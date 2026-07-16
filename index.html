@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAFEBOAT Térmica — Manutenção Preditiva por Visão Térmica com IA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&family=Montserrat:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap');
+  :root {
+    --navy: #23304A;        /* Pantone 654 C — cor institucional */
+    --navy-soft: rgba(35,48,74,.55);
+    --ink: #231F20;         /* preto institucional */
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --panel2: #f3f5f9;
+    --line: #dde2ea;
+    --rule: rgba(35,48,74,.30);
+    --txt: #23304A;
+    --txt2: #6b7385;
+    --hot: #c2410c;         /* acento térmico (severidade) */
+    --crit: #b91c1c; --ok: #15803d; --warn: #a16207;
+    --serif-h: 'Josefin Sans', 'Segoe UI', sans-serif;
+    --sans: 'Source Sans 3', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--txt); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+  header {
+    position: fixed; inset: 0 0 auto 0; z-index: 50; height: 60px;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 28px;
+    background: var(--navy); border-bottom: 1px solid rgba(255,255,255,.08);
+    font-size: 13px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; color: #fff; text-decoration: none; }
+  .brand img { height: 32px; width: auto; display: block; }
+  .brand .divi { width: 1px; height: 26px; background: rgba(255,255,255,.35); }
+  .brand .prod { font-family: var(--serif-h); font-weight: 300; font-size: 17px; letter-spacing: .32em; color: #fff; padding-top: 3px; }
+  header nav a { color: rgba(255,255,255,.72); text-decoration: none; margin-left: 20px; transition: color .2s; letter-spacing: .04em; }
+  header nav a:hover { color: #fff; }
+  @media (max-width: 860px) { header nav a:nth-child(n+4) { display: none; } .brand .prod { letter-spacing: .18em; } }
+
+  .hero { padding: 130px 24px 4px; text-align: center; }
+  .hero .eyebrow { color: var(--navy); font-weight: 600; font-size: 12.5px; letter-spacing: .34em; }
+  .hero h1 { font-family: var(--serif-h); font-weight: 300; text-transform: uppercase;
+             font-size: clamp(46px, 8vw, 96px); letter-spacing: .14em; line-height: 1.05;
+             margin: 18px 0 10px; color: var(--navy); text-indent: .14em; }
+  .hero p.tag { font-size: clamp(17px, 2.4vw, 24px); color: var(--txt2); font-weight: 400; }
+  .hero p.tag b { color: var(--navy); font-weight: 600; }
+  .hero .waves { margin: 22px auto 0; display: block; width: 76px; height: auto; opacity: .9; }
+
+  /* ---------- viewer ---------- */
+  .stage-wrap { position: relative; height: min(78vh, 860px); margin: 10px auto 0; max-width: 1400px; }
+  #stage { position: absolute; inset: 0; cursor: grab; }
+  #stage:active { cursor: grabbing; }
+  .hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--txt2);
+          background: rgba(255,255,255,.75); border: 1px solid var(--line); padding: 6px 14px; border-radius: 999px;
+          backdrop-filter: blur(8px); pointer-events: none; transition: opacity 1s; }
+  #tooltip { position: absolute; pointer-events: none; background: var(--navy); border: 1px solid var(--navy);
+             color: #fff; font-size: 12.5px; padding: 6px 11px; border-radius: 8px; transform: translate(-50%, -140%);
+             opacity: 0; transition: opacity .15s; white-space: nowrap; }
+  .ctrls {
+    position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 22px; flex-wrap: wrap; justify-content: center;
+    background: rgba(255,255,255,.85); border: 1px solid var(--line); border-radius: 14px;
+    padding: 13px 22px; backdrop-filter: blur(20px); box-shadow: 0 14px 44px rgba(35,48,74,.16);
+  }
+  .ctrls label.head { font-size: 10.5px; color: var(--txt2); letter-spacing: .22em; display: block; margin-bottom: 6px; font-weight: 600; }
+  .ctrls input[type=range] { width: 190px; accent-color: var(--navy); }
+  .chips { display: flex; gap: 8px; }
+  .chip { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; outline: 2px solid var(--line); outline-offset: 2px; }
+  .chip.on { outline-color: var(--navy); }
+  .chip.branco { background: #eceae5; }
+  .chip.grafite { background: #3a3d42; }
+  .btn { background: transparent; color: var(--navy); border: 1px solid var(--rule); border-radius: 999px;
+         font-size: 12.5px; padding: 7px 15px; cursor: pointer; transition: .2s; font-family: var(--sans); font-weight: 600; }
+  .btn:hover { border-color: var(--navy); }
+  .btn.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  /* ---------- sections ---------- */
+  section { max-width: 1080px; margin: 0 auto; padding: 96px 24px 0; }
+  .kick { display: flex; align-items: center; gap: 16px; font-size: 11.5px; font-weight: 700;
+          letter-spacing: .3em; color: var(--navy); margin-bottom: 20px; }
+  .kick::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+  section h2 { font-family: var(--serif-h); font-weight: 300; text-transform: uppercase; letter-spacing: .06em;
+               font-size: clamp(26px, 3.8vw, 38px); line-height: 1.22; margin-bottom: 10px; color: var(--navy); }
+  section p.sub { color: var(--txt2); font-size: 16.5px; max-width: 700px; margin-bottom: 32px; line-height: 1.55; }
+  section p.sub b { color: var(--navy); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 24px 22px; }
+  .card .big { font-family: var(--serif-h); font-weight: 400; font-size: 27px; letter-spacing: .02em; color: var(--navy); }
+  .card .big small { font-size: 15px; color: var(--txt2); font-weight: 300; }
+  .card .lbl { color: var(--txt2); font-size: 13.5px; margin-top: 6px; line-height: 1.5; }
+  .card .lbl b { color: var(--navy); font-weight: 600; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--navy-soft); font-weight: 700; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+  td:first-child { font-weight: 600; white-space: nowrap; color: var(--navy); }
+  td { color: #444b5c; }
+  td em { font-style: normal; color: var(--navy); font-weight: 600; }
+  .tableCard { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: auto; }
+  .tableCard tr:last-child td { border-bottom: none; }
+
+  .dl { display: flex; flex-wrap: wrap; gap: 12px; }
+  .dl a { display: flex; flex-direction: column; gap: 3px; text-decoration: none; color: var(--navy);
+          background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; min-width: 200px; transition: .2s; }
+  .dl a:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: 0 10px 26px rgba(35,48,74,.12); }
+  .dl a .n { font-weight: 700; font-size: 15px; }
+  .dl a .d { color: var(--txt2); font-size: 12.5px; }
+  .dl a .n::before { content: "⬇︎ "; color: var(--navy); }
+
+  ol.steps { counter-reset: s; list-style: none; display: grid; gap: 10px; }
+  ol.steps li { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 15px 18px 15px 58px; position: relative; font-size: 14.5px; color: #444b5c; line-height: 1.55; }
+  ol.steps li b { color: var(--navy); }
+  ol.steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    width: 27px; height: 27px; border-radius: 50%; background: var(--navy); color: #fff;
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+
+  /* ---------- pipeline ---------- */
+  .pipe { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+  .pipe .stg { flex: 1 1 130px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 13px; position: relative; }
+  .pipe .stg .t { font-weight: 700; font-size: 13.5px; margin-bottom: 4px; color: var(--navy); }
+  .pipe .stg .d { font-size: 12px; color: var(--txt2); line-height: 1.45; }
+  .pipe .stg .d b { color: var(--navy); }
+  .pipe .stg::after { content: "→"; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--navy); font-weight: 700; z-index: 2; }
+  .pipe .stg:last-child::after { content: none; }
+
+  /* ---------- demo IA ---------- */
+  .demo { background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .demo-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); font-size: 12.5px; cursor: pointer; color: var(--txt2); background: #fff; transition: .15s; font-family: var(--sans); }
+  .tab.on { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+  .status { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; }
+  .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--txt2); }
+  .status.learning .dot { background: var(--navy); animation: pulse 1.2s infinite; }
+  .status.ok .dot { background: var(--ok); }
+  .status.alert { border-color: rgba(185,28,28,.45); color: var(--crit); }
+  .status.alert .dot { background: var(--crit); animation: pulse .7s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .views { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  .view { position: relative; }
+  .view .cap { font-size: 11px; color: var(--navy-soft); letter-spacing: .18em; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+  .view canvas { width: 100%; aspect-ratio: 4/3; border-radius: 10px; border: 1px solid var(--navy); background: #000; display: block; }
+  .view .rng { position: absolute; right: 8px; bottom: 8px; font-size: 11px; font-variant-numeric: tabular-nums;
+               background: rgba(6,7,12,.75); border-radius: 6px; padding: 3px 8px; color: #fff; }
+  .demo-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 0; align-items: center; }
+  .demo-actions .lbl { font-size: 11px; color: var(--navy-soft); letter-spacing: .18em; margin-right: 4px; font-weight: 700; }
+  .abtn { padding: 8px 15px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--txt); font-size: 12.5px; cursor: pointer; transition: .15s; font-family: var(--sans); }
+  .abtn:hover { border-color: var(--hot); color: var(--hot); }
+  .abtn.on { background: var(--hot); border-color: var(--hot); color: #fff; font-weight: 600; }
+  .abtn.ok:hover { border-color: var(--ok); color: var(--ok); }
+  .alerts { margin-top: 18px; display: grid; gap: 8px; }
+  .alerts .empty { color: var(--txt2); font-size: 13px; padding: 10px 4px; }
+  .al { display: grid; grid-template-columns: auto 1fr; gap: 12px; background: #fff; border: 1px solid var(--line);
+        border-left: 3px solid var(--warn); border-radius: 10px; padding: 11px 14px; font-size: 13px; }
+  .al.alerta { border-left-color: var(--hot); }
+  .al.critico { border-left-color: var(--crit); }
+  .al .when { color: var(--txt2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .al .what { color: #444b5c; }
+  .al .what b { color: var(--navy); }
+  .al .what .diag { color: var(--txt2); margin-top: 3px; font-size: 12.5px; }
+  .al .what .diag::before { content: "IA · "; color: var(--navy); font-weight: 700; }
+
+  .schWrap { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; overflow-x: auto; }
+  .schWrap svg { min-width: 820px; width: 100%; height: auto; display: block; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 12.5px; color: var(--txt2); padding: 0 6px; }
+  .legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  .note { background: var(--panel2); border: 1px solid var(--line); border-left: 3px solid var(--navy); border-radius: 10px; padding: 14px 18px; font-size: 13.5px; color: #444b5c; line-height: 1.6; margin-top: 16px; }
+  .note b { color: var(--navy); }
+  .note.warn { border-left-color: var(--hot); }
+  .note.warn b { color: var(--hot); }
+  .note code, section code { background: var(--panel2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: .9em; color: var(--navy); }
+
+  footer { margin-top: 100px; background: var(--navy); color: rgba(255,255,255,.75); text-align: center; padding: 54px 20px 46px; font-size: 12.5px; }
+  footer img { height: 44px; width: auto; display: block; margin: 0 auto 16px; }
+  footer .tagline { font-size: 11px; letter-spacing: .34em; color: rgba(255,255,255,.65); margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="#">
+    <!-- logotipo oficial SAFEBOAT (branco, fundo transparente) -->
+    <img src="img/logo-safeboat-branco.png" alt="SAFEBOAT">
+    <span class="divi"></span>
+    <span class="prod">TÉRMICA</span>
+  </a>
+  <nav>
+    <a href="#ia">IA</a>
+    <a href="#specs">Especificações</a>
+    <a href="#janela">Janela IR</a>
+    <a href="#eletrica">Elétrica</a>
+    <a href="#fixacao">Fixação</a>
+    <a href="#fabricacao">Fabricação</a>
+    <a href="#downloads">Downloads</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">MANUTENÇÃO PREDITIVA &nbsp;·&nbsp; VISÃO TÉRMICA &nbsp;·&nbsp; IA</div>
+  <h1>Térmica</h1>
+  <p class="tag">Vê o superaquecimento <b>semanas antes</b> da falha. Em cada canto do barco.</p>
+  <svg class="waves" viewBox="0 0 76 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#23304A" stroke-width="2.6" stroke-linecap="round">
+      <path d="M6 6 q 8 -6 16 0 t 16 0 t 16 0 t 16 0"/>
+      <path d="M6 15 q 8 -6 16 0 t 16 0 t 16 0 t 16 0"/>
+      <path d="M6 24 q 8 -6 16 0 t 16 0 t 16 0 t 16 0"/>
+    </g>
+  </svg>
+</div>
+
+<div class="stage-wrap">
+  <div id="stage"></div>
+  <div class="hint" id="hint">Arraste para girar · Ctrl+scroll para zoom · Use o slider para explodir</div>
+  <div id="tooltip"></div>
+  <div class="ctrls">
+    <div>
+      <label class="head">VISTA EXPLODIDA</label>
+      <input type="range" id="explode" min="0" max="100" value="0">
+    </div>
+    <div>
+      <label class="head">ACABAMENTO</label>
+      <div class="chips">
+        <div class="chip branco on" data-c="branco" title="Branco Náutico"></div>
+        <div class="chip grafite" data-c="grafite" title="Grafite"></div>
+      </div>
+    </div>
+    <button class="btn on" id="rot">Rotação automática</button>
+    <button class="btn" id="reset">Recentrar</button>
+  </div>
+</div>
+
+<!-- ============================================================ IA -->
+<section id="ia">
+  <div class="kick">REDE DE ANÁLISE</div>
+  <h2>A rede de análise,<br>funcionando agora.</h2>
+  <p class="sub">Demonstração <b>ao vivo</b> com frames mocados de três câmeras MLX90640 (32×24 px, 4 Hz) — exatamente o pipeline que rodará no computador de bordo. O sistema aprende o padrão térmico normal de cada equipamento e acusa qualquer pixel que fuja da estatística. <b>Injete uma falha</b> e veja a IA encontrá-la, classificá-la e sugerir o diagnóstico.</p>
+
+  <div class="demo">
+    <div class="demo-top">
+      <div class="tabs" id="camTabs"></div>
+      <div class="status learning" id="status"><span class="dot"></span><span id="statusTxt">Aprendendo baseline…</span></div>
+    </div>
+    <div class="views">
+      <div class="view"><div class="cap">Baseline aprendido</div><canvas id="cvBase" width="384" height="288"></canvas><div class="rng" id="rngBase">—</div></div>
+      <div class="view"><div class="cap">Ao vivo · detecção</div><canvas id="cvLive" width="384" height="288"></canvas><div class="rng" id="rngLive">—</div></div>
+      <div class="view"><div class="cap">Mapa de anomalia (Δ°C)</div><canvas id="cvDelta" width="384" height="288"></canvas><div class="rng" id="rngDelta">—</div></div>
+    </div>
+    <div class="demo-actions" id="anomBtns"></div>
+    <div class="alerts" id="alerts"><div class="empty">Nenhum alerta — todos os equipamentos dentro do padrão térmico.</div></div>
+  </div>
+
+  <div class="note">A demo processa as <b>três câmeras simultaneamente</b> (como a central a bordo): alertas de qualquer câmera aparecem no feed, mesmo que você esteja vendo outra. O código desta página (<code>engine.js</code>) é a implementação de referência — no barco, troca-se o gerador de frames mocados pelo feed MQTT real das câmeras.</div>
+</section>
+
+<!-- ============================================================ método -->
+<section id="metodo">
+  <div class="kick">MÉTODO</div>
+  <h2>Comparação e detecção.</h2>
+  <p class="sub">Nada de "temperatura maior que X". Cada pixel tem seu próprio limiar estatístico, aprendido por <b>regime de operação</b> — porque 115 °C é normal no coletor de escape e é incêndio no chicote elétrico.</p>
+  <div class="pipe">
+    <div class="stg"><div class="t">1 · Aquisição</div><div class="d">Frame 32×24 float (°C) a 4 Hz por câmera, via Wi-Fi/MQTT (1,5 kB/frame)</div></div>
+    <div class="stg"><div class="t">2 · Normalização</div><div class="d">Compensação da temperatura ambiente (Ta do próprio MLX90640) e da emissividade por zona</div></div>
+    <div class="stg"><div class="t">3 · Baseline</div><div class="d">Média + desvio σ por pixel (Welford), um baseline por regime: desligado, marcha lenta, cruzeiro</div></div>
+    <div class="stg"><div class="t">4 · Comparação</div><div class="d">Δ = frame − baseline e z-score = Δ/σ. Anomalia: z &gt; 4 <b>e</b> Δ &gt; 6 °C</div></div>
+    <div class="stg"><div class="t">5 · Blobs</div><div class="d">Píxeis anômalos agrupados (componentes conectados ≥ 3 px) — ruído não forma região</div></div>
+    <div class="stg"><div class="t">6 · Persistência</div><div class="d">Região precisa sobreviver 3+ frames seguidos; reflexos e respingos morrem aqui</div></div>
+    <div class="stg"><div class="t">7 · Classificação</div><div class="d">Centróide → zona do equipamento (alternador, escape, mancal…) + severidade por Δ°C</div></div>
+    <div class="stg"><div class="t">8 · Alerta</div><div class="d">Diagnóstico sugerido + tendência °C/dia no app SAFEBOAT, antes da falha</div></div>
+  </div>
+  <div class="note">O baseline <b>se adapta devagar</b> (α = 0,004) apenas nos píxeis saudáveis: dia quente não gera alarme falso, mas uma falha real nunca é "aprendida" como normal. A seleção de regime vem de graça: a SAFEBOAT já monitora RPM e motores — o mesmo barramento diz à IA qual baseline usar. Evolução planejada: os blobs rotulados alimentam um classificador CNN leve (TensorFlow Lite) treinado com o histórico da frota.</div>
+</section>
+
+<!-- ============================================================ specs -->
+<section id="specs">
+  <div class="kick">ESPECIFICAÇÕES</div>
+  <h2>Uma câmera térmica nossa.<br>Fácil de fabricar, fácil de multiplicar.</h2>
+  <p class="sub">Sensor Melexis MLX90640 + ESP32-C3 num case de escotilha Ø50 mm impresso em ASA. Sem lente, sem obturador, sem partes móveis — <b>R$ ~650 por ponto monitorado</b>, contra R$ 15 mil+ de uma câmera térmica industrial.</p>
+  <div class="grid">
+    <div class="card"><div class="big">32 × 24 <small>px</small></div><div class="lbl"><b>MLX90640</b> · matriz de 768 termopilhas · FOV 55°×35° · −40 a +300 °C · ±1,5 °C</div></div>
+    <div class="card"><div class="big">ESP32-C3</div><div class="lbl">SuperMini · Wi-Fi 2,4 GHz · lê o sensor por <b>I²C</b> e publica frames via <b>MQTT</b> · OTA</div></div>
+    <div class="card"><div class="big">Ø50 × 62 <small>mm</small></div><div class="lbl">Corpo monobloco em <b>ASA</b>, família do Vigia · menor que uma lata de espuma</div></div>
+    <div class="card"><div class="big">IP66/67 <small>alvo</small></div><div class="lbl">Janela de germânio colada + O-ring radial + prensa-cabo IP68 — <b>zero parafusos expostos</b></div></div>
+    <div class="card"><div class="big">10–28 V</div><div class="lbl">Buck interno: liga direto no <b>12 V do barco</b> · consumo ~0,8 W · fusível 1 A</div></div>
+    <div class="card"><div class="big">4 Hz</div><div class="lbl">Taxa de quadros contínua · <b>1,5 kB/frame</b> — 12 câmeras consomem menos que uma música no 4G</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ janela -->
+<section id="janela">
+  <div class="kick">JANELA INFRAVERMELHA</div>
+  <h2>Vidro comum é opaco para o calor.</h2>
+  <p class="sub">O MLX90640 enxerga infravermelho de onda longa (8–14 µm) — que <b>não atravessa vidro</b> nem acrílico. A janela estanque precisa ser de material transparente ao calor:</p>
+  <div class="tableCard"><table>
+    <tr><th>Opção</th><th>Material</th><th>Transmissão 8–14 µm</th><th>Custo</th><th>Veredicto</th></tr>
+    <tr><td>A · Padrão</td><td>Germânio Ø25 × 1 mm com coating AR/DLC</td><td>~90 %</td><td>~R$ 180 (AliExpress)</td><td><em>Recomendada.</em> Rígida, lavável, colada com Sikaflex como o vidro do Vigia. DLC resiste à maresia.</td></tr>
+    <tr><td>B · Econômica</td><td>Filme de polietileno (HDPE) 0,25 mm duplo</td><td>~70 %</td><td>~R$ 5</td><td>Para protótipos: prensado entre o recesso e um anel impresso. Frágil, atenua o sinal (recalibrar emissividade).</td></tr>
+    <tr><td>C · Sem janela</td><td>Abertura aberta com labirinto</td><td>100 %</td><td>R$ 0</td><td>Só em praça de máquinas seca — perde o IP66. Não recomendada em barco.</td></tr>
+  </table></div>
+  <div class="note warn"><b>Regra de projeto:</b> o recesso frontal aceita qualquer disco Ø25 × 1 mm — dá para começar com filme HDPE nos testes de bancada e trocar por germânio na versão embarcada, sem reimprimir nada.</div>
+</section>
+
+<!-- ============================================================ elétrica -->
+<section id="eletrica">
+  <div class="kick">ESQUEMA ELÉTRICO</div>
+  <h2>Três placas, sete fios.</h2>
+  <p class="sub">Montagem em <b>menos de 20 minutos</b> por câmera, sem PCB customizada na v1 — tudo módulo de prateleira.</p>
+  <div class="schWrap">
+    <svg viewBox="0 0 980 470" xmlns="http://www.w3.org/2000/svg" font-family="'Source Sans 3',-apple-system,'Segoe UI',Roboto,sans-serif">
+      <defs>
+        <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#6b7385"/></marker>
+      </defs>
+      <!-- painel CC -->
+      <rect x="18" y="168" width="132" height="132" rx="10" fill="#f3f5f9" stroke="#c6cdd9"/>
+      <text x="84" y="190" fill="#6b7385" font-size="11" text-anchor="middle" letter-spacing="1.5">PAINEL CC DO BARCO</text>
+      <text x="84" y="228" fill="#23304A" font-size="15" font-weight="700" text-anchor="middle">12 V ⎓</text>
+      <!-- fusível -->
+      <line x1="60" y1="252" x2="76" y2="252" stroke="#c0392b" stroke-width="2"/>
+      <rect x="76" y="246" width="26" height="12" rx="6" fill="none" stroke="#c0392b" stroke-width="2"/>
+      <line x1="102" y1="252" x2="118" y2="252" stroke="#c0392b" stroke-width="2"/>
+      <text x="89" y="240" fill="#c0392b" font-size="10.5" text-anchor="middle">F1 · 1 A</text>
+      <text x="84" y="284" fill="#6b7385" font-size="10.5" text-anchor="middle">disjuntor dedicado “TÉRMICA”</text>
+      <!-- cabo -->
+      <path d="M150 252 C 200 252, 205 210, 250 210" fill="none" stroke="#c0392b" stroke-width="2.5"/>
+      <path d="M150 268 C 200 268, 205 250, 250 250" fill="none" stroke="#5b6270" stroke-width="2.5"/>
+      <path d="M250 210 C 285 210, 272 268, 296 240 C 308 226, 296 214, 316 224" fill="none" stroke="#c0392b" stroke-width="2.5"/>
+      <path d="M250 250 C 285 250, 272 300, 296 272 C 308 258, 296 246, 316 252" fill="none" stroke="#5b6270" stroke-width="2.5"/>
+      <text x="235" y="192" fill="#23304A" font-size="11.5" text-anchor="middle" font-weight="600">cabo marítimo 2×0,75 mm²</text>
+      <text x="284" y="300" fill="#6b7385" font-size="10.5" text-anchor="middle">alça de gotejamento</text>
+      <!-- conector -->
+      <rect x="316" y="216" width="34" height="44" rx="8" fill="#e7ebf2" stroke="#8b93a5"/>
+      <text x="333" y="208" fill="#6b7385" font-size="10.5" text-anchor="middle">SP13</text>
+      <text x="333" y="242" fill="#444b5c" font-size="9.5" text-anchor="middle">IP68</text>
+      <!-- case boundary -->
+      <rect x="382" y="34" width="580" height="410" rx="16" fill="none" stroke="#23304A" stroke-width="1.6" stroke-dasharray="7 6" opacity=".65"/>
+      <text x="672" y="56" fill="#23304A" font-size="11.5" text-anchor="middle" letter-spacing="2">INTERIOR DA CASE · ESTANQUE IP66/67</text>
+      <!-- prensa-cabo -->
+      <rect x="362" y="212" width="40" height="52" rx="6" fill="#dfe4ec" stroke="#8b93a5"/>
+      <text x="382" y="286" fill="#6b7385" font-size="10.5" text-anchor="middle">prensa-cabo</text>
+      <text x="382" y="298" fill="#6b7385" font-size="10.5" text-anchor="middle">M12 IP68</text>
+      <line x1="350" y1="228" x2="362" y2="228" stroke="#c0392b" stroke-width="2.5"/>
+      <line x1="350" y1="248" x2="362" y2="248" stroke="#5b6270" stroke-width="2.5"/>
+      <!-- TVS -->
+      <line x1="402" y1="228" x2="452" y2="228" stroke="#c0392b" stroke-width="2.5"/>
+      <line x1="402" y1="248" x2="452" y2="248" stroke="#5b6270" stroke-width="2.5"/>
+      <line x1="430" y1="228" x2="430" y2="248" stroke="#a16207" stroke-width="2"/>
+      <circle cx="430" cy="238" r="5" fill="none" stroke="#a16207" stroke-width="1.5"/>
+      <text x="430" y="266" fill="#a16207" font-size="10" text-anchor="middle">TVS SMBJ26A</text>
+      <!-- buck -->
+      <rect x="452" y="196" width="120" height="86" rx="10" fill="#f3f5f9" stroke="#c6cdd9"/>
+      <text x="512" y="218" fill="#6b7385" font-size="10.5" text-anchor="middle" letter-spacing="1">BUCK MP1584EN</text>
+      <text x="512" y="243" fill="#23304A" font-size="14" font-weight="700" text-anchor="middle">12 V → 5 V</text>
+      <text x="512" y="262" fill="#6b7385" font-size="10" text-anchor="middle">ajustar ANTES de ligar</text>
+      <text x="462" y="232" fill="#c0392b" font-size="9.5">IN+</text>
+      <text x="462" y="252" fill="#5b6270" font-size="9.5">IN−</text>
+      <text x="544" y="232" fill="#c2410c" font-size="9.5">OUT+</text>
+      <text x="544" y="252" fill="#5b6270" font-size="9.5">OUT−</text>
+      <!-- buck → esp -->
+      <line x1="572" y1="228" x2="640" y2="228" stroke="#c2410c" stroke-width="2.5" marker-end="url(#arr)"/>
+      <line x1="572" y1="248" x2="640" y2="248" stroke="#5b6270" stroke-width="2.5"/>
+      <text x="606" y="218" fill="#c2410c" font-size="10.5" text-anchor="middle">5 V</text>
+      <!-- ESP32 -->
+      <rect x="640" y="128" width="150" height="200" rx="12" fill="#f3f5f9" stroke="#c6cdd9"/>
+      <text x="715" y="152" fill="#6b7385" font-size="10.5" text-anchor="middle" letter-spacing="1">ESP32-C3 SUPERMINI</text>
+      <text x="715" y="172" fill="#23304A" font-size="13" font-weight="700" text-anchor="middle">Wi-Fi · MQTT · OTA</text>
+      <path d="M715 96 v18 m-9 -26 a12 12 0 0 1 18 0 m-25 -8 a22 22 0 0 1 32 0" fill="none" stroke="#23304A" stroke-width="2" stroke-linecap="round"/>
+      <text x="748" y="96" fill="#23304A" font-size="10">Wi-Fi 2,4 GHz</text>
+      <text x="650" y="232" fill="#c2410c" font-size="10">5V</text>
+      <text x="650" y="252" fill="#5b6270" font-size="10">GND</text>
+      <text x="758" y="200" fill="#a16207" font-size="10" text-anchor="end">3V3</text>
+      <text x="758" y="232" fill="#2563eb" font-size="10" text-anchor="end">GPIO8</text>
+      <text x="758" y="264" fill="#15803d" font-size="10" text-anchor="end">GPIO9</text>
+      <text x="758" y="304" fill="#7c3aed" font-size="10" text-anchor="end">GPIO10</text>
+      <!-- esp → mlx -->
+      <line x1="790" y1="196" x2="852" y2="196" stroke="#a16207" stroke-width="2.5"/>
+      <line x1="790" y1="228" x2="852" y2="228" stroke="#2563eb" stroke-width="2.5"/>
+      <line x1="790" y1="260" x2="852" y2="260" stroke="#15803d" stroke-width="2.5"/>
+      <path d="M790 300 h20 v-8 h22" fill="none" stroke="#5b6270" stroke-width="2.5"/>
+      <text x="820" y="188" fill="#a16207" font-size="10" text-anchor="middle">3V3</text>
+      <text x="820" y="220" fill="#2563eb" font-size="10" text-anchor="middle">SDA</text>
+      <text x="820" y="252" fill="#15803d" font-size="10" text-anchor="middle">SCL</text>
+      <text x="826" y="284" fill="#5b6270" font-size="10" text-anchor="middle">GND</text>
+      <!-- MLX -->
+      <rect x="852" y="128" width="98" height="192" rx="12" fill="#f3f5f9" stroke="#23304A"/>
+      <text x="901" y="152" fill="#23304A" font-size="10.5" text-anchor="middle" letter-spacing="1" font-weight="700">MLX90640</text>
+      <text x="901" y="170" fill="#6b7385" font-size="10" text-anchor="middle">GY-MCU90640</text>
+      <circle cx="901" cy="248" r="26" fill="#e7ebf2" stroke="#8b93a5"/>
+      <circle cx="901" cy="248" r="13" fill="#fff" stroke="#c2410c"/>
+      <text x="901" y="252" fill="#c2410c" font-size="9" text-anchor="middle">55°×35°</text>
+      <text x="901" y="300" fill="#6b7385" font-size="9.5" text-anchor="middle">I²C 400 kHz · addr 0x33</text>
+      <text x="901" y="312" fill="#6b7385" font-size="9.5" text-anchor="middle">pull-ups 4,7 kΩ no módulo</text>
+      <!-- LED -->
+      <path d="M715 328 v40 h60" fill="none" stroke="#7c3aed" stroke-width="2"/>
+      <rect x="775" y="360" width="30" height="14" rx="4" fill="none" stroke="#8b93a5" stroke-width="1.5"/>
+      <text x="790" y="355" fill="#6b7385" font-size="9.5" text-anchor="middle">330 Ω</text>
+      <path d="M805 367 h24" stroke="#7c3aed" stroke-width="2"/>
+      <circle cx="838" cy="367" r="7" fill="none" stroke="#15803d" stroke-width="2"/>
+      <path d="M845 367 h18 v-8" fill="none" stroke="#5b6270" stroke-width="2"/>
+      <text x="838" y="392" fill="#15803d" font-size="10" text-anchor="middle">LED status</text>
+      <text x="712" y="380" fill="#6b7385" font-size="9.5" text-anchor="end">Wi-Fi ok / anomalia / erro</text>
+      <!-- GND rail -->
+      <line x1="660" y1="418" x2="940" y2="418" stroke="#8b93a5" stroke-width="1.5" stroke-dasharray="3 4" opacity=".8"/>
+      <text x="800" y="434" fill="#6b7385" font-size="9.5" text-anchor="middle">GND comum (estrela no OUT− do buck — nunca no casco)</text>
+    </svg>
+  </div>
+  <div class="legend">
+    <span><i style="background:#c0392b"></i>+12 V (vermelho)</span>
+    <span><i style="background:#5b6270"></i>GND (preto)</span>
+    <span><i style="background:#c2410c"></i>+5 V (laranja)</span>
+    <span><i style="background:#a16207"></i>3V3 (amarelo)</span>
+    <span><i style="background:#2563eb"></i>SDA (azul)</span>
+    <span><i style="background:#15803d"></i>SCL (verde)</span>
+  </div>
+  <div class="note">O MLX90640 é alimentado pelo <b>3V3 do regulador do próprio ESP32-C3</b> (consome ~23 mA — folga tranquila). I²C a 400 kHz sustenta 4 Hz; para 8 Hz, subir para 1 MHz. Verniz conformal em todas as placas após a solda — atmosfera de praça de máquinas é quente, úmida e salina.</div>
+</section>
+
+<!-- ============================================================ cabeamento -->
+<section id="cabeamento">
+  <div class="kick">CABEAMENTO</div>
+  <h2>Um cabo para fora da case.</h2>
+  <p class="sub">Dados vão por Wi-Fi — só energia passa pelo cabo. Instalar uma câmera nova = <b>2 fios + 4 parafusos</b>.</p>
+  <div class="tableCard"><table>
+    <tr><th>Item</th><th>Especificação</th><th>Detalhe de instalação</th></tr>
+    <tr><td>Cabo</td><td>Marítimo estanhado 2×0,75 mm², capa PVC Ø4–6 mm</td><td>Comprimento livre; queda de tensão irrelevante (60 mA @ 12 V). Abraçadeiras UV a cada 30 cm.</td></tr>
+    <tr><td>Saída da case</td><td>Prensa-cabo M12×1,5 nylon IP68 (faixa 3–6,5 mm)</td><td>Aperto firme sobre a capa; laço de folga interno antes do prensa-cabo.</td></tr>
+    <tr><td>Conector de serviço</td><td>Weipu SP13 2 pinos IP68, em linha, a 30 cm da câmera</td><td>Permite remover a câmera sem refazer cabeamento — padrão da família Vigia.</td></tr>
+    <tr><td>Alça de gotejamento</td><td>Curva em “U” antes de qualquer conector/entrada</td><td>Água escorre pelo ponto baixo do cabo, nunca para dentro do prensa-cabo.</td></tr>
+    <tr><td>Proteção</td><td>Fusível 1 A no painel CC, circuito dedicado “TÉRMICA”</td><td>Um circuito alimenta até 8 câmeras em derivação (60 mA cada); TVS interna segura transientes de partida.</td></tr>
+    <tr><td>Roteamento</td><td>Afastado ≥10 cm de cabos de potência/ignição</td><td>Evita ruído conduzido; cruzamentos a 90°. Nunca apoiar o cabo sobre o coletor de escape.</td></tr>
+    <tr><td>Rede</td><td>Wi-Fi 2,4 GHz do barco (roteador Starlink / 4G)</td><td>RSSI mínimo −75 dBm no ponto de instalação; a case ASA é transparente ao rádio.</td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ fixação -->
+<section id="fixacao">
+  <div class="kick">FIXAÇÃO</div>
+  <h2>Fixação e mira.</h2>
+  <p class="sub">Suporte yoke com manípulos M4: instala em anteparo, longarina ou teto da praça de máquinas e ajusta ±35° de inclinação <b>sem ferramenta</b>.</p>
+  <div class="grid">
+    <div class="card"><div class="big">4× inox A4</div><div class="lbl">Parafusos Ø4,8 auto-atarraxantes na base 70×36 mm + Sikaflex nos furos. Em fibra fina: rebite ou VHB estrutural 3M.</div></div>
+    <div class="card"><div class="big">±35°</div><div class="lbl">Inclinação nos manípulos M4 rosqueados em <b>insertos de latão</b> no corpo — aperta com dois dedos, aguenta vibração de motor.</div></div>
+    <div class="card"><div class="big">0,4–1,0 m</div><div class="lbl">Distância recomendada ao alvo. O FOV 55° enquadra um motor inteiro a ~80 cm.</div></div>
+    <div class="card"><div class="big">≥15 cm</div><div class="lbl">Afastamento mínimo de superfícies &gt;80 °C — o próprio case não pode virar fonte de erro térmico.</div></div>
+  </div>
+  <div style="height:22px"></div>
+  <div class="tableCard"><table>
+    <tr><th>Distância</th><th>Cena enquadrada (55°×35°)</th><th>Tamanho do pixel</th><th>Uso típico</th></tr>
+    <tr><td>0,4 m</td><td>0,42 × 0,25 m</td><td>~13 mm</td><td>Alternador, bomba d’água, mancal, conexões do quadro</td></tr>
+    <tr><td>0,8 m</td><td>0,83 × 0,50 m</td><td>~26 mm</td><td>Motor completo (posição padrão), coletor + turbo</td></tr>
+    <tr><td>1,2 m</td><td>1,25 × 0,76 m</td><td>~39 mm</td><td>Vista geral da praça de máquinas, dois motores</td></tr>
+  </table></div>
+  <div class="note warn"><b>Posições recomendadas por barco (kit 3 câmeras):</b> ① teto da praça de máquinas mirando o motor a ~80 cm (escape + turbo + alternador no mesmo quadro) · ② anteparo lateral mirando bomba d’água e mancal do eixo · ③ interior do quadro elétrico principal a ~40 cm. Frota SAFEBOAT: mesmo baseline de modelo de motor compartilhado entre barcos acelera o aprendizado.</div>
+</section>
+
+<!-- ============================================================ fabricação -->
+<section id="fabricacao">
+  <div class="kick">FABRICAÇÃO</div>
+  <h2>Feita para a sua Bambu Lab.</h2>
+  <p class="sub">Quatro peças, uma chapa, ~6 h de impressão. Mesma receita de vedação validada no Vigia: rosca + O-ring radial + janela colada.</p>
+  <div class="tableCard"><table>
+    <tr><th>Parâmetro</th><th>Valor</th><th>Observação</th></tr>
+    <tr><td>Material</td><td>Bambu ASA (ou PETG-HF)</td><td>ASA: resistência UV e a 100 °C ambiente — obrigatório perto de motor</td></tr>
+    <tr><td>Camada</td><td>0,16 mm</td><td>Perfil "0.16mm Optimal"; rosca Ø47×P3 e canal de O-ring saem limpos</td></tr>
+    <tr><td>Perímetros</td><td>5 paredes · 40% gyroid</td><td>Topo/fundo: 5 camadas. Estanqueidade e rigidez</td></tr>
+    <tr><td>Orientação</td><td>Corpo: face frontal na chapa · Tampa: flange na chapa · Carrier: disco na chapa · Suporte: base na chapa</td><td>Chapa PEI texturizada dá acabamento fosco premium</td></tr>
+    <tr><td>Suportes</td><td>Tree, apenas nos 2 bosses laterais do corpo</td><td>Nenhuma outra peça precisa de suporte</td></tr>
+    <tr><td>Pós-processo</td><td>Insertos M4 a quente · 2 demãos de epóxi interno · teste de mergulho 30 min</td><td>FDM selado com epóxi = estanque na prática (não certificado)</td></tr>
+  </table></div>
+
+  <div style="height:44px"></div>
+  <div class="kick">MONTAGEM</div>
+  <h2 style="font-size:clamp(22px,3vw,30px)">Oito passos.</h2>
+  <div style="height:14px"></div>
+  <ol class="steps">
+    <li><b>Sele o interior</b> do corpo impresso com 2 demãos finas de epóxi e cure por 24 h.</li>
+    <li><b>Instale os insertos M4</b> nos bosses laterais com ferro de solda a ~250 °C.</li>
+    <li><b>Cole a janela IR:</b> cordão fino de Sikaflex-291i no recesso frontal, assente o disco de germânio Ø25×1 (coating DLC para fora), remova o excesso e cure 48 h.</li>
+    <li><b>Monte o carrier:</b> deslize o módulo MLX90640 no slot (sensor atravessando o furo central do disco) e fixe o ESP32-C3 na bandeja traseira com fita VHB.</li>
+    <li><b>Ligue a elétrica:</b> buck MP1584 ajustado em 5,0 V → ESP32-C3; 3V3/GND/SDA(GPIO8)/SCL(GPIO9) → MLX90640; LED de status no GPIO10. Verniz conformal em tudo.</li>
+    <li><b>Grave o firmware</b> via USB-C antes de fechar, configure SSID/MQTT e confirme o frame no broker. Depois disso, atualizações são OTA.</li>
+    <li><b>Feche a tampa:</b> O-ring 37×3 engraxado no canal, cabo no prensa-cabo M12, sachê de sílica-gel dentro, rosqueie até o flange encostar.</li>
+    <li><b>Instale a bordo:</b> suporte na posição de mira, conecte ao circuito 12 V “TÉRMICA” e confirme a câmera no dashboard. A IA aprende o baseline sozinha nos primeiros ciclos de motor.</li>
+  </ol>
+
+  <div style="height:44px"></div>
+  <div class="kick">LISTA DE MATERIAIS</div>
+  <h2 style="font-size:clamp(22px,3vw,30px)">Uma câmera.</h2>
+  <div style="height:14px"></div>
+  <div class="tableCard"><table>
+    <tr><th>Componente</th><th>Especificação</th><th>Custo est.</th></tr>
+    <tr><td>Sensor térmico</td><td>Módulo MLX90640 (GY-MCU90640, FOV 55°) — versão BAA 110° para cenas amplas</td><td>R$ 350</td></tr>
+    <tr><td>Controlador</td><td>ESP32-C3 SuperMini (Wi-Fi, USB-C)</td><td>R$ 25</td></tr>
+    <tr><td>Alimentação</td><td>Buck MP1584EN + TVS SMBJ26A + LED/resistor</td><td>R$ 12</td></tr>
+    <tr><td>Janela IR</td><td>Germânio Ø25×1 mm AR/DLC 8–14 µm</td><td>R$ 180</td></tr>
+    <tr><td>Vedação</td><td>O-ring NBR 37×3 · prensa-cabo M12 IP68 · Weipu SP13 · sílica-gel</td><td>R$ 35</td></tr>
+    <tr><td>Fixação</td><td>2× insertos M4 + 2× manípulos M4 + 4× parafusos inox A4</td><td>R$ 18</td></tr>
+    <tr><td>Impressão</td><td>~95 g de ASA + epóxi + Sikaflex-291i</td><td>R$ 30</td></tr>
+    <tr><td>Total</td><td>por ponto monitorado (com germânio) · R$ ~470 na versão filme HDPE</td><td><em>R$ ~650</em></td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ downloads -->
+<section id="downloads">
+  <div class="kick">DOWNLOADS</div>
+  <h2>Arquivos do projeto.</h2>
+  <p class="sub">STLs prontos para fatiar no Bambu Studio. Modelos gerados parametricamente — edite <code>tools/generate-stl.cjs</code> para ajustar qualquer cota. A rede de análise está em <code>public/engine.js</code>.</p>
+  <div class="dl">
+    <a href="stl/corpo.stl" download><span class="n">corpo.stl</span><span class="d">Corpo monobloco · Ø50×62 mm</span></a>
+    <a href="stl/tampa-traseira.stl" download><span class="n">tampa-traseira.stl</span><span class="d">Tampa roscada + canal O-ring</span></a>
+    <a href="stl/carrier-interno.stl" download><span class="n">carrier-interno.stl</span><span class="d">Sled MLX90640 + bandeja ESP32-C3</span></a>
+    <a href="stl/suporte.stl" download><span class="n">suporte.stl</span><span class="d">Suporte yoke · 70×36 mm</span></a>
+    <a href="engine.js" download><span class="n">engine.js</span><span class="d">Rede de análise térmica (referência)</span></a>
+  </div>
+</section>
+
+<footer>
+  <img src="img/logo-safeboat-branco.png" alt="SAFEBOAT">
+  <div class="tagline">ENGENHARIA NAVAL &amp; PREVENÇÃO</div>
+  Térmica — manutenção preditiva por visão térmica com IA · MLX90640 + ESP32-C3 · 2026
+</footer>
+
+<script src="engine.js"></script>
+<script>
+// ============================================================ demo IA
+;(() => {
+  const { MockCamera, ThermalDetector, renderThermal, drawBlobs, LAYOUTS } = window.Termica
+  const cams = [
+    { cam: new MockCamera('Motor BB', 'motor'), det: new ThermalDetector(), layout: LAYOUTS.motor, anom: null },
+    { cam: new MockCamera('Motor BE', 'motor'), det: new ThermalDetector(), layout: LAYOUTS.motor, anom: null },
+    { cam: new MockCamera('Quadro elétrico', 'painel'), det: new ThermalDetector(), layout: LAYOUTS.painel, anom: null },
+  ]
+  const ANOM_LABEL = {
+    alternador: 'Falha: alternador', escape: 'Falha: junta do escape', mancal: 'Falha: mancal',
+    conexao: 'Falha: conexão frouxa', disjuntor: 'Falha: disjuntor',
+  }
+  let sel = 0
+  const t0 = performance.now()
+  const now = () => (performance.now() - t0) / 1000
+
+  const tabsEl = document.getElementById('camTabs')
+  const btnsEl = document.getElementById('anomBtns')
+  const alertsEl = document.getElementById('alerts')
+  const statusEl = document.getElementById('status')
+  const statusTxt = document.getElementById('statusTxt')
+  const cvBase = document.getElementById('cvBase')
+  const cvLive = document.getElementById('cvLive')
+  const cvDelta = document.getElementById('cvDelta')
+  const alertLog = []          // { key, tLast }
+  const seen = new Map()       // cooldown por câmera+zona
+
+  function renderTabs () {
+    tabsEl.innerHTML = ''
+    cams.forEach((c, i) => {
+      const b = document.createElement('button')
+      b.className = 'tab' + (i === sel ? ' on' : '')
+      b.textContent = c.cam.name
+      b.onclick = () => { sel = i; renderTabs(); renderBtns() }
+      tabsEl.appendChild(b)
+    })
+  }
+  function renderBtns () {
+    btnsEl.innerHTML = '<span class="lbl">INJETAR NA CÂMERA:</span>'
+    const c = cams[sel]
+    for (const key of Object.keys(c.layout.anomalies)) {
+      const b = document.createElement('button')
+      b.className = 'abtn' + (c.anom === key ? ' on' : '')
+      b.textContent = ANOM_LABEL[key] || key
+      b.onclick = () => {
+        c.anom = c.anom === key ? null : key
+        c.cam.setAnomaly(c.anom, now())
+        renderBtns()
+      }
+      btnsEl.appendChild(b)
+    }
+    const okB = document.createElement('button')
+    okB.className = 'abtn ok'
+    okB.textContent = '✓ Normalizar'
+    okB.onclick = () => { c.anom = null; c.cam.setAnomaly(null, now()); renderBtns() }
+    btnsEl.appendChild(okB)
+  }
+  renderTabs(); renderBtns()
+
+  function pushAlert (camName, b, t) {
+    const key = camName + '|' + b.zone
+    const last = seen.get(key) || -99
+    if (t - last < 15) return           // cooldown 15 s por zona
+    seen.set(key, t)
+    const when = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    alertLog.unshift({ when, camName, b })
+    if (alertLog.length > 6) alertLog.pop()
+    alertsEl.innerHTML = ''
+    for (const a of alertLog) {
+      const div = document.createElement('div')
+      div.className = 'al ' + a.b.severity
+      const sev = { critico: 'CRÍTICO', alerta: 'ALERTA', atencao: 'ATENÇÃO' }[a.b.severity]
+      div.innerHTML = `<div class="when">${a.when}</div>
+        <div class="what"><b>${sev}</b> · ${a.camName} · <b>${a.b.zone}</b> — ${a.b.maxT.toFixed(0)} °C (+${a.b.maxD.toFixed(0)} °C acima do baseline)
+        <div class="diag">${a.b.diag}</div></div>`
+      alertsEl.appendChild(div)
+    }
+  }
+
+  setInterval(() => {
+    const t = now()
+    let anyAlert = false
+    let selResult = null, selFrame = null
+    cams.forEach((c, i) => {
+      const frame = c.cam.frame(t)
+      const r = c.det.process(frame, c.layout)
+      if (r.state === 'monitoring') {
+        for (const b of r.blobs) { pushAlert(c.cam.name, b, t); anyAlert = true }
+      }
+      if (i === sel) { selResult = r; selFrame = frame }
+    })
+    // canvases da câmera selecionada
+    const r = selResult
+    if (r.state === 'learning') {
+      statusEl.className = 'status learning'
+      statusTxt.textContent = `Aprendendo baseline… ${(r.progress * 100).toFixed(0)}%`
+      const [lo, hi] = renderThermal(cvLive, selFrame)
+      document.getElementById('rngLive').textContent = `${lo.toFixed(0)}–${hi.toFixed(0)} °C`
+      renderThermal(cvBase, selFrame)
+      document.getElementById('rngBase').textContent = 'aprendendo…'
+      renderThermal(cvDelta, new Float32Array(768), { min: -5, max: 40 })
+      document.getElementById('rngDelta').textContent = 'Δ 0 °C'
+    } else {
+      const hasBlobs = r.blobs.length > 0
+      statusEl.className = 'status ' + (hasBlobs ? 'alert' : 'ok')
+      statusTxt.textContent = hasBlobs ? `${r.blobs.length} anomalia(s) em ${cams[sel].cam.name}` : 'Monitorando — padrão térmico normal'
+      const [blo, bhi] = renderThermal(cvBase, cams[sel].det.mean)
+      document.getElementById('rngBase').textContent = `${blo.toFixed(0)}–${bhi.toFixed(0)} °C`
+      const [lo, hi] = renderThermal(cvLive, selFrame)
+      drawBlobs(cvLive, r.blobs)
+      document.getElementById('rngLive').textContent = `${lo.toFixed(0)}–${hi.toFixed(0)} °C`
+      renderThermal(cvDelta, r.delta, { min: -5, max: 40 })
+      let dmax = 0; for (let i = 0; i < r.delta.length; i++) dmax = Math.max(dmax, r.delta[i])
+      document.getElementById('rngDelta').textContent = `Δ máx ${dmax.toFixed(1)} °C`
+    }
+  }, 250) // 4 Hz — taxa real do MLX90640
+})()
+</script>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.js", "three/addons/": "./vendor/" } }
+</script>
+<script type="module">
+import * as THREE from 'three'
+import { OrbitControls } from './vendor/OrbitControls.js'
+import { STLLoader } from './vendor/STLLoader.js'
+import { RoomEnvironment } from './vendor/RoomEnvironment.js'
+import * as BGU from './vendor/BufferGeometryUtils.js'
+
+const stage = document.getElementById('stage')
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.15
+stage.appendChild(renderer.domElement)
+
+const scene = new THREE.Scene()
+const pmrem = new THREE.PMREMGenerator(renderer)
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+
+const camera = new THREE.PerspectiveCamera(38, 1, 1, 4000)
+camera.position.set(130, 90, 170)
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.target.set(0, 42, 0)
+controls.enableDamping = true
+controls.autoRotate = true
+controls.autoRotateSpeed = 1.1
+controls.minDistance = 70
+controls.maxDistance = 600
+// zoom só com Ctrl — scroll normal continua rolando a página
+controls.enableZoom = false
+stage.addEventListener('wheel', e => {
+  if (!e.ctrlKey) return
+  e.preventDefault()
+  const dir = camera.position.clone().sub(controls.target)
+  const len = THREE.MathUtils.clamp(dir.length() * (e.deltaY > 0 ? 1.1 : 0.9), controls.minDistance, controls.maxDistance)
+  camera.position.copy(controls.target).addScaledVector(dir.normalize(), len)
+}, { passive: false })
+
+// luzes
+const key = new THREE.DirectionalLight(0xffffff, 1.6)
+key.position.set(120, 220, 140)
+key.castShadow = true
+key.shadow.mapSize.set(2048, 2048)
+const d = 110
+Object.assign(key.shadow.camera, { left: -d, right: d, top: d, bottom: -d, far: 700 })
+key.shadow.bias = -0.0004
+scene.add(key, new THREE.DirectionalLight(0xbcd0ff, 0.35).translateX(-150).translateY(60))
+
+// chão de sombra
+const ground = new THREE.Mesh(new THREE.CircleGeometry(400, 64), new THREE.ShadowMaterial({ opacity: 0.18 }))
+ground.rotation.x = -Math.PI / 2
+ground.receiveShadow = true
+scene.add(ground)
+
+// ---------- materiais ----------
+const finishes = {
+  branco: { shell: 0xeceae5, rough: 0.4 },
+  grafite: { shell: 0x3a3d42, rough: 0.48 },
+}
+const matShell = new THREE.MeshPhysicalMaterial({ color: finishes.branco.shell, roughness: 0.4, metalness: 0.02, clearcoat: 0.28, clearcoatRoughness: 0.5 })
+const matDark = new THREE.MeshPhysicalMaterial({ color: 0x232529, roughness: 0.6, metalness: 0.05 })
+const matGe = new THREE.MeshPhysicalMaterial({ color: 0x3b3226, roughness: 0.12, metalness: 0.55, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.6 }) // germânio DLC: dourado-escuro metálico
+const matRubber = new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.9 })
+const matPCB = new THREE.MeshStandardMaterial({ color: 0x0d2213, roughness: 0.55 })
+const matPCBdark = new THREE.MeshStandardMaterial({ color: 0x101018, roughness: 0.5 })
+const matSensor = new THREE.MeshStandardMaterial({ color: 0xb8bcc2, roughness: 0.25, metalness: 0.9 })
+const matSteel = new THREE.MeshStandardMaterial({ color: 0xb8bcc2, roughness: 0.3, metalness: 0.9 })
+
+// ---------- montagem ----------
+// grupo do corpo: coordenadas do modelo (z=0 face frontal, +z ré) → mundo:
+// rotateY(π) faz a frente apontar para +Z; boss (z=30) fica no eixo do suporte
+const root = new THREE.Group()
+scene.add(root)
+const parts = {}          // nome → { obj, dir, dist } p/ explosão
+const loader = new STLLoader()
+
+function smooth (geo, angle = 32) {
+  let g = BGU.mergeVertices(geo, 1e-3)
+  return BGU.toCreasedNormals(g, THREE.MathUtils.degToRad(angle))
+}
+function addSTL (url, mat, { pos = [0, 0, 0], rot = [0, 0, 0], name, dir = [0, 0, 0], dist = 0 }) {
+  return new Promise(res => loader.load(url, geo => {
+    const mesh = new THREE.Mesh(smooth(geo), mat)
+    mesh.rotation.set(...rot)
+    mesh.castShadow = mesh.receiveShadow = true
+    const g = new THREE.Group()
+    g.add(mesh)
+    g.position.set(...pos)
+    g.userData.home = [...pos]
+    root.add(g)
+    parts[name] = { obj: g, dir: new THREE.Vector3(...dir), dist }
+    mesh.userData.label = name
+    res(g)
+  }))
+}
+
+const AXLE_Y = 45   // altura do eixo do suporte
+
+const loadAll = Promise.all([
+  // corpo: modelo z 0(frente)..62(ré) → rotY(π): frente vira +Z; boss z=30 → mundo z=-30 → transladar +30
+  addSTL('stl/corpo.stl', matShell, { name: 'Corpo monobloco (ASA)', rot: [0, Math.PI, 0], pos: [0, AXLE_Y, 30], dir: [0, 0, 0], dist: 0 }),
+  // tampa: modelo +z = espiga; instalada com a espiga entrando pela ré (mundo -Z→corpo)
+  addSTL('stl/tampa-traseira.stl', matShell, { name: 'Tampa roscada', pos: [0, AXLE_Y, -32], dir: [0, 0, -1], dist: 62 }),
+  // carrier: modelo +z = ré. rotY(π) p/ disco olhar +Z; disco frontal em corpo z=12 → mundo z=30-12=18
+  addSTL('stl/carrier-interno.stl', matDark, { name: 'Carrier interno · MLX90640 + ESP32-C3', rot: [0, Math.PI, 0], pos: [0, AXLE_Y, 18], dir: [0, 0, -1], dist: 82 }),
+  // suporte: z p/ cima → rotX(-π/2)
+  addSTL('stl/suporte.stl', matShell, { name: 'Suporte yoke', rot: [-Math.PI / 2, 0, 0], pos: [0, 0, 0], dir: [0, -1, 0], dist: 22 }),
+])
+
+// ---------- peças procedurais (não impressas) ----------
+function proc (name, mesh, pos, dir, dist) {
+  const g = new THREE.Group()
+  g.add(mesh)
+  g.position.set(...pos)
+  g.userData.home = [...pos]
+  mesh.traverse ? mesh.traverse(m => { if (m.isMesh) { m.castShadow = true; m.userData.label = name } }) : null
+  root.add(g)
+  parts[name] = { obj: g, dir: new THREE.Vector3(...dir), dist }
+}
+
+// janela de germânio Ø25×1 (recesso frontal: corpo z 0..1.8 → mundo z ≈ 28.7)
+{
+  const win = new THREE.Mesh(new THREE.CylinderGeometry(12.5, 12.5, 1, 96), matGe)
+  win.rotation.x = Math.PI / 2
+  proc('Janela de germânio Ø25×1 (8–14 µm)', win, [0, AXLE_Y, 28.9], [0, 0, 1], 34)
+}
+// O-ring NBR 37×3 (na espiga da tampa: mundo z ≈ -13)
+{
+  const oring = new THREE.Mesh(new THREE.TorusGeometry(18.5, 1.5, 24, 96), matRubber)
+  proc('O-ring NBR 37×3', oring, [0, AXLE_Y, -13], [0, 0, -1], 46)
+}
+// eletrônica visível: módulo MLX90640 + ESP32-C3 (filhos do carrier p/ explodir junto)
+loadAll.then(() => {
+  const mod = new THREE.Group()
+  // PCB do MLX90640 25.4×17.8 no slot (modelo z≈8 → local -8)
+  const pcb = new THREE.Mesh(new THREE.BoxGeometry(25.4, 17.8, 1.6), matPCB)
+  pcb.position.z = -8
+  // "olho" do sensor atravessando o disco
+  const can = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 6.5, 48), matSensor)
+  can.rotation.x = Math.PI / 2
+  can.position.z = -4
+  const eye = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, 0.8, 48), matDark)
+  eye.rotation.x = Math.PI / 2
+  eye.position.z = -0.6
+  // ESP32-C3 SuperMini na bandeja traseira (modelo z≈22.8 → local -22.8)
+  const esp = new THREE.Mesh(new THREE.BoxGeometry(22.5, 18, 1.2), matPCBdark)
+  esp.position.z = -23
+  const shield = new THREE.Mesh(new THREE.BoxGeometry(12, 10, 2), matSensor)
+  shield.position.set(-3, 0, -24.5)
+  mod.add(pcb, can, eye, esp, shield)
+  mod.traverse(m => { if (m.isMesh) m.userData.label = 'MLX90640 + ESP32-C3' })
+  parts['Carrier interno · MLX90640 + ESP32-C3'].obj.add(mod)
+
+  // ---------- chicote: prensa-cabo + cabo + conector SP13 (montados na tampa) ----------
+  // filhos do grupo da tampa: na vista explodida viajam com ela, como na realidade
+  // (coords locais da tampa: z=0 face traseira externa, -z = para fora da case)
+  {
+    const tampa = parts['Tampa roscada'].obj
+    const matNylon = new THREE.MeshStandardMaterial({ color: 0x1d1f24, roughness: 0.62 })
+    const lbl = (m, t) => m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.userData.label = t } })
+
+    // prensa-cabo M12 IP68: corpo sextavado + porca de vedação cônica
+    const gland = new THREE.Group()
+    const hexBody = new THREE.Mesh(new THREE.CylinderGeometry(8.2, 8.2, 6, 6), matNylon)
+    hexBody.rotation.x = Math.PI / 2
+    hexBody.position.z = -4.5
+    const sealNut = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 6.8, 8, 24), matNylon)
+    sealNut.rotation.x = Math.PI / 2
+    sealNut.position.z = -11
+    gland.add(hexBody, sealNut)
+    lbl(gland, 'Prensa-cabo M12 IP68 (nylon)')
+
+    // cabo marítimo 2×0,75 mm² com alça de gotejamento
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, 0, -13),
+      new THREE.Vector3(0, -1, -26),
+      new THREE.Vector3(0, -9, -36),
+      new THREE.Vector3(0, -19, -45),   // ponto baixo: água pinga aqui, não no prensa-cabo
+      new THREE.Vector3(0, -17, -56),
+      new THREE.Vector3(0, -17, -63),
+    ])
+    const cable = new THREE.Mesh(new THREE.TubeGeometry(curve, 56, 2.3, 12), matRubber)
+    lbl(cable, 'Chicote marítimo 2×0,75 mm² · alça de gotejamento')
+
+    // conector Weipu SP13 em linha (plugue + anel serrilhado + tomada)
+    const conn = new THREE.Group()
+    const plugA = new THREE.Mesh(new THREE.CylinderGeometry(6.4, 6.4, 10, 24), matDark)
+    plugA.position.z = -68
+    const knurl = new THREE.Mesh(new THREE.CylinderGeometry(7.6, 7.6, 8, 24), matSteel)
+    knurl.position.z = -77
+    const plugB = new THREE.Mesh(new THREE.CylinderGeometry(6.4, 6.4, 9, 24), matDark)
+    plugB.position.z = -85.5
+    for (const p of [plugA, knurl, plugB]) { p.rotation.x = Math.PI / 2; p.position.y = -17 }
+    conn.add(plugA, knurl, plugB)
+    lbl(conn, 'Conector Weipu SP13 IP68 (serviço)')
+
+    // rabicho para o circuito 12 V do barco
+    const tailCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, -17, -90),
+      new THREE.Vector3(0, -19, -99),
+      new THREE.Vector3(0, -24, -107),
+    ])
+    const tail = new THREE.Mesh(new THREE.TubeGeometry(tailCurve, 24, 2.3, 12), matRubber)
+    const tailEnd = new THREE.Mesh(new THREE.SphereGeometry(2.3, 16, 12), matRubber)
+    tailEnd.position.set(0, -24, -107)
+    const tailG = new THREE.Group()
+    tailG.add(tail, tailEnd)
+    lbl(tailG, 'Para o circuito 12 V “TÉRMICA” (fusível 1 A)')
+
+    tampa.add(gland, cable, conn, tailG)
+  }
+
+  // manípulos M4 do suporte
+  for (const s of [1, -1]) {
+    const knob = new THREE.Group()
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(6.5, 7, 5, 32), matDark)
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 10, 16), matSteel)
+    shaft.position.y = -6
+    knob.add(cap, shaft)
+    knob.rotation.z = s * Math.PI / 2
+    knob.position.set(s * 40, AXLE_Y, 0)
+    knob.traverse(m => { if (m.isMesh) { m.castShadow = true; m.userData.label = 'Manípulo M4 inox A4' } })
+    root.add(knob)
+    parts['Manípulo ' + s] = { obj: knob, dir: new THREE.Vector3(s, 0, 0), dist: 20 }
+    knob.userData.home = [s * 40, AXLE_Y, 0]
+  }
+})
+
+// ---------- interação ----------
+let explode = 0
+document.getElementById('explode').addEventListener('input', e => {
+  explode = e.target.value / 100
+  document.getElementById('hint').style.opacity = 0
+  for (const k in parts) {
+    const { obj, dir, dist } = parts[k]
+    const h = obj.userData.home
+    obj.position.set(h[0] + dir.x * dist * explode, h[1] + dir.y * dist * explode, h[2] + dir.z * dist * explode)
+  }
+})
+
+document.querySelectorAll('.chip').forEach(ch => ch.addEventListener('click', () => {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'))
+  ch.classList.add('on')
+  const f = finishes[ch.dataset.c]
+  matShell.color.set(f.shell)
+  matShell.roughness = f.rough
+}))
+
+const rotBtn = document.getElementById('rot')
+rotBtn.addEventListener('click', () => {
+  controls.autoRotate = !controls.autoRotate
+  rotBtn.classList.toggle('on', controls.autoRotate)
+})
+document.getElementById('reset').addEventListener('click', () => {
+  camera.position.set(130, 90, 170)
+  controls.target.set(0, 42, 0)
+})
+
+// tooltip por raycast
+const ray = new THREE.Raycaster()
+const mouse = new THREE.Vector2()
+const tip = document.getElementById('tooltip')
+stage.addEventListener('pointermove', e => {
+  const r = stage.getBoundingClientRect()
+  mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1)
+  ray.setFromCamera(mouse, camera)
+  const hit = ray.intersectObjects(root.children, true).find(h => h.object.userData.label)
+  if (hit) {
+    tip.textContent = hit.object.userData.label
+    tip.style.left = (e.clientX - r.left) + 'px'
+    tip.style.top = (e.clientY - r.top) + 'px'
+    tip.style.opacity = 1
+  } else tip.style.opacity = 0
+})
+
+setTimeout(() => { document.getElementById('hint').style.opacity = 0 }, 9000)
+
+function resize () {
+  const w = stage.clientWidth, h = stage.clientHeight
+  renderer.setSize(w, h)
+  camera.aspect = w / h
+  camera.updateProjectionMatrix()
+}
+addEventListener('resize', resize)
+resize()
+
+renderer.setAnimationLoop(() => {
+  controls.update()
+  renderer.render(scene, camera)
+})
+
+// gancho de depuração/verificação (render manual + captura do canvas)
+window.__viewer = { scene, camera, renderer, controls, parts, root }
+</script>
+</body>
+</html>
