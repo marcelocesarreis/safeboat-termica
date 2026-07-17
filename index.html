@@ -102,6 +102,12 @@
   .tableCard { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: auto; }
   .tableCard tr:last-child td { border-bottom: none; }
 
+  .buy { display: flex; flex-wrap: wrap; gap: 6px; }
+  .buy a { font-size: 11.5px; font-weight: 600; text-decoration: none; white-space: nowrap;
+           padding: 3px 10px; border-radius: 999px; border: 1px solid var(--rule); color: var(--navy); transition: .15s; }
+  .buy a:hover { background: var(--navy); color: #fff; }
+  .buy a.ali { border-style: dashed; }
+
   .dl { display: flex; flex-wrap: wrap; gap: 12px; }
   .dl a { display: flex; flex-direction: column; gap: 3px; text-decoration: none; color: var(--navy);
           background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 22px; min-width: 200px; transition: .2s; }
@@ -195,6 +201,7 @@
     <a href="#eletrica">Elétrica</a>
     <a href="#fixacao">Fixação</a>
     <a href="#fabricacao">Fabricação</a>
+    <a href="#compras">Compras</a>
     <a href="#downloads">Downloads</a>
   </nav>
 </header>
@@ -486,20 +493,54 @@
   </ol>
 
   <div style="height:44px"></div>
-  <div class="kick">LISTA DE MATERIAIS</div>
+  <div class="kick" id="compras">LISTA DE MATERIAIS · ONDE COMPRAR</div>
   <h2 style="font-size:clamp(22px,3vw,30px)">Uma câmera.</h2>
-  <div style="height:14px"></div>
+  <p class="sub">Links de menor prazo primeiro: Mercado Livre entrega em dias; AliExpress (tracejado) em 2–6 semanas — só para o que não tem opção nacional.</p>
   <div class="tableCard"><table>
-    <tr><th>Componente</th><th>Especificação</th><th>Custo est.</th></tr>
-    <tr><td>Sensor térmico</td><td>Módulo MLX90640 (GY-MCU90640, FOV 55°) — versão BAA 110° para cenas amplas</td><td>R$ 350</td></tr>
-    <tr><td>Controlador</td><td>ESP32-C3 SuperMini (Wi-Fi, USB-C)</td><td>R$ 25</td></tr>
-    <tr><td>Alimentação</td><td>Buck MP1584EN + TVS SMBJ26A + LED/resistor</td><td>R$ 12</td></tr>
-    <tr><td>Janela IR</td><td>Germânio Ø25×1 mm AR/DLC 8–14 µm</td><td>R$ 180</td></tr>
-    <tr><td>Vedação</td><td>O-ring NBR 37×3 · prensa-cabo M12 IP68 · Weipu SP13 · sílica-gel</td><td>R$ 35</td></tr>
-    <tr><td>Fixação</td><td>2× insertos M4 + 2× manípulos M4 + 4× parafusos inox A4</td><td>R$ 18</td></tr>
-    <tr><td>Impressão</td><td>~95 g de ASA + epóxi + Sikaflex-291i</td><td>R$ 30</td></tr>
-    <tr><td>Total</td><td>por ponto monitorado (com germânio) · R$ ~470 na versão filme HDPE</td><td><em>R$ ~650</em></td></tr>
+    <tr><th>Componente</th><th>Especificação</th><th>Custo est.</th><th>Onde comprar</th></tr>
+    <tr><td>Sensor térmico</td><td>Módulo MLX90640 I²C — conferir sufixo <em>BAB (55°)</em>; BAA 110° só p/ vista geral. Atenção: não é a câmera pronta com tela.</td><td>R$ 400–600 BR<br>R$ 200–350 Ali</td><td><div class="buy">
+      <a href="https://www.mercadolivre.com.br/modulo-de-imagem-termica-ir-mlx90640-sensor-de-temperatura-i/p/MLB2040445938" target="_blank" rel="noopener">Módulo I²C · ML</a>
+      <a href="https://lista.mercadolivre.com.br/mlx90640" target="_blank" rel="noopener">busca ML</a>
+      <a class="ali" href="https://pt.aliexpress.com/w/wholesale-GY-MCU90640.html" target="_blank" rel="noopener">GY-MCU90640 · Ali</a>
+    </div></td></tr>
+    <tr><td>Controlador</td><td>ESP32-C3 SuperMini (Wi-Fi, USB-C)</td><td>R$ 25–40</td><td><div class="buy">
+      <a href="https://www.mercadolivre.com.br/esp32-c3-mini-wifi-bluethooth-usb-c/p/MLB36723216" target="_blank" rel="noopener">ESP32-C3 · ML</a>
+      <a href="https://lista.mercadolivre.com.br/esp-32-c3-mini" target="_blank" rel="noopener">busca ML</a>
+    </div></td></tr>
+    <tr><td>Alimentação</td><td>Buck MP1584EN + TVS SMBJ26A + LED/resistor</td><td>R$ 15</td><td><div class="buy">
+      <a href="https://lista.mercadolivre.com.br/mp1584en" target="_blank" rel="noopener">MP1584EN · ML</a>
+      <a href="https://lista.mercadolivre.com.br/smbj26a" target="_blank" rel="noopener">SMBJ26A · ML</a>
+    </div></td></tr>
+    <tr><td>Janela IR</td><td>Germânio Ø25×1 mm AR/DLC 8–14 µm (único item sem opção nacional) · p/ bancada: filme HDPE / lente fresnel de sensor PIR</td><td>US$ 30–60<br>fresnel R$ 10</td><td><div class="buy">
+      <a class="ali" href="https://pt.aliexpress.com/w/wholesale-germanium-window-25mm-8-14um.html" target="_blank" rel="noopener">germânio · Ali</a>
+      <a href="https://lista.mercadolivre.com.br/lente-fresnel-sensor-presenca" target="_blank" rel="noopener">fresnel p/ testes · ML</a>
+    </div></td></tr>
+    <tr><td>Vedação</td><td>Prensa-cabo M12 IP68 · conector Weipu SP13 2p · O-ring NBR 37×3 · Sikaflex-291i · sílica-gel</td><td>R$ 160<br>(Sikaflex é a maior parte)</td><td><div class="buy">
+      <a href="https://produto.mercadolivre.com.br/MLB-949013524-prensa-cabo-curto-m12-ch-m12-65-metaltex-_JM" target="_blank" rel="noopener">prensa-cabo · ML</a>
+      <a href="https://produto.mercadolivre.com.br/MLB-4983286856-conector-aviaco-sp13-ip68-2-pinos-flange-_JM" target="_blank" rel="noopener">SP13 · ML</a>
+      <a href="https://lista.mercadolivre.com.br/o-ring-de-borracha-nitrilica" target="_blank" rel="noopener">O-rings · ML</a>
+      <a href="https://lista.mercadolivre.com.br/sikaflex-291-nautico" target="_blank" rel="noopener">Sikaflex 291 · ML</a>
+      <a href="https://lista.mercadolivre.com.br/saches-silica-gel-1g" target="_blank" rel="noopener">sílica · ML</a>
+    </div></td></tr>
+    <tr><td>Fixação</td><td>2× insertos M4 latão + 2× manípulos M4 + 4× parafusos inox Ø4,8</td><td>R$ 45<br>(kits)</td><td><div class="buy">
+      <a href="https://lista.mercadolivre.com.br/inserto-m4" target="_blank" rel="noopener">insertos M4 · ML</a>
+      <a href="https://lista.mercadolivre.com.br/parafuso-manipulo-m4" target="_blank" rel="noopener">manípulos · ML</a>
+      <a href="https://lista.mercadolivre.com.br/parafuso-auto-atarraxante-inox-4.8" target="_blank" rel="noopener">inox 4,8 · ML</a>
+    </div></td></tr>
+    <tr><td>Cabeamento</td><td>Cabo marítimo estanhado 2×0,75 mm² (~R$ 5/m) + porta-fusível 1 A em linha + fita VHB 3M</td><td>R$ 60<br>(10 m)</td><td><div class="buy">
+      <a href="https://lista.mercadolivre.com.br/cabo-estanhado-nautico" target="_blank" rel="noopener">cabo estanhado · ML</a>
+      <a href="https://lista.mercadolivre.com.br/porta-fusivel-em-linha" target="_blank" rel="noopener">porta-fusível · ML</a>
+      <a href="https://lista.mercadolivre.com.br/fita-vhb-3m" target="_blank" rel="noopener">VHB 3M · ML</a>
+    </div></td></tr>
+    <tr><td>Impressão</td><td>~95 g de ASA (1 kg imprime ~10 cases) + epóxi + verniz conformal + graxa de silicone</td><td>R$ 30<br>(rateado)</td><td><div class="buy">
+      <a href="https://www.mercadolivre.com.br/filamento-asa-preto-1kg-175mm-3dx-preto/p/MLB62184108" target="_blank" rel="noopener">ASA 1 kg · ML</a>
+      <a href="https://lista.mercadolivre.com.br/araldite-24-horas" target="_blank" rel="noopener">epóxi · ML</a>
+      <a href="https://lista.mercadolivre.com.br/verniz-conformal" target="_blank" rel="noopener">verniz · ML</a>
+      <a href="https://lista.mercadolivre.com.br/graxa-de-silicone" target="_blank" rel="noopener">graxa · ML</a>
+    </div></td></tr>
+    <tr><td>Total</td><td>por ponto monitorado (com germânio) · R$ ~470 na versão filme HDPE · sensor do AliExpress derruba ~R$ 250</td><td><em>R$ ~650–850</em></td><td></td></tr>
   </table></div>
+  <div class="note warn"><b>Estratégia de compra:</b> peça hoje no Mercado Livre tudo exceto a janela (chega em dias) e já dispare o germânio no AliExpress. Enquanto ele não chega, o filme HDPE/fresnel no mesmo recesso valida a câmera na bancada.</div>
 </section>
 
 <!-- ============================================================ downloads -->
