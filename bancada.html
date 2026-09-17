@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAFEBOAT Térmica · Bancada</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&family=Source+Sans+3:wght@400;600;700&display=swap');
+  :root { --navy:#23304A; --navy-soft:rgba(35,48,74,.55); --bg:#fff; --panel2:#f3f5f9; --line:#dde2ea; --rule:rgba(35,48,74,.30);
+          --txt:#23304A; --txt2:#6b7385; --hot:#c2410c; --crit:#b91c1c; --ok:#15803d; --warn:#a16207;
+          --serif-h:'Josefin Sans','Segoe UI',sans-serif; --sans:'Source Sans 3',-apple-system,'Segoe UI',Roboto,sans-serif; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--txt); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  header { height:60px; display:flex; align-items:center; justify-content:space-between; padding:0 24px; background:var(--navy); color:#fff; }
+  .brand { display:flex; align-items:center; gap:14px; text-decoration:none; color:#fff; }
+  .brand img { height:30px; display:block; }
+  .brand .divi { width:1px; height:26px; background:rgba(255,255,255,.35); }
+  .brand .prod { font-family:var(--serif-h); font-weight:300; font-size:16px; letter-spacing:.28em; padding-top:3px; }
+  header nav a { color:rgba(255,255,255,.75); text-decoration:none; font-size:13px; letter-spacing:.04em; margin-left:18px; }
+  header nav a:hover { color:#fff; }
+
+  .wrap { max-width:1280px; margin:0 auto; padding:22px 20px 60px; display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:18px; }
+  @media (max-width:900px) { .wrap { grid-template-columns:1fr; } }
+
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+  .btn { padding:8px 15px; border-radius:999px; border:1px solid var(--rule); background:#fff; color:var(--navy); font:600 13px var(--sans); cursor:pointer; transition:.15s; }
+  .btn:hover { background:var(--navy); color:#fff; }
+  .btn.pri { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .btn.pri:hover { background:#16203a; }
+  .btn.on { background:var(--hot); border-color:var(--hot); color:#fff; }
+  .btn:disabled { opacity:.45; cursor:default; }
+  select, input[type=number] { padding:7px 10px; border:1px solid var(--line); border-radius:8px; font:600 13px var(--sans); color:var(--navy); background:#fff; }
+  input[type=number] { width:74px; }
+  .pill { display:inline-flex; align-items:center; gap:8px; padding:7px 13px; border-radius:999px; border:1px solid var(--line); font-size:12.5px; font-weight:600; background:#fff; }
+  .pill .dot { width:8px; height:8px; border-radius:50%; background:var(--txt2); }
+  .pill.ok .dot { background:var(--ok); }
+  .pill.warn .dot { background:var(--warn); animation:pulse 1.2s infinite; }
+  .pill.err .dot { background:var(--crit); }
+  @keyframes pulse { 50% { opacity:.3; } }
+
+  .stage { position:relative; background:#000; border-radius:12px; overflow:hidden; border:1px solid var(--navy); }
+  .stage canvas { width:100%; aspect-ratio:4/3; display:block; cursor:crosshair; }
+  .stage .ro { position:absolute; left:10px; top:10px; background:rgba(6,7,12,.78); color:#fff; font-size:12px; padding:4px 9px; border-radius:6px; pointer-events:none; font-variant-numeric:tabular-nums; opacity:0; }
+  .stage .frz { position:absolute; right:10px; top:10px; background:var(--hot); color:#fff; font-size:11px; font-weight:700; letter-spacing:.14em; padding:4px 10px; border-radius:6px; display:none; }
+  .stage .empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.55); font-size:14px; text-align:center; padding:20px; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-top:12px; }
+  .st { background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .st .v { font-family:var(--serif-h); font-size:24px; color:var(--navy); font-variant-numeric:tabular-nums; }
+  .st .v small { font-size:13px; color:var(--txt2); }
+  .st .l { font-size:11px; letter-spacing:.16em; color:var(--navy-soft); font-weight:700; text-transform:uppercase; margin-top:2px; }
+
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:14px; }
+  .kick { display:flex; align-items:center; gap:12px; font-size:11px; font-weight:700; letter-spacing:.26em; color:var(--navy); margin-bottom:12px; }
+  .kick::after { content:""; flex:1; height:1px; background:var(--rule); }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; font-size:13px; }
+  .row label { color:var(--txt2); }
+  .al { border-left:3px solid var(--warn); background:var(--panel2); border-radius:8px; padding:8px 10px; font-size:12.5px; margin-top:6px; }
+  .al.alerta { border-left-color:var(--hot); } .al.critico { border-left-color:var(--crit); }
+  .al b { color:var(--navy); } .al .d { color:var(--txt2); margin-top:2px; }
+  .al .d::before { content:"IA · "; color:var(--navy); font-weight:700; }
+  .log { background:#0f1420; color:#cfd6e4; font:12px/1.5 ui-monospace,Consolas,monospace; border-radius:8px; padding:10px 12px; height:150px; overflow:auto; white-space:pre-wrap; word-break:break-all; }
+  .muted { color:var(--txt2); font-size:12.5px; line-height:1.5; }
+  .prog { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin:8px 0; }
+  .prog i { display:block; height:100%; background:var(--navy); width:0; transition:width .25s; }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="index.html"><img src="img/logo-safeboat-branco.png" alt="SAFEBOAT"><span class="divi"></span><span class="prod">TÉRMICA · BANCADA</span></a>
+  <nav><a href="index.html">← Projeto</a></nav>
+</header>
+
+<div class="wrap">
+  <section>
+    <div class="bar">
+      <button class="btn pri" id="bConn">Conectar USB</button>
+      <button class="btn" id="bSim">Simulador</button>
+      <span class="pill" id="pill"><span class="dot"></span><span id="pillTxt">desconectado</span></span>
+      <select id="rate" title="Taxa de atualização (envia o comando à placa)">
+        <option value="1">1 Hz</option><option value="2">2 Hz</option><option value="4" selected>4 Hz</option><option value="8">8 Hz</option><option value="6">16 Hz (exp.)</option>
+      </select>
+      <button class="btn" id="bFrz">Congelar</button>
+      <button class="btn" id="bPng">Foto PNG</button>
+      <button class="btn" id="bCsv">Gravar CSV</button>
+      <button class="btn" id="bFault" style="display:none">Injetar falha (sim)</button>
+    </div>
+
+    <div class="stage">
+      <canvas id="cv" width="768" height="576"></canvas>
+      <div class="ro" id="ro"></div>
+      <div class="frz" id="frz">CONGELADO</div>
+      <div class="empty" id="empty">Conecte a câmera pela USB (Chrome ou Edge no PC)<br>ou ligue o simulador para testar a interface.</div>
+    </div>
+
+    <div class="stats">
+      <div class="st"><div class="v" id="sMin">—</div><div class="l">Mínima</div></div>
+      <div class="st"><div class="v" id="sMax">—</div><div class="l">Máxima</div></div>
+      <div class="st"><div class="v" id="sAvg">—</div><div class="l">Média</div></div>
+      <div class="st"><div class="v" id="sTa">—</div><div class="l">Ta do sensor</div></div>
+      <div class="st"><div class="v" id="sFps">—</div><div class="l">Quadros · fps</div></div>
+      <div class="st"><div class="v" id="sLost">0</div><div class="l">Perdidos · ruins</div></div>
+    </div>
+  </section>
+
+  <aside>
+    <div class="card">
+      <div class="kick">ESCALA</div>
+      <div class="row"><label><input type="radio" name="sc" value="auto" checked> automática</label><label><input type="radio" name="sc" value="fix"> fixa</label></div>
+      <div class="row"><label>mín</label><input type="number" id="scLo" value="20" step="1"><label>máx</label><input type="number" id="scHi" value="80" step="1"><label>°C</label></div>
+      <div class="row"><label><input type="checkbox" id="pix"> píxeis (sem interpolação)</label></div>
+    </div>
+
+    <div class="card">
+      <div class="kick">IA · DETECÇÃO</div>
+      <div class="row"><button class="btn" id="bLearn">Aprender baseline</button><button class="btn" id="bIaOff">Parar</button></div>
+      <div class="prog" id="prog"><i></i></div>
+      <div class="muted" id="iaTxt">Aponte a câmera para a cena estável e clique em <b>Aprender baseline</b>: 48 quadros (~12 s a 4 Hz). Depois, qualquer pixel fora da estatística vira alerta.</div>
+      <div id="alerts"></div>
+    </div>
+
+    <div class="card">
+      <div class="kick">CONSOLE DA PLACA</div>
+      <div class="log" id="log"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="bInfo">i · info</button><span class="muted" id="portTxt"></span></div>
+    </div>
+  </aside>
+</div>
+
+<script src="engine.js"></script>
+<script src="serial-parser.js"></script>
+<script>
+;(() => {
+  const { renderThermal, drawBlobs, ThermalDetector, MockCamera } = window.Termica
+  const { FrameParser, encodeFrame } = window.TermicaSerial
+  const $ = id => document.getElementById(id)
+  const cv = $('cv'), ctx = cv.getContext('2d')
+
+  // ---------------- estado ----------------
+  let port = null, reader = null, writer = null, parser = null
+  let sim = false, simTimer = null, simSeq = 0, simCam = null, simT0 = 0
+  let frozen = false, last = null, recording = null
+  let frames = 0, fpsEma = 0, lastTs = 0
+  const scale = { lo: 20, hi: 40 }        // EMA da escala automática (evita cintilação)
+  const det = new ThermalDetector({ learnFrames: 48 })
+  const layout = { zones: [], defaultZone: 'Cena', anomalies: {} }
+  let ia = 'off'                          // off | learning | monitoring
+  const alertsEl = $('alerts'), seen = new Map()
+
+  const log = s => { const el = $('log'); el.textContent += s + '\n'; if (el.textContent.length > 6000) el.textContent = el.textContent.slice(-5000); el.scrollTop = el.scrollHeight }
+  const setPill = (cls, txt) => { $('pill').className = 'pill ' + cls; $('pillTxt').textContent = txt }
+
+  // ---------------- quadro recebido (USB ou simulador, mesmo caminho) ----------------
+  function onFrame (f) {
+    last = f; frames++
+    const now = performance.now()
+    if (lastTs) { const inst = 1000 / (now - lastTs); fpsEma = fpsEma ? fpsEma * 0.8 + inst * 0.2 : inst }
+    lastTs = now
+    $('empty').style.display = 'none'
+    if (recording) recording.push(f)
+
+    let lo = Infinity, hi = -Infinity, sum = 0, imax = 0
+    for (let i = 0; i < 768; i++) { const v = f.t[i]; if (v < lo) lo = v; if (v > hi) { hi = v; imax = i } sum += v }
+    $('sMin').innerHTML = lo.toFixed(1) + '<small> °C</small>'
+    $('sMax').innerHTML = hi.toFixed(1) + '<small> °C</small>'
+    $('sAvg').innerHTML = (sum / 768).toFixed(1) + '<small> °C</small>'
+    $('sTa').innerHTML = f.ta == null ? '—' : f.ta.toFixed(1) + '<small> °C</small>'
+    $('sFps').innerHTML = frames + '<small> · ' + fpsEma.toFixed(1) + ' fps</small>'
+    if (parser) $('sLost').innerHTML = parser.stats.lost + '<small> · ' + parser.stats.bad + '</small>'
+    if (!f.sensorOk) setPill('err', 'placa OK, sensor NÃO responde')
+    else if (f.i2cErr) setPill('warn', 'erro I²C no quadro ' + f.seq)
+    else setPill('ok', (sim ? 'simulador' : 'conectado') + ' · ' + fpsEma.toFixed(1) + ' fps')
+
+    if (frozen) return
+    const auto = document.querySelector('input[name=sc]:checked').value === 'auto'
+    if (auto) { scale.lo += (lo - scale.lo) * 0.3; scale.hi += (hi - scale.hi) * 0.3 }
+    else { scale.lo = +$('scLo').value; scale.hi = +$('scHi').value }
+    renderThermal(cv, f.t, { min: scale.lo, max: Math.max(scale.lo + 0.5, scale.hi), pixelated: $('pix').checked })
+
+    // marcador do pixel mais quente
+    const kx = cv.width / 32, ky = cv.height / 24, cx = (imax % 32 + 0.5) * kx, cy = (Math.floor(imax / 32) + 0.5) * ky
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.moveTo(cx - 10, cy); ctx.lineTo(cx + 10, cy); ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy + 10); ctx.stroke()
+    ctx.font = '600 12px Source Sans 3, sans-serif'; ctx.fillStyle = '#fff'
+    ctx.fillText(hi.toFixed(1) + ' °C', cx + 12, cy - 6)
+
+    // IA: baseline estatístico por pixel → blobs → alertas (mesmo motor da página do projeto)
+    if (ia !== 'off') {
+      const r = det.process(f.t, layout)
+      if (r.state === 'learning') {
+        ia = 'learning'
+        $('prog').firstElementChild.style.width = (r.progress * 100).toFixed(0) + '%'
+        $('iaTxt').innerHTML = 'Aprendendo baseline… <b>' + (r.progress * 100).toFixed(0) + '%</b> — não mexa na câmera nem na cena.'
+      } else {
+        if (ia === 'learning') { ia = 'monitoring'; $('prog').firstElementChild.style.width = '100%' }
+        drawBlobs(cv, r.blobs)
+        $('iaTxt').innerHTML = r.blobs.length
+          ? '<b style="color:var(--crit)">' + r.blobs.length + ' anomalia(s)</b> fora do padrão aprendido.'
+          : '<b style="color:var(--ok)">Monitorando</b> — cena dentro do padrão térmico aprendido.'
+        for (const b of r.blobs) pushAlert(b)
+      }
+    }
+  }
+  function pushAlert (b) {
+    const key = Math.round(b.cx / 4) + '|' + Math.round(b.cy / 4)
+    const now = performance.now() / 1000
+    if (now - (seen.get(key) || -99) < 15) return          // 15 s de silêncio por região
+    seen.set(key, now)
+    const sev = { critico: 'CRÍTICO', alerta: 'ALERTA', atencao: 'ATENÇÃO' }[b.severity]
+    const div = document.createElement('div')
+    div.className = 'al ' + b.severity
+    div.innerHTML = '<b>' + sev + '</b> · pixel (' + b.cx.toFixed(0) + ',' + b.cy.toFixed(0) + ') · ' + b.maxT.toFixed(1) + ' °C (+' + b.maxD.toFixed(1) + ' °C acima do baseline) · ' + new Date().toLocaleTimeString('pt-BR') + '<div class="d">' + b.diag + '</div>'
+    alertsEl.prepend(div)
+    while (alertsEl.children.length > 6) alertsEl.lastChild.remove()
+  }
+
+  // ---------------- Web Serial ----------------
+  async function connect () {
+    if (!navigator.serial) { alert('Este navegador não tem Web Serial. Use Chrome ou Edge no PC.'); return }
+    try {
+      port = await navigator.serial.requestPort()
+      await port.open({ baudRate: 115200 })
+    } catch (e) { log('# não conectou: ' + e.message); port = null; return }
+    stopSim()
+    parser = new FrameParser()
+    parser.onFrame = onFrame
+    parser.onText = l => log(l)
+    const info = port.getInfo()
+    $('portTxt').textContent = 'VID ' + (info.usbVendorId || 0).toString(16) + ':' + (info.usbProductId || 0).toString(16)
+    setPill('ok', 'conectado · aguardando quadros')
+    $('bConn').textContent = 'Desconectar'
+    frames = 0; fpsEma = 0; lastTs = 0
+    log('# porta aberta — a placa reinicia ao abrir a serial; o banner aparece em ~1 s')
+    writer = port.writable.getWriter()
+    reader = port.readable.getReader()
+    try {
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        if (value) parser.push(value)
+      }
+    } catch (e) { log('# leitura interrompida: ' + e.message) }
+    await disconnect()
+  }
+  async function disconnect () {
+    try { if (reader) await reader.cancel() } catch {}
+    try { if (writer) writer.releaseLock() } catch {}
+    try { if (port) await port.close() } catch {}
+    reader = writer = port = null
+    setPill('', 'desconectado')
+    $('bConn').textContent = 'Conectar USB'
+  }
+  async function send (ch) {
+    if (writer) { try { await writer.write(new TextEncoder().encode(ch)) } catch (e) { log('# envio falhou: ' + e.message) } }
+    else if (sim) log('# (simulador) comando ' + ch + ' ignorado')
+  }
+  if (navigator.serial) navigator.serial.addEventListener('disconnect', () => { log('# USB removido'); disconnect() })
+
+  // ---------------- simulador (passa pelo MESMO parser/protocolo) ----------------
+  function startSim () {
+    disconnect()
+    simCam = new MockCamera('Bancada', 'motor'); simSeq = 0; simT0 = performance.now()
+    parser = new FrameParser(); parser.onFrame = onFrame; parser.onText = l => log(l)
+    parser.push(new TextEncoder().encode('# SIMULADOR termica-usb | cena de motor mocada | 4 Hz\n'))
+    simTimer = setInterval(() => {
+      const t = (performance.now() - simT0) / 1000
+      parser.push(encodeFrame(simCam.frame(t), simSeq++, 25.4 + 0.3 * Math.sin(t / 7)))
+    }, 250)
+    sim = true
+    $('bSim').classList.add('on'); $('bFault').style.display = ''
+    frames = 0; fpsEma = 0; lastTs = 0
+  }
+  function stopSim () {
+    if (simTimer) clearInterval(simTimer)
+    simTimer = null; sim = false; simCam = null
+    $('bSim').classList.remove('on'); $('bFault').style.display = 'none'; $('bFault').classList.remove('on')
+  }
+
+  // ---------------- controles ----------------
+  $('bConn').onclick = () => port ? disconnect() : connect()
+  $('bSim').onclick = () => { if (sim) { stopSim(); setPill('', 'desconectado') } else startSim() }
+  $('bFault').onclick = e => { if (!simCam) return; const on = e.target.classList.toggle('on'); simCam.setAnomaly(on ? 'alternador' : null, (performance.now() - simT0) / 1000) }
+  $('rate').onchange = e => send(e.target.value)
+  $('bInfo').onclick = () => send('i')
+  $('bFrz').onclick = e => { frozen = !frozen; e.target.classList.toggle('on', frozen); $('frz').style.display = frozen ? '' : 'none' }
+  $('bPng').onclick = () => { const a = document.createElement('a'); a.download = 'termica-' + new Date().toISOString().replace(/[:.]/g, '-') + '.png'; a.href = cv.toDataURL('image/png'); a.click() }
+  $('bCsv').onclick = e => {
+    if (!recording) { recording = []; e.target.classList.add('on'); e.target.textContent = 'Parar · 0 q'; return }
+    const rows = ['seq,ta,' + Array.from({ length: 768 }, (_, i) => 'p' + i).join(',')]
+    for (const f of recording) rows.push(f.seq + ',' + (f.ta == null ? '' : f.ta.toFixed(2)) + ',' + Array.from(f.t, v => v.toFixed(2)).join(','))
+    const blob = new Blob([rows.join('\n')], { type: 'text/csv' })
+    const a = document.createElement('a'); a.download = 'termica-' + new Date().toISOString().replace(/[:.]/g, '-') + '.csv'; a.href = URL.createObjectURL(blob); a.click()
+    recording = null; e.target.classList.remove('on'); e.target.textContent = 'Gravar CSV'
+  }
+  setInterval(() => { if (recording) $('bCsv').textContent = 'Parar · ' + recording.length + ' q' }, 500)
+  $('bLearn').onclick = () => { det.reset(); ia = 'learning'; seen.clear(); alertsEl.innerHTML = ''; $('prog').firstElementChild.style.width = '0%' }
+  $('bIaOff').onclick = () => { ia = 'off'; $('prog').firstElementChild.style.width = '0%'; $('iaTxt').textContent = 'IA parada.' }
+
+  // leitura do pixel sob o mouse
+  cv.addEventListener('mousemove', e => {
+    if (!last) return
+    const r = cv.getBoundingClientRect()
+    const x = Math.min(31, Math.floor((e.clientX - r.left) / r.width * 32)), y = Math.min(23, Math.floor((e.clientY - r.top) / r.height * 24))
+    const ro = $('ro'); ro.style.opacity = 1
+    ro.textContent = '(' + x + ',' + y + ')  ' + last.t[y * 32 + x].toFixed(2) + ' °C'
+  })
+  cv.addEventListener('mouseleave', () => { $('ro').style.opacity = 0 })
+
+  // gancho de verificação (mesmo padrão do index.html)
+  window.__bancada = { onFrame, get parser () { return parser }, get last () { return last }, get ia () { return ia }, get frames () { return frames }, det, startSim, stopSim }
+})()
+</script>
+</body>
+</html>
