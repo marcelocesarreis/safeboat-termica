@@ -2,7 +2,7 @@
  * SAFEBOAT TÉRMICA — firmware de bancada "termica-usb" 0.1.0
  *
  * ESP32-C3 SuperMini + MLX90640 (I²C) → quadros térmicos pela USB nativa (CDC).
- * Objetivo: PRIMEIRA LUZ da câmera. Sem Wi-Fi, sem MQTT — só o sensor e o cabo USB.
+ * Objetivo: PRIMEIRA LUZ da câmera. Sem rede — só o sensor e o cabo USB (Wi-Fi: ver ../PLANO-WIFI.md).
  *
  * Protocolo (little-endian, 1546 bytes por quadro) — igual a public/serial-parser.js:
  *   A5 5A | ver=1 | flags | seq u16 | Ta i16×100 | 768 × i16×100 | soma u16

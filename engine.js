@@ -6,7 +6,7 @@
  *   persistência → classificação por zona → diagnóstico → alerta
  *
  * Roda idêntico no navegador (demo com frames MOCADOS do MLX90640 32×24) e em
- * Node.js no computador de bordo (basta trocar MockCamera pelo feed MQTT real).
+ * Node.js — a Bancada já o alimenta com quadros reais pela USB; o firmware Wi-Fi o porta para C, dentro da câmera.
  */
 ;(function (global) {
   'use strict'

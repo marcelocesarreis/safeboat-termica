@@ -196,6 +196,7 @@
   </a>
   <nav>
     <a href="#ia">IA</a>
+    <a href="#nuvem">Nuvem</a>
     <a href="#specs">Especificações</a>
     <a href="#janela">Janela IR</a>
     <a href="#eletrica">Elétrica</a>
@@ -245,7 +246,7 @@
 <section id="ia">
   <div class="kick">REDE DE ANÁLISE</div>
   <h2>A rede de análise,<br>funcionando agora.</h2>
-  <p class="sub">Demonstração <b>ao vivo</b> com frames mocados de três câmeras MLX90640 (32×24 px, 4 Hz) — exatamente o pipeline que rodará no computador de bordo. O sistema aprende o padrão térmico normal de cada equipamento e acusa qualquer pixel que fuja da estatística. <b>Injete uma falha</b> e veja a IA encontrá-la, classificá-la e sugerir o diagnóstico.</p>
+  <p class="sub">Demonstração <b>ao vivo</b> com frames mocados de três câmeras MLX90640 (32×24 px, 4 Hz) — exatamente o pipeline que rodará <b>dentro de cada câmera</b>. O sistema aprende o padrão térmico normal de cada equipamento e acusa qualquer pixel que fuja da estatística. <b>Injete uma falha</b> e veja a IA encontrá-la, classificá-la e sugerir o diagnóstico.</p>
 
   <div class="demo">
     <div class="demo-top">
@@ -261,7 +262,7 @@
     <div class="alerts" id="alerts"><div class="empty">Nenhum alerta — todos os equipamentos dentro do padrão térmico.</div></div>
   </div>
 
-  <div class="note">A demo processa as <b>três câmeras simultaneamente</b> (como a central a bordo): alertas de qualquer câmera aparecem no feed, mesmo que você esteja vendo outra. O código desta página (<code>engine.js</code>) é a implementação de referência — no barco, troca-se o gerador de frames mocados pelo feed MQTT real das câmeras.</div>
+  <div class="note">A demo processa as <b>três câmeras simultaneamente</b> (como a central a bordo): alertas de qualquer câmera aparecem no feed, mesmo que você esteja vendo outra. O código desta página (<code>engine.js</code>) é a implementação de referência — a <a href="bancada.html" style="color:var(--navy);font-weight:700">Bancada</a> já roda este mesmo detector sobre os quadros reais do sensor, e o firmware Wi-Fi o leva para dentro da câmera.</div>
 </section>
 
 <!-- ============================================================ método -->
@@ -270,16 +271,49 @@
   <h2>Comparação e detecção.</h2>
   <p class="sub">Nada de "temperatura maior que X". Cada pixel tem seu próprio limiar estatístico, aprendido por <b>regime de operação</b> — porque 115 °C é normal no coletor de escape e é incêndio no chicote elétrico.</p>
   <div class="pipe">
-    <div class="stg"><div class="t">1 · Aquisição</div><div class="d">Frame 32×24 float (°C) a 4 Hz por câmera, via Wi-Fi/MQTT (1,5 kB/frame)</div></div>
+    <div class="stg"><div class="t">1 · Aquisição</div><div class="d">Quadro 32×24 (°C) a 4 Hz, lido por I²C <b>dentro da própria câmera</b> — nada cru sai pelo rádio</div></div>
     <div class="stg"><div class="t">2 · Normalização</div><div class="d">Compensação da temperatura ambiente (Ta do próprio MLX90640) e da emissividade por zona</div></div>
     <div class="stg"><div class="t">3 · Baseline</div><div class="d">Média + desvio σ por pixel (Welford), um baseline por regime: desligado, marcha lenta, cruzeiro</div></div>
     <div class="stg"><div class="t">4 · Comparação</div><div class="d">Δ = frame − baseline e z-score = Δ/σ. Anomalia: z &gt; 4 <b>e</b> Δ &gt; 6 °C</div></div>
     <div class="stg"><div class="t">5 · Blobs</div><div class="d">Píxeis anômalos agrupados (componentes conectados ≥ 3 px) — ruído não forma região</div></div>
     <div class="stg"><div class="t">6 · Persistência</div><div class="d">Região precisa sobreviver 3+ frames seguidos; reflexos e respingos morrem aqui</div></div>
     <div class="stg"><div class="t">7 · Classificação</div><div class="d">Centróide → zona do equipamento (alternador, escape, mancal…) + severidade por Δ°C</div></div>
-    <div class="stg"><div class="t">8 · Alerta</div><div class="d">Diagnóstico sugerido + tendência °C/dia no app SAFEBOAT, antes da falha</div></div>
+    <div class="stg"><div class="t">8 · Alerta</div><div class="d">Só o alerta (com o quadro anexado) e um resumo por minuto sobem por HTTPS — o app avisa antes da falha</div></div>
   </div>
   <div class="note">O baseline <b>se adapta devagar</b> (α = 0,004) apenas nos píxeis saudáveis: dia quente não gera alarme falso, mas uma falha real nunca é "aprendida" como normal. A seleção de regime vem de graça: a SAFEBOAT já monitora RPM e motores — o mesmo barramento diz à IA qual baseline usar. Evolução planejada: os blobs rotulados alimentam um classificador CNN leve (TensorFlow Lite) treinado com o histórico da frota.</div>
+</section>
+
+<!-- ============================================================ nuvem -->
+<section id="nuvem">
+  <div class="kick">DA CÂMERA À NUVEM</div>
+  <h2>A câmera pensa.<br>O rádio só avisa.</h2>
+  <p class="sub">Nada de fluxo de vídeo térmico para a nuvem. O detector roda <b>dentro do ESP32-C3</b> — média e variância de 768 píxeis cabem em 6 kB — e pelo Wi-Fi sobem só resumos e alertas, por <b>HTTPS</b>, no mesmo caminho que o VIB já usa em produção. Sem broker, sem serviço novo para manter.</p>
+
+  <div class="pipe">
+    <div class="stg"><div class="t">Câmera</div><div class="d">MLX90640 → detector a bordo. Decide sozinha o que é anomalia</div></div>
+    <div class="stg"><div class="t">HTTPS POST</div><div class="d">JSON em conexão keep-alive para <b>hub.safeboat.tech</b>, como o VIB</div></div>
+    <div class="stg"><div class="t">Hub</div><div class="d">Deduplica por id de evento e repassa à API com segredo no header</div></div>
+    <div class="stg"><div class="t">API SAFEBOAT</div><div class="d">Grava no Postgres e levanta o alerta <b>temperatura anormal</b></div></div>
+    <div class="stg"><div class="t">App</div><div class="d">Push com deeplink para o equipamento que esquentou</div></div>
+  </div>
+
+  <div style="height:22px"></div>
+  <div class="tableCard"><table>
+    <tr><th>Mensagem</th><th>Quando</th><th>Conteúdo</th><th>Tamanho</th></tr>
+    <tr><td>Resumo</td><td>a cada 60 s</td><td>mín · máx · média · p95 · pixel mais quente · Ta · estado do detector · RSSI</td><td>~0,3 kB</td></tr>
+    <tr><td>Alerta</td><td>anomalia confirmada em 3 quadros, e a cada mudança de severidade</td><td>zona, severidade, temperatura e Δ sobre o baseline + <em>o quadro anexado</em> (768 píxeis)</td><td>~2,3 kB</td></tr>
+    <tr><td>Batimento</td><td>a cada 600 s sem outra mensagem</td><td>versão, tempo ligado, RSSI, erros de I²C</td><td>~0,1 kB</td></tr>
+  </table></div>
+
+  <div style="height:22px"></div>
+  <div class="grid">
+    <div class="card"><div class="big">~0,3 <small>W</small></div><div class="lbl">Com o rádio em rajadas (resumo por minuto + alertas) — <b>estimado por datasheet, a medir</b>. O fluxo contínuo de quadros custaria ~0,7 W</div></div>
+    <div class="card"><div class="big">pós-chave</div><div class="lbl">A câmera só tem o que ver com o <b>motor ligado</b>, quando o alternador carrega. Alimentada pelo circuito pós-chave, o consumo parado deixa de existir</div></div>
+    <div class="card"><div class="big">mesmo código</div><div class="lbl">O detector da demo e da <a href="bancada.html" style="color:var(--navy);font-weight:700">Bancada</a> é o que vai para dentro da câmera — portado para C e conferido contra os mesmos quadros gravados</div></div>
+  </div>
+
+  <div class="note"><b>Onde estamos.</b> Firmware <b>0.1.2</b> gravado na placa: primeira luz pela USB, 10 quadros reais, 0 perdidos. Próximas etapas — 0.2 Wi-Fi + provisionamento por portal · 0.3 detector a bordo · 0.4 rotas no hub e na API · 0.5 OTA. O plano completo, com as lições herdadas do VIB, está em <a href="firmware/PLANO-WIFI.md" style="color:var(--navy);font-weight:700">firmware/PLANO-WIFI.md</a>.</div>
+  <div class="note warn"><b>Em aberto:</b> o baseline por regime precisa saber lenta × cruzeiro, e o RPM ainda não chega pelo barramento. Plano B sem RPM: a câmera só aprende e monitora com a cena <b>termicamente estabilizada</b>.</div>
 </section>
 
 <!-- ============================================================ specs -->
@@ -289,11 +323,11 @@
   <p class="sub">Sensor Melexis MLX90640 + ESP32-C3 num case de escotilha Ø50 mm impresso em ASA. Sem lente, sem obturador, sem partes móveis — <b>R$ ~650 por ponto monitorado</b>, contra R$ 15 mil+ de uma câmera térmica industrial.</p>
   <div class="grid">
     <div class="card"><div class="big">32 × 24 <small>px</small></div><div class="lbl"><b>MLX90640</b> · matriz de 768 termopilhas · FOV 55°×35° · −40 a +300 °C · ±1,5 °C</div></div>
-    <div class="card"><div class="big">ESP32-C3</div><div class="lbl">SuperMini · Wi-Fi 2,4 GHz · lê o sensor por <b>I²C</b> e publica frames via <b>MQTT</b> · OTA</div></div>
+    <div class="card"><div class="big">ESP32-C3</div><div class="lbl">SuperMini · Wi-Fi 2,4 GHz · lê o sensor por <b>I²C</b>, <b>analisa a bordo</b> e envia só resumos e alertas por <b>HTTPS</b> · OTA</div></div>
     <div class="card"><div class="big">Ø50 × 62 <small>mm</small></div><div class="lbl">Corpo monobloco em <b>PETG</b> (ASA em impressora fechada), família do Vigia</div></div>
     <div class="card"><div class="big">IP66/67 <small>alvo</small></div><div class="lbl">Janela de germânio colada + O-ring radial + prensa-cabo IP68 — <b>zero parafusos expostos</b></div></div>
-    <div class="card"><div class="big">10–28 V</div><div class="lbl">Buck interno: liga direto no <b>12 V do barco</b> · consumo ~0,8 W · fusível 1 A</div></div>
-    <div class="card"><div class="big">4 Hz</div><div class="lbl">Taxa de quadros contínua · <b>1,5 kB/frame</b> — 12 câmeras consomem menos que uma música no 4G</div></div>
+    <div class="card"><div class="big">10–28 V</div><div class="lbl">Buck interno: liga direto no <b>12 V do barco</b> · ~0,3 W com o rádio em rajadas (estimado, a medir) · fusível 1 A</div></div>
+    <div class="card"><div class="big">4 Hz</div><div class="lbl">Análise contínua a bordo · pelo rádio vão <b>~0,3 kB por minuto</b> + 2,3 kB por alerta — irrelevante até no 4G</div></div>
   </div>
 </section>
 
@@ -373,7 +407,7 @@
       <!-- ESP32 -->
       <rect x="640" y="128" width="150" height="200" rx="12" fill="#f3f5f9" stroke="#c6cdd9"/>
       <text x="715" y="152" fill="#6b7385" font-size="10.5" text-anchor="middle" letter-spacing="1">ESP32-C3 SUPERMINI</text>
-      <text x="715" y="172" fill="#23304A" font-size="13" font-weight="700" text-anchor="middle">Wi-Fi · MQTT · OTA</text>
+      <text x="715" y="172" fill="#23304A" font-size="13" font-weight="700" text-anchor="middle">Wi-Fi · HTTPS · OTA</text>
       <path d="M715 96 v18 m-9 -26 a12 12 0 0 1 18 0 m-25 -8 a22 22 0 0 1 32 0" fill="none" stroke="#23304A" stroke-width="2" stroke-linecap="round"/>
       <text x="748" y="96" fill="#23304A" font-size="10">Wi-Fi 2,4 GHz</text>
       <text x="650" y="232" fill="#c2410c" font-size="10">5V</text>
@@ -432,11 +466,11 @@
   <p class="sub">Dados vão por Wi-Fi — só energia passa pelo cabo. Instalar uma câmera nova = <b>2 fios + 4 parafusos</b>.</p>
   <div class="tableCard"><table>
     <tr><th>Item</th><th>Especificação</th><th>Detalhe de instalação</th></tr>
-    <tr><td>Cabo</td><td>Marítimo estanhado 2×0,75 mm², capa PVC Ø4–6 mm</td><td>Comprimento livre; queda de tensão irrelevante (60 mA @ 12 V). Abraçadeiras UV a cada 30 cm.</td></tr>
+    <tr><td>Cabo</td><td>Marítimo estanhado 2×0,75 mm², capa PVC Ø4–6 mm</td><td>Comprimento livre; queda de tensão irrelevante (dezenas de mA @ 12 V). Abraçadeiras UV a cada 30 cm.</td></tr>
     <tr><td>Saída da case</td><td>Prensa-cabo M12×1,5 nylon IP68 (faixa 3–6,5 mm)</td><td>Aperto firme sobre a capa; laço de folga interno antes do prensa-cabo.</td></tr>
     <tr><td>Conector de serviço</td><td>Weipu SP13 2 pinos IP68, em linha, a 30 cm da câmera</td><td>Permite remover a câmera sem refazer cabeamento — padrão da família Vigia.</td></tr>
     <tr><td>Alça de gotejamento</td><td>Curva em “U” antes de qualquer conector/entrada</td><td>Água escorre pelo ponto baixo do cabo, nunca para dentro do prensa-cabo.</td></tr>
-    <tr><td>Proteção</td><td>Fusível 1 A no painel CC, circuito dedicado “TÉRMICA”</td><td>Um circuito alimenta até 8 câmeras em derivação (60 mA cada); TVS interna segura transientes de partida.</td></tr>
+    <tr><td>Proteção</td><td>Fusível 1 A no painel CC, circuito <b>pós-chave</b> dedicado “TÉRMICA”</td><td>Um circuito alimenta até 8 câmeras em derivação (~25–60 mA cada, estimado); TVS interna segura transientes de partida.</td></tr>
     <tr><td>Roteamento</td><td>Afastado ≥10 cm de cabos de potência/ignição</td><td>Evita ruído conduzido; cruzamentos a 90°. Nunca apoiar o cabo sobre o coletor de escape.</td></tr>
     <tr><td>Rede</td><td>Wi-Fi 2,4 GHz do barco (roteador Starlink / 4G)</td><td>RSSI mínimo −75 dBm no ponto de instalação; a case ASA é transparente ao rádio.</td></tr>
   </table></div>
@@ -523,7 +557,7 @@
     <li><b>Cole a janela IR:</b> cordão fino de Sikaflex-291i no recesso frontal, assente o disco de germânio Ø25×1 (coating DLC para fora), remova o excesso e cure 48 h. <b>Não encoste os dedos na face óptica</b> — gordura é opaca no LWIR.</li>
     <li><b>Monte o carrier:</b> deslize o módulo MLX90640 no slot (o "olho" TO-39 atravessando o furo central do disco) e cole o ESP32-C3 na bandeja traseira com fita VHB. Um disco de espuma EVA de 1 mm na traseira tira a folga de 0,5 mm e mata o chocalho na vibração do motor.</li>
     <li><b>Ligue a elétrica:</b> buck MP1584 ajustado em 5,0 V <em>antes</em> de conectar o ESP32-C3; 3V3/GND/SDA(GPIO8)/SCL(GPIO9) → MLX90640; LED de status no GPIO10. Verniz conformal em tudo.</li>
-    <li><b>Grave o firmware</b> via USB-C antes de fechar, configure SSID/MQTT e confirme o frame no broker. Depois disso, atualizações são OTA.</li>
+    <li><b>Grave o firmware</b> via USB-C antes de fechar, confira a imagem ao vivo na <a href="bancada.html" style="color:var(--navy);font-weight:700">Bancada</a>. Na versão Wi-Fi, a rede entra pelo portal de configuração e as atualizações passam a ser OTA.</li>
     <li><b>Monte o prensa-cabo</b> na tampa: corpo por fora, contraporca por dentro do rebaixo Ø24, apertando contra os 5 mm do flange. Passe o cabo com um laço de folga interno.</li>
     <li><b>Feche:</b> O-ring 37×3 engraxado com silicone no canal, sachê de sílica-gel dentro. Empurre a tampa até o flange encostar e <b>gire 60° no sentido da seta “FECHA”</b> gravada, até o clique — sem ferramenta, só a mão.</li>
     <li><b>Instale a bordo:</b> suporte na posição de mira, conecte ao circuito 12 V “TÉRMICA” e confirme a câmera no dashboard. A IA aprende o baseline sozinha nos primeiros ciclos de motor.</li>
