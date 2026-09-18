@@ -36,6 +36,8 @@
       let i = 0
       const b = this.buf
       while (i < b.length) {
+        // cabeçalho cortado na fronteira do bloco (comum no BLE, fatias de 20–244 B): espera o resto em vez de gastar o A5 como texto
+        if (b[i] === 0xA5 && i + 2 >= b.length && (i + 1 >= b.length || b[i + 1] === 0x5A)) break
         if (b[i] === 0xA5 && i + 2 < b.length && b[i + 1] === 0x5A && b[i + 2] === 0x01) {
           if (b.length - i < FRAME_LEN) break            // quadro incompleto: espera mais bytes
           if (this._sumOk(i)) { this._emit(i); i += FRAME_LEN; continue }
@@ -43,7 +45,10 @@
         }
         const c = b[i]
         if (c === 10) { const line = this.text; this.text = ''; if (this.onText && line.length) this.onText(line) }
-        else if (c >= 32 && c < 127) { this.text += String.fromCharCode(c); if (this.text.length > 240) this.text = this.text.slice(-240) }
+        else if (c >= 32 && c < 127) {
+          this.text += String.fromCharCode(c)
+          if (this.text.length > 2048) this.text = this.text.slice(-2048)   // o estado "#J {json}" passa de 300 caracteres
+        }
         i++
       }
       this.buf = b.slice(i)

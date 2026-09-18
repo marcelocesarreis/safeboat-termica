@@ -29,7 +29,7 @@
   .btn.pri:hover { background:#16203a; }
   .btn.on { background:var(--hot); border-color:var(--hot); color:#fff; }
   .btn:disabled { opacity:.45; cursor:default; }
-  select, input[type=number] { padding:7px 10px; border:1px solid var(--line); border-radius:8px; font:600 13px var(--sans); color:var(--navy); background:#fff; }
+  select, input[type=number], input[type=text], input[type=password] { padding:7px 10px; border:1px solid var(--line); border-radius:8px; font:600 13px var(--sans); color:var(--navy); background:#fff; }
   input[type=number] { width:74px; }
   .pill { display:inline-flex; align-items:center; gap:8px; padding:7px 13px; border-radius:999px; border:1px solid var(--line); font-size:12.5px; font-weight:600; background:#fff; }
   .pill .dot { width:8px; height:8px; border-radius:50%; background:var(--txt2); }
@@ -75,6 +75,7 @@
   <section>
     <div class="bar">
       <button class="btn pri" id="bConn">Conectar USB</button>
+      <button class="btn pri" id="bBle">Conectar Bluetooth</button>
       <button class="btn" id="bSim">Simulador</button>
       <span class="pill" id="pill"><span class="dot"></span><span id="pillTxt">desconectado</span></span>
       <select id="rate" title="Taxa de atualização (envia o comando à placa)">
@@ -90,7 +91,7 @@
       <canvas id="cv" width="768" height="576"></canvas>
       <div class="ro" id="ro"></div>
       <div class="frz" id="frz">CONGELADO</div>
-      <div class="empty" id="empty">Conecte a câmera pela USB (Chrome ou Edge no PC)<br>ou ligue o simulador para testar a interface.</div>
+      <div class="empty" id="empty">Conecte a câmera pela <b>USB</b> (Chrome ou Edge no PC) ou por <b>Bluetooth</b> (Chrome no Android ou no PC)<br>— ou ligue o simulador para testar a interface.</div>
     </div>
 
     <div class="stats">
@@ -119,6 +120,19 @@
       <div id="alerts"></div>
     </div>
 
+    <div class="card" id="wifiCard">
+      <div class="kick">WI-FI · ETAPA 0.2</div>
+      <div class="row"><span class="pill" id="wPill"><span class="dot"></span><span id="wPillTxt">firmware sem Wi-Fi ou placa desconectada</span></span></div>
+      <div class="muted" id="wInfo" style="margin-bottom:10px">Conecte a placa pela USB. Com o firmware 0.2+, o estado do rádio aparece aqui.</div>
+      <div class="row"><button class="btn" id="bScan">Procurar redes</button><select id="wSsid" style="flex:1;min-width:0"><option value="">— procure as redes —</option></select></div>
+      <div class="row"><input type="text" id="wSsidManual" placeholder="ou digite o nome da rede (oculta)" autocomplete="off" style="flex:1;min-width:0;width:auto"></div>
+      <div class="row"><input type="password" id="wPass" placeholder="senha do Wi-Fi" autocomplete="off" style="flex:1;min-width:0;width:auto"><button class="btn pri" id="bWifi">Conectar</button></div>
+      <div class="muted" style="margin-bottom:10px">A senha vai do seu navegador direto para a placa pela USB e fica gravada só nela. A placa enxerga apenas redes de <b>2,4 GHz</b>.</div>
+      <div class="row"><input type="text" id="wHub" placeholder="hub de teste, ex. http://192.168.0.148:8097" autocomplete="off" style="flex:1;min-width:0;width:auto"><button class="btn" id="bHub">Gravar</button></div>
+      <div class="row"><button class="btn" id="bTest">Testar agora</button><button class="btn" id="bForget">Esquecer rede</button></div>
+      <div id="wResults"></div>
+    </div>
+
     <div class="card">
       <div class="kick">CONSOLE DA PLACA</div>
       <div class="log" id="log"></div>
@@ -138,6 +152,7 @@
 
   // ---------------- estado ----------------
   let port = null, reader = null, writer = null, parser = null
+  let bleDev = null, bleCtrl = null         // transporte Bluetooth LE: o MESMO fluxo de bytes da USB, em notificações
   let sim = false, simTimer = null, simSeq = 0, simCam = null, simT0 = 0
   let frozen = false, last = null, recording = null
   let frames = 0, fpsEma = 0, lastTs = 0
@@ -169,7 +184,7 @@
     if (parser) $('sLost').innerHTML = parser.stats.lost + '<small> · ' + parser.stats.bad + '</small>'
     if (!f.sensorOk) setPill('err', 'placa OK, sensor NÃO responde')
     else if (f.i2cErr) setPill('warn', 'erro I²C no quadro ' + f.seq)
-    else setPill('ok', (sim ? 'simulador' : 'conectado') + ' · ' + fpsEma.toFixed(1) + ' fps')
+    else setPill('ok', (sim ? 'simulador' : bleCtrl ? 'Bluetooth' : 'conectado') + ' · ' + fpsEma.toFixed(1) + ' fps')
 
     if (frozen) return
     const auto = document.querySelector('input[name=sc]:checked').value === 'auto'
@@ -214,6 +229,70 @@
     while (alertsEl.children.length > 6) alertsEl.lastChild.remove()
   }
 
+  // ---------------- Wi-Fi (etapa 0.2) ----------------
+  // A placa manda "# ap <rssi> <canal> <aberta|segura> <ssid>" no scan e o estado em "#J {json}".
+  const aps = new Map()
+  function onBoardText (l) {
+    if (l.startsWith('#J ')) { try { renderWifi(JSON.parse(l.slice(3))) } catch (e) {} return }   // estado: não polui o console
+    const m = /^# ap (-?\d+) (\d+) (\S+) (.*)$/.exec(l)
+    if (m) { aps.set(m[4], { rssi: +m[1], ch: +m[2], sec: m[3] }); renderAps() }
+    if (/^# wifi-scan: inicio/.test(l)) { aps.clear(); renderAps() }
+    log(l)
+  }
+  function renderAps () {
+    const sel = $('wSsid'), cur = sel.value
+    sel.innerHTML = ''
+    if (!aps.size) { sel.innerHTML = '<option value="">— procure as redes —</option>'; return }
+    for (const [ssid, a] of [...aps].sort((x, y) => y[1].rssi - x[1].rssi)) {
+      if (!ssid) continue
+      const o = document.createElement('option')
+      o.value = ssid
+      o.textContent = ssid + '  ·  ' + a.rssi + ' dBm · canal ' + a.ch + (a.sec === 'aberta' ? ' · aberta' : '')
+      sel.appendChild(o)
+    }
+    if (cur && aps.has(cur)) sel.value = cur
+  }
+  const MOTIVOS = { 2: 'o AP não respondeu à autenticação', 5: 'o roteador recusou por excesso de clientes no 2,4 GHz (nem testou a senha)', 15: 'handshake da senha expirou (senha ou PMF/WPA3)', 200: 'sinal perdido', 201: 'a placa não enxerga esse SSID',
+    202: 'o AP recusou a autenticação (senha, filtro de MAC ou limite de clientes)', 203: 'o AP recusou a associação', 204: 'senha recusada', 205: 'falha de conexão',
+    210: 'segurança do AP incompatível', 211: 'AP abaixo do mínimo WPA2' }
+  const codeTxt = c => c === 200 ? '200 OK' : c === 0 ? 'ainda não testado' : c < 0 ? 'sem conexão (' + c + ')' : 'HTTP ' + c
+  function renderWifi (j) {
+    const nome = { sem_rede: 'sem rede configurada', conectando: 'conectando a ' + j.ssid + '…', ok: 'conectado · ' + j.ssid, falhou: 'falhou — tentando de novo (' + j.fails + ')' }[j.wifi] || j.wifi
+    $('wPill').className = 'pill ' + ({ ok: 'ok', conectando: 'warn', falhou: 'err' }[j.wifi] || '')
+    $('wPillTxt').textContent = nome
+    $('wInfo').innerHTML = j.wifi === 'ok'
+      ? '<b>' + j.dev + '</b> · firmware ' + j.fw + ' · IP <b>' + j.ip + '</b> · sinal <b>' + j.rssi + ' dBm</b> · canal ' + j.ch + (j.txlow ? ' · <b style="color:var(--hot)">potência de TX reduzida</b>' : '')
+      : '<b>' + j.dev + '</b> · firmware ' + j.fw + (j.txlow ? ' · potência de TX reduzida' : '') +
+        (j.reason ? '<br><b style="color:var(--crit)">motivo ' + j.reason + ': ' + (MOTIVOS[j.reason] || 'ver o console') + '</b>' + (j.assoc ? ' · associou, mas sem IP (DHCP)' : '') : '')
+    if (j.hub && !$('wHub').value) $('wHub').value = j.hub
+    const row = (titulo, ok, txt) => '<div class="al' + (ok ? '' : ' alerta') + '" style="border-left-color:' + (ok ? 'var(--ok)' : 'var(--hot)') + '"><b>' + titulo + '</b> · ' + txt + '</div>'
+    let h = ''
+    if (j.wifi === 'ok') {
+      h += j.hub ? row('Hub de teste', j.hubCode === 200, codeTxt(j.hubCode) + (j.hubCode ? ' em ' + j.hubMs + ' ms' : '') + ' · ' + j.beats + ' batimentos entregues, ' + j.hubFails + ' falhas')
+                 : row('Hub de teste', false, 'nenhum endereço gravado')
+      h += row('Internet (hub.safeboat.tech por HTTPS)', j.netCode === 200, codeTxt(j.netCode) + (j.netCode ? ' em ' + j.netMs + ' ms' : ''))
+    }
+    if (j.ble != null) h += row('Bluetooth LE', true, ['anunciando, sem celular conectado', 'celular conectado, sem assinar o fluxo', 'transmitindo · MTU ' + j.mtu][j.ble] + ' · ' + j.bleq + ' quadros enviados, ' + j.bled + ' abandonados · memória livre ' + Math.round(j.heap / 1024) + ' kB')
+    $('wResults').innerHTML = h
+  }
+  const soUsb = () => { if (bleCtrl && !writer) { alert('Rede e hub só se configuram pela USB: o enlace Bluetooth não é cifrado e a senha do Wi-Fi não passa por ele.'); return true } return false }
+  const sendLine = s => send(s + '\n')
+  $('bScan').onclick = () => { aps.clear(); renderAps(); sendLine('S') }
+  $('bWifi').onclick = () => {
+    if (soUsb()) return
+    const ssid = $('wSsidManual').value.trim() || $('wSsid').value
+    if (!ssid) { alert('Escolha ou digite o nome da rede.'); return }
+    if (!writer) { alert('Conecte a placa pela USB primeiro.'); return }
+    sendLine('W\t' + ssid + '\t' + $('wPass').value)
+    $('wPass').value = ''                                   // não fica na página
+    log('# (bancada) credenciais enviadas à placa pela USB — a senha não é exibida nem guardada aqui')
+  }
+  $('bHub').onclick = () => { if (!soUsb()) sendLine('H\t' + $('wHub').value.trim()) }
+  $('bTest').onclick = () => sendLine('T')
+  $('bForget').onclick = () => { if (!soUsb() && confirm('Apagar a rede gravada na placa?')) sendLine('X') }
+  // sugere o IP deste PC na rede local como hub de teste (só quando servido pelo server.cjs)
+  fetch('/__lanip').then(r => r.ok ? r.json() : null).then(j => { if (j && j.sugestao && !$('wHub').value) $('wHub').value = j.sugestao }).catch(() => {})
+
   // ---------------- Web Serial ----------------
   async function connect () {
     if (!navigator.serial) { alert('Este navegador não tem Web Serial. Use Chrome ou Edge no PC.'); return }
@@ -224,7 +303,7 @@
     stopSim()
     parser = new FrameParser()
     parser.onFrame = onFrame
-    parser.onText = l => log(l)
+    parser.onText = onBoardText
     const info = port.getInfo()
     $('portTxt').textContent = 'VID ' + (info.usbVendorId || 0).toString(16) + ':' + (info.usbProductId || 0).toString(16)
     setPill('ok', 'conectado · aguardando quadros')
@@ -243,24 +322,66 @@
     await disconnect()
   }
   async function disconnect () {
-    try { if (reader) await reader.cancel() } catch {}
-    try { if (writer) writer.releaseLock() } catch {}
-    try { if (port) await port.close() } catch {}
+    const r = reader, w = writer, p = port
     reader = writer = port = null
-    setPill('', 'desconectado')
+    // cancel() encerra a leitura pendente, mas a TRAVA do fluxo continua com o leitor: sem o
+    // releaseLock() o port.close() é rejeitado e o Chrome segue dono da COM (bug da 1ª versão)
+    try { if (r) { await r.cancel(); r.releaseLock() } } catch {}
+    try { if (w) w.releaseLock() } catch {}
+    let fechou = true
+    try { if (p) await p.close() } catch (e) { fechou = false; log('# ATENÇÃO: a porta não fechou (' + e.message + ') — recarregue a página para liberá-la') }
+    setPill(fechou ? '' : 'err', fechou ? 'desconectado' : 'porta ainda presa — recarregue a página')
     $('bConn').textContent = 'Conectar USB'
   }
   async function send (ch) {
     if (writer) { try { await writer.write(new TextEncoder().encode(ch)) } catch (e) { log('# envio falhou: ' + e.message) } }
-    else if (sim) log('# (simulador) comando ' + ch + ' ignorado')
+    else if (bleCtrl) {
+      const b = new TextEncoder().encode(ch)
+      try { await bleCtrl.writeValueWithoutResponse(b) } catch { try { await bleCtrl.writeValue(b) } catch (e) { log('# envio BLE falhou: ' + e.message) } }
+    }
+    else if (sim) log('# (simulador) comando ' + ch.trim()[0] + ' ignorado')
   }
   if (navigator.serial) navigator.serial.addEventListener('disconnect', () => { log('# USB removido'); disconnect() })
 
+  // ---------------- Web Bluetooth (firmware 0.2.3+) ----------------
+  // A placa manda pelo BLE exatamente os bytes que manda pela USB; aqui só trocamos o "cabo".
+  const BLE_SVC = '5afe0001-5445-524d-4943-410000000001', BLE_DATA = '5afe0002-5445-524d-4943-410000000001', BLE_CTRL = '5afe0003-5445-524d-4943-410000000001'
+  async function bleConnect () {
+    if (!navigator.bluetooth) { alert('Este navegador não tem Web Bluetooth. Use o Chrome no Android ou no PC (no iPhone o Safari não tem).'); return }
+    if (port) await disconnect()
+    try {
+      bleDev = await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'termica' }, { services: [BLE_SVC] }], optionalServices: [BLE_SVC] })
+      setPill('warn', 'Bluetooth · conectando a ' + (bleDev.name || 'câmera') + '…')
+      bleDev.addEventListener('gattserverdisconnected', () => { log('# Bluetooth: a conexão caiu'); bleCleanup() })
+      const gatt = await bleDev.gatt.connect()
+      const svc = await gatt.getPrimaryService(BLE_SVC)
+      const data = await svc.getCharacteristic(BLE_DATA)
+      const ctrl = await svc.getCharacteristic(BLE_CTRL)
+      stopSim()
+      parser = new FrameParser(); parser.onFrame = onFrame; parser.onText = onBoardText
+      frames = 0; fpsEma = 0; lastTs = 0
+      data.addEventListener('characteristicvaluechanged', e => { const v = e.target.value; parser.push(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)) })
+      await data.startNotifications()
+      bleCtrl = ctrl
+      $('bBle').textContent = 'Desconectar Bluetooth'
+      $('portTxt').textContent = 'BLE · ' + (bleDev.name || '')
+      setPill('ok', 'Bluetooth · aguardando quadros')
+      log('# Bluetooth conectado a ' + (bleDev.name || 'câmera') + ' — mesmo fluxo da USB')
+      send('i')
+    } catch (e) { log('# Bluetooth não conectou: ' + e.message); bleCleanup() }
+  }
+  function bleCleanup () {
+    const d = bleDev; bleDev = null; bleCtrl = null
+    try { if (d && d.gatt.connected) d.gatt.disconnect() } catch {}
+    $('bBle').textContent = 'Conectar Bluetooth'
+    if (!port && !sim) setPill('', 'desconectado')
+  }
+
   // ---------------- simulador (passa pelo MESMO parser/protocolo) ----------------
   function startSim () {
-    disconnect()
+    disconnect(); bleCleanup()
     simCam = new MockCamera('Bancada', 'motor'); simSeq = 0; simT0 = performance.now()
-    parser = new FrameParser(); parser.onFrame = onFrame; parser.onText = l => log(l)
+    parser = new FrameParser(); parser.onFrame = onFrame; parser.onText = onBoardText
     parser.push(new TextEncoder().encode('# SIMULADOR termica-usb | cena de motor mocada | 4 Hz\n'))
     simTimer = setInterval(() => {
       const t = (performance.now() - simT0) / 1000
@@ -277,7 +398,8 @@
   }
 
   // ---------------- controles ----------------
-  $('bConn').onclick = () => port ? disconnect() : connect()
+  $('bConn').onclick = () => { if (port) disconnect(); else { bleCleanup(); connect() } }
+  $('bBle').onclick = () => bleDev ? bleCleanup() : bleConnect()
   $('bSim').onclick = () => { if (sim) { stopSim(); setPill('', 'desconectado') } else startSim() }
   $('bFault').onclick = e => { if (!simCam) return; const on = e.target.classList.toggle('on'); simCam.setAnomaly(on ? 'alternador' : null, (performance.now() - simT0) / 1000) }
   $('rate').onchange = e => send(e.target.value)
