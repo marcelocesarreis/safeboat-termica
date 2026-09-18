@@ -36,7 +36,7 @@
 #include "host/ble_hs.h"           // NimBLE cru: notify com retorno (controle de fluxo — receita do VIB)
 #include <stdarg.h>
 
-#define FW_VERSION  "0.2.3"
+#define FW_VERSION  "0.2.6"
 #define PIN_SDA     8            // também é o LED onboard do SuperMini — pisca com o I²C, normal
 #define PIN_SCL     9
 #define PIN_LED     10
@@ -112,12 +112,13 @@ static const char* authName(wifi_auth_mode_t a) {
 }
 
 // ---------------- Bluetooth LE ----------------
+#define BLE_ADDR_SALT 0x26
 #define UUID_SVC  "5afe0001-5445-524d-4943-410000000001"
 #define UUID_DATA "5afe0002-5445-524d-4943-410000000001"
 #define UUID_CTRL "5afe0003-5445-524d-4943-410000000001"
 static BLEServer* bleSrv = NULL; static BLECharacteristic *chData = NULL, *chCtrl = NULL;
 static volatile bool bleConn = false, bleSub = false; static volatile uint16_t bleHandle = 0xFFFF;
-static uint16_t bleMtu = 23; static uint32_t bleFrames = 0, bleDrops = 0, bleRetries = 0;
+static uint16_t bleMtu = 23; static uint32_t bleFrames = 0, bleDrops = 0, bleRetries = 0, bleAdvFix = 0, bleConns = 0, lastAdvChk = 0, bleKicks = 0; static volatile uint32_t bleConnAt = 0;
 static String bleCmd = "";          // comando recebido: executa no loop (fora da tarefa do host BLE)
 static volatile bool bleCmdDue = false;
 
@@ -151,7 +152,7 @@ static void say(const char* fmt, ...) {
   bleWrite((const uint8_t*)b, n);
 }
 class SrvCb : public BLEServerCallbacks {
-  void onConnect(BLEServer* s) { bleHandle = s->getConnId(); bleSub = false; bleMtu = 23; bleConn = true; }
+  void onConnect(BLEServer* s) { bleHandle = s->getConnId(); bleSub = false; bleMtu = 23; bleConnAt = millis(); bleConn = true; bleConns++; }
   void onDisconnect(BLEServer* s) { bleConn = false; bleSub = false; BLEDevice::startAdvertising(); }
 };
 class DataCb : public BLECharacteristicCallbacks {
@@ -233,12 +234,13 @@ static void wifiPoll() {
 static void sendBeat() {
   lastBeat = millis(); beatDue = false;
   if (wst != WS_CONECTADO || !cfgHub.length()) return;
-  char body[420];
+  char body[560];
   snprintf(body, sizeof body,
     "{\"dev\":\"%s\",\"fw\":\"%s\",\"tipo\":\"batimento\",\"seq\":%lu,\"up\":%lu,\"rssi\":%d,\"ta\":%.2f,\"min\":%.2f,\"max\":%.2f,\"med\":%.2f,"
-    "\"hot\":{\"x\":%d,\"y\":%d,\"t\":%.2f},\"quadros\":%u,\"erros_i2c\":%lu,\"sensor\":%d}",
+    "\"hot\":{\"x\":%d,\"y\":%d,\"t\":%.2f},\"quadros\":%u,\"erros_i2c\":%lu,\"sensor\":%d,\"ble\":%d,\"adv\":%d,\"advfix\":%lu,\"kicks\":%lu,\"bleconns\":%lu,\"bleq\":%lu,\"heap\":%lu}",
     devId.c_str(), FW_VERSION, (unsigned long)beats, (unsigned long)(millis() / 1000), WiFi.RSSI(), isnan(fTa) ? 0.0f : fTa, fMin, fMax, fMean,
-    hotIdx % 32, hotIdx / 32, fMax, seq, (unsigned long)i2cErrors, sensorOk ? 1 : 0);
+    hotIdx % 32, hotIdx / 32, fMax, seq, (unsigned long)i2cErrors, sensorOk ? 1 : 0,
+    bleSub ? 2 : bleConn ? 1 : 0, ble_gap_adv_active() ? 1 : 0, (unsigned long)bleAdvFix, (unsigned long)bleKicks, (unsigned long)bleConns, (unsigned long)bleFrames, (unsigned long)ESP.getFreeHeap());
   WiFiClient c; HTTPClient http;
   http.setConnectTimeout(2000); http.setTimeout(3000);
   uint32_t t0 = millis();
@@ -348,6 +350,10 @@ static void bleCommands() {
 static void bleInit() {
   BLEDevice::init(devId.c_str());
   BLEDevice::setMTU(517);
+  // endereço aleatório-estático derivado do MAC (receita do VIB): Windows/Android guardam a tabela GATT por endereço;
+  // a 1ª descoberta desta placa foi truncada e ficou em cache — endereço novo força a redescoberta. Mude BLE_ADDR_SALT se a tabela mudar.
+  { uint8_t a[6]; memcpy(a, BLEDevice::getAddress().getNative(), 6); a[5] |= 0xC0; a[0] ^= BLE_ADDR_SALT;
+    if (!(BLEDevice::setOwnAddr(a) && BLEDevice::setOwnAddrType(BLE_OWN_ADDR_RANDOM))) Serial.println("# ble: fiquei com o endereco publico"); }
   bleSrv = BLEDevice::createServer(); bleSrv->setCallbacks(new SrvCb());
   BLEService* svc = bleSrv->createService(UUID_SVC);
   chData = svc->createCharacteristic(UUID_DATA, BLECharacteristic::PROPERTY_NOTIFY);
@@ -414,6 +420,10 @@ void setup() {
 void loop() {
   readCommands();
   bleCommands();
+  // vigia do anúncio: se ninguém está conectado e o anúncio parou (reinício falhou no onDisconnect, rádio ocupado pelo Wi-Fi), religa
+  if (millis() - lastAdvChk > 2000) { lastAdvChk = millis(); if (!bleConn && !ble_gap_adv_active()) { BLEDevice::startAdvertising(); bleAdvFix++; }
+    // central "zumbi": conectou e não assinou o fluxo em 12 s (descoberta GATT falhou no Windows/Android) — derruba, senão ninguém mais acha a placa
+    if (bleConn && !bleSub && millis() - bleConnAt > 12000) { bleKicks++; bleConnAt = millis(); ble_gap_terminate(bleHandle, BLE_ERR_REM_USER_CONN_TERM); } }
   wifiPoll();
   if (wst == WS_CONECTADO) {
     if (beatDue  || millis() - lastBeat  > BEAT_MS)  sendBeat();

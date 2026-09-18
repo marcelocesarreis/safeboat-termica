@@ -368,7 +368,11 @@
       setPill('ok', 'Bluetooth · aguardando quadros')
       log('# Bluetooth conectado a ' + (bleDev.name || 'câmera') + ' — mesmo fluxo da USB')
       send('i')
-    } catch (e) { log('# Bluetooth não conectou: ' + e.message); bleCleanup() }
+    } catch (e) {
+      log('# Bluetooth não conectou: ' + e.message)
+      if (/service|servi/i.test(e.message)) log('# dica: o aparelho guardou uma tabela antiga da placa — desligue e ligue o Bluetooth do aparelho e tente de novo')
+      bleCleanup()
+    }
   }
   function bleCleanup () {
     const d = bleDev; bleDev = null; bleCtrl = null
