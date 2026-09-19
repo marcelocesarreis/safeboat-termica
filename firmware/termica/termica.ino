@@ -20,6 +20,9 @@
  * Bluetooth LE (0.2.3) — "cabo sem fio": o MESMO fluxo de bytes da USB (quadros + texto) sai
  * em notificações, fatiado pela MTU; o celular usa o mesmo parser da Bancada (Web Bluetooth).
  *   serviço 5afe0001-…  ·  DATA 5afe0002 (notify)  ·  CTRL 5afe0003 (write: os comandos acima)
+ *   0.2.7: cada notificação leva um cabeçalho de 5 B  B1 | tipo (1 texto, 2 quadro) | id | pedaço | total
+ *   e os pedaços saem ESPAÇADOS (um por evento de conexão): o Chrome do Android perde notificações
+ *   em rajada, e sem numeração um pedaço perdido desalinhava o fluxo inteiro (nenhum quadro fechava).
  *   Sem pareamento o enlace NÃO é cifrado: W, X e H são RECUSADOS pelo BLE (senha só pela USB).
  *   Wi-Fi + BLE dividem o mesmo rádio: o modem-sleep do Wi-Fi fica LIGADO (exigência do chip).
  */
@@ -36,7 +39,7 @@
 #include "host/ble_hs.h"           // NimBLE cru: notify com retorno (controle de fluxo — receita do VIB)
 #include <stdarg.h>
 
-#define FW_VERSION  "0.2.6"
+#define FW_VERSION  "0.2.8"
 #define PIN_SDA     8            // também é o LED onboard do SuperMini — pisca com o I²C, normal
 #define PIN_SCL     9
 #define PIN_LED     10
@@ -136,11 +139,20 @@ static bool bleNotify(const uint8_t* p, size_t n) {
   }
   return false;
 }
-static bool bleWrite(const uint8_t* p, size_t n) {   // fatia pela MTU; falso = abandonou no meio (o parser ressincroniza pela soma)
+#define BLE_GAP_MS 18              // espaço entre pedaços: > intervalo de conexão (7,5–15 ms) = um pedaço por evento
+static uint8_t bleMsgId = 0, bleSalt = 0; static bool bleAdvOk = false;
+static bool bleWrite(uint8_t tipo, const uint8_t* p, size_t n) {   // mensagem = N pedaços numerados; falso = abandonou no meio (a página descarta só essa mensagem)
   if (!bleConn || !bleSub) return false;
   { uint16_t m = bleSrv->getPeerMTU(bleHandle); if (m >= 23) bleMtu = m; }
-  size_t step = (bleMtu > 512 ? 512 : bleMtu) - 3;
-  for (size_t o = 0; o < n; o += step) if (!bleNotify(p + o, (n - o < step) ? n - o : step)) return false;
+  size_t step = (bleMtu > 512 ? 512 : bleMtu) - 3 - 5;
+  size_t cnt = (n + step - 1) / step; if (cnt == 0 || cnt > 255) return false;
+  static uint8_t pk[512]; uint8_t id = bleMsgId++;
+  for (size_t k = 0; k < cnt; k++) {
+    size_t o = k * step, len = (n - o < step) ? n - o : step;
+    pk[0] = 0xB1; pk[1] = tipo; pk[2] = id; pk[3] = (uint8_t)k; pk[4] = (uint8_t)cnt; memcpy(pk + 5, p + o, len);
+    if (!bleNotify(pk, len + 5)) return false;
+    if (k + 1 < cnt) delay(BLE_GAP_MS);
+  }
   return true;
 }
 // todo texto de diagnóstico sai pela USB E pelo BLE
@@ -149,7 +161,7 @@ static void say(const char* fmt, ...) {
   if (n <= 0) return;
   if (n >= (int)sizeof b) n = sizeof b - 1;
   Serial.write((const uint8_t*)b, n);
-  bleWrite((const uint8_t*)b, n);
+  bleWrite(1, (const uint8_t*)b, n);
 }
 class SrvCb : public BLEServerCallbacks {
   void onConnect(BLEServer* s) { bleHandle = s->getConnId(); bleSub = false; bleMtu = 23; bleConnAt = millis(); bleConn = true; bleConns++; }
@@ -352,7 +364,7 @@ static void bleInit() {
   BLEDevice::setMTU(517);
   // endereço aleatório-estático derivado do MAC (receita do VIB): Windows/Android guardam a tabela GATT por endereço;
   // a 1ª descoberta desta placa foi truncada e ficou em cache — endereço novo força a redescoberta. Mude BLE_ADDR_SALT se a tabela mudar.
-  { uint8_t a[6]; memcpy(a, BLEDevice::getAddress().getNative(), 6); a[5] |= 0xC0; a[0] ^= BLE_ADDR_SALT;
+  { uint8_t a[6]; memcpy(a, BLEDevice::getAddress().getNative(), 6); a[5] |= 0xC0; a[0] ^= BLE_ADDR_SALT; a[1] ^= bleSalt;   // bleSalt muda a CADA BOOT: religar a câmera sempre escapa de uma tabela GATT truncada que o Windows/Android tenha guardado
     if (!(BLEDevice::setOwnAddr(a) && BLEDevice::setOwnAddrType(BLE_OWN_ADDR_RANDOM))) Serial.println("# ble: fiquei com o endereco publico"); }
   bleSrv = BLEDevice::createServer(); bleSrv->setCallbacks(new SrvCb());
   BLEService* svc = bleSrv->createService(UUID_SVC);
@@ -364,8 +376,9 @@ static void bleInit() {
   BLEAdvertising* adv = BLEDevice::getAdvertising();
   adv->addServiceUUID(UUID_SVC); adv->setScanResponse(true);
   adv->setMinPreferred(0x06); adv->setMaxPreferred(0x0C);
-  BLEDevice::startAdvertising();
-  say("# ble: anunciando como '%s' | heap livre %lu B\n", devId.c_str(), (unsigned long)ESP.getFreeHeap());
+  // o anúncio só começa no loop, depois que o Wi-Fi assenta: central que conecta durante a associação do Wi-Fi
+  // recebe a descoberta de serviços truncada (só 1800/1801) e guarda essa tabela errada em cache
+  say("# ble: pronto como '%s' (anuncio liga quando o Wi-Fi assentar) | heap livre %lu B\n", devId.c_str(), (unsigned long)ESP.getFreeHeap());
 }
 
 // ---------------- sensor / USB / BLE ----------------
@@ -392,7 +405,7 @@ static void sendFrame(uint8_t flags, float ta) {
   for (size_t k = 0; k < sizeof(Pkt) - 2; k++) s += b[k];
   pkt.sum = s;
   if (usbOk) Serial.write(b, sizeof(Pkt));
-  if (bleSub) { if (bleWrite(b, sizeof(Pkt))) bleFrames++; else bleDrops++; }
+  if (bleSub) { if (bleWrite(2, b, sizeof(Pkt))) bleFrames++; else bleDrops++; }
 }
 
 void setup() {
@@ -406,9 +419,11 @@ void setup() {
   uint8_t mac[6]; WiFi.mode(WIFI_STA); WiFi.macAddress(mac);
   char id[20]; snprintf(id, sizeof id, "termica-%02x%02x", mac[4], mac[5]); devId = id;
   prefs.begin("termica", true);
+  bleSalt = prefs.getUChar("boot", 0) + 1;
   cfgSsid = prefs.getString("ssid", ""); cfgPass = prefs.getString("pass", ""); cfgHub = prefs.getString("hub", "");
   prefs.end();
 
+  prefs.begin("termica", false); prefs.putUChar("boot", bleSalt); prefs.end();
   sensorOk = initSensor();
   pkt.s0 = 0xA5; pkt.s1 = 0x5A; pkt.ver = 1;
   WiFi.onEvent(onWifiEvent);
@@ -421,11 +436,12 @@ void loop() {
   readCommands();
   bleCommands();
   // vigia do anúncio: se ninguém está conectado e o anúncio parou (reinício falhou no onDisconnect, rádio ocupado pelo Wi-Fi), religa
-  if (millis() - lastAdvChk > 2000) { lastAdvChk = millis(); if (!bleConn && !ble_gap_adv_active()) { BLEDevice::startAdvertising(); bleAdvFix++; }
+  if (millis() - lastAdvChk > 2000) { lastAdvChk = millis(); if (!bleAdvOk && (wst == WS_SEM_REDE || (wst == WS_CONECTADO && netCode != 0) || millis() > 30000)) { bleAdvOk = true; BLEDevice::startAdvertising(); say("# ble: anunciando\n"); }
+    else if (bleAdvOk && !bleConn && !ble_gap_adv_active()) { BLEDevice::startAdvertising(); bleAdvFix++; }
     // central "zumbi": conectou e não assinou o fluxo em 12 s (descoberta GATT falhou no Windows/Android) — derruba, senão ninguém mais acha a placa
     if (bleConn && !bleSub && millis() - bleConnAt > 12000) { bleKicks++; bleConnAt = millis(); ble_gap_terminate(bleHandle, BLE_ERR_REM_USER_CONN_TERM); } }
   wifiPoll();
-  if (wst == WS_CONECTADO) {
+  if (wst == WS_CONECTADO && !(bleConn && !bleSub)) {   // central descobrindo serviços: não ocupa o rádio com HTTP agora
     if (beatDue  || millis() - lastBeat  > BEAT_MS)  sendBeat();
     if (probeDue || millis() - lastProbe > PROBE_MS) probeNet();
   }

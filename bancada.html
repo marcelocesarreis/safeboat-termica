@@ -146,12 +146,13 @@
 <script>
 ;(() => {
   const { renderThermal, drawBlobs, ThermalDetector, MockCamera } = window.Termica
-  const { FrameParser, encodeFrame } = window.TermicaSerial
+  const { FrameParser, BleDeframer, encodeFrame } = window.TermicaSerial
   const $ = id => document.getElementById(id)
   const cv = $('cv'), ctx = cv.getContext('2d')
 
   // ---------------- estado ----------------
   let port = null, reader = null, writer = null, parser = null
+  let bleRx = null, bleTimer = null, sensorMudo = false
   let bleDev = null, bleCtrl = null         // transporte Bluetooth LE: o MESMO fluxo de bytes da USB, em notificações
   let sim = false, simTimer = null, simSeq = 0, simCam = null, simT0 = 0
   let frozen = false, last = null, recording = null
@@ -167,7 +168,7 @@
 
   // ---------------- quadro recebido (USB ou simulador, mesmo caminho) ----------------
   function onFrame (f) {
-    last = f; frames++
+    last = f; frames++; sensorMudo = false
     const now = performance.now()
     if (lastTs) { const inst = 1000 / (now - lastTs); fpsEma = fpsEma ? fpsEma * 0.8 + inst * 0.2 : inst }
     lastTs = now
@@ -237,6 +238,12 @@
     const m = /^# ap (-?\d+) (\d+) (\S+) (.*)$/.exec(l)
     if (m) { aps.set(m[4], { rssi: +m[1], ch: +m[2], sec: m[3] }); renderAps() }
     if (/^# wifi-scan: inicio/.test(l)) { aps.clear(); renderAps() }
+    if (/MLX90640 nao responde|MLX90640 @0x33 NAO ENCONTRADO/.test(l)) {      // placa viva, sensor mudo: sem isso a tela ficava em "aguardando quadros"
+      sensorMudo = true
+      setPill('err', 'placa OK, mas o SENSOR não responde')
+      $('empty').style.display = ''
+      $('empty').innerHTML = '<span><b style="color:#fff">A placa está viva, mas o sensor MLX90640 não responde.</b><br>Confira os 4 fios entre o sensor e o ESP: 3V3→VIN · GND→GND · GPIO8→SDA · GPIO9→SCL.<br>Assim que o sensor voltar, a imagem reaparece sozinha.</span>'
+    }
     log(l)
   }
   function renderAps () {
@@ -360,7 +367,18 @@
       stopSim()
       parser = new FrameParser(); parser.onFrame = onFrame; parser.onText = onBoardText
       frames = 0; fpsEma = 0; lastTs = 0
-      data.addEventListener('characteristicvaluechanged', e => { const v = e.target.value; parser.push(new Uint8Array(v.buffer, v.byteOffset, v.byteLength)) })
+      const p0 = parser
+      bleRx = new BleDeframer(u8 => p0.push(u8))
+      data.addEventListener('characteristicvaluechanged', e => { const v = e.target.value; bleRx.push(new Uint8Array(v.buffer.slice(v.byteOffset, v.byteOffset + v.byteLength))) })
+      clearInterval(bleTimer)
+      bleTimer = setInterval(() => {            // contadores do enlace: mostram ONDE a imagem para (rádio → remontagem → quadro)
+        if (!bleRx || !bleCtrl) return
+        const s = bleRx.stats
+        $('portTxt').textContent = 'BLE · ' + s.notifs + ' notificações (maior ' + s.maxLen + ' B) · ' + (s.bytes / 1024).toFixed(0) + ' kB · ' + s.msgs + ' mensagens · ' + s.dropped + ' descartadas · ' + p0.stats.frames + ' quadros · ' + p0.stats.bad + ' somas ruins'
+        if (sensorMudo && !p0.stats.frames) return
+        if (!p0.stats.frames && s.notifs === 0) setPill('warn', 'Bluetooth conectado, mas nenhuma notificação chegou')
+        else if (!p0.stats.frames) setPill('warn', 'Bluetooth: chegam dados, nenhum quadro fechou ainda')
+      }, 1000)
       await data.startNotifications()
       bleCtrl = ctrl
       $('bBle').textContent = 'Desconectar Bluetooth'
@@ -376,6 +394,7 @@
   }
   function bleCleanup () {
     const d = bleDev; bleDev = null; bleCtrl = null
+    clearInterval(bleTimer); bleTimer = null
     try { if (d && d.gatt.connected) d.gatt.disconnect() } catch {}
     $('bBle').textContent = 'Conectar Bluetooth'
     if (!port && !sim) setPill('', 'desconectado')

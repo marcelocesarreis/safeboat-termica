@@ -88,5 +88,25 @@
     return out
   }
 
-  global.TermicaSerial = { FrameParser, encodeFrame, FRAME_LEN, W, H }
+  // Transporte BLE (firmware 0.2.7+): notificação = B1 | tipo | id | pedaço | total | carga.
+  // Remonta a mensagem e só então entrega ao FrameParser; pedaço perdido descarta SÓ aquela mensagem.
+  // Notificação sem o cabeçalho B1 (firmware 0.2.3–0.2.6) passa direto.
+  class BleDeframer {
+    constructor (sink) { this.sink = sink; this.id = -1; this.next = 0; this.cnt = 0; this.parts = []; this.stats = { notifs: 0, bytes: 0, msgs: 0, dropped: 0, maxLen: 0 } }
+    push (u8) {
+      const st = this.stats; st.notifs++; st.bytes += u8.length; if (u8.length > st.maxLen) st.maxLen = u8.length
+      if (u8.length < 5 || u8[0] !== 0xB1) { this.sink(u8); return }
+      const id = u8[2], idx = u8[3], cnt = u8[4]
+      if (idx === 0) { if (this.id >= 0 && this.next < this.cnt) st.dropped++; this.id = id; this.cnt = cnt; this.next = 0; this.parts = [] }
+      if (id !== this.id || idx !== this.next) { if (this.id >= 0) st.dropped++; this.id = -1; return }   // buraco: espera o próximo pedaço 0
+      this.parts.push(u8.slice(5)); this.next++
+      if (this.next === this.cnt) {
+        let n = 0; for (const p of this.parts) n += p.length
+        const out = new Uint8Array(n); let o = 0; for (const p of this.parts) { out.set(p, o); o += p.length }
+        this.id = -1; st.msgs++; this.sink(out)
+      }
+    }
+  }
+
+  global.TermicaSerial = { FrameParser, BleDeframer, encodeFrame, FRAME_LEN, W, H }
 })(typeof window !== 'undefined' ? window : globalThis)
