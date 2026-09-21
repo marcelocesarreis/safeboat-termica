@@ -1,0 +1,92 @@
+SAFEBOAT TERMICA - rev. C (fecho por baioneta)
+Arquivos prontos para Bambu Studio - impressora Bambu Lab A1
+==============================================================
+
+ORDEM DE IMPRESSAO - NAO PULE O PASSO 1
+--------------------------------------------------------------
+  1) gabarito.stl ............ ~25 min   TESTE DE ENCAIXE
+  2) corpo.stl ............... ~3h30     sozinho na chapa
+  3) tampa + carrier + suporte  ~2h30    juntos na chapa
+
+O gabarito e um cupom com os 4 encaixes criticos em tamanho real:
+baioneta femea, baioneta macho, slot da PCB e furo do prensa-cabo.
+So imprima o resto depois que os 4 passarem.
+
+Como testar o gabarito:
+  - Encaixe o plug no anel e gire 60 graus: deve entrar com a mao,
+    girar liso e dar um clique perceptivel perto do fim.
+  - Puxe: nao pode sair sem girar de volta.
+  - Ponha o O-ring 37x3 engraxado com silicone no canal do plug
+    e insira: tem de exigir forca moderada e constante.
+  - Deslize a PCB do MLX90640 no slot: entra sem forcar, sai sem
+    cair sozinha.
+  - Rosqueie o prensa-cabo M12 no furo da plaquinha.
+
+Se a baioneta ficar dura demais: reduza P.detentDepth (0.15 -> 0.10)
+Se ficar frouxa: aumente para 0.20. Regenere com:
+  node tools/generate-stl.cjs
+
+
+AJUSTES NO BAMBU STUDIO (A1)
+--------------------------------------------------------------
+  Impressora ........ Bambu Lab A1 - bico 0.4
+  Filamento ......... Generic PETG (ASA nao: a A1 e aberta e empena)
+  Processo .......... 0.16 mm Optimal
+
+  ALTERE ISTO (o resto fica no padrao):
+    Paredes (wall loops) ......... 6      <- e o que da estanqueidade
+    Preenchimento ................ 40% gyroid
+    Camadas topo/fundo ........... 5
+    Brim ......................... 5 mm  (so no corpo e na tampa)
+    Elephant foot compensation ... 0.15 mm
+    Ironing ...................... desligado
+    Suporte ...................... Tree (auto), limiar 40 graus
+                                   SOMENTE na chapa do corpo
+    Costura (seam) ............... Aligned
+
+  PETG na chapa texturizada: passe bastao de cola como desmoldante.
+  PETG gruda demais em PEI liso e arranca pedaco da chapa.
+
+  As pecas ja vem na orientacao certa, apoiadas em z=0.
+  Nao gire nada - so arraste para a chapa.
+
+
+O QUE MUDOU DA REV. B PARA A REV. C
+--------------------------------------------------------------
+A rosca impressa falhou. Causa medida:
+  engajamento do filete .... 0.50 mm
+  erro tipico de FDM ....... 0.20 a 0.45 mm
+  crista do filete ......... 1.9 camadas
+O erro de processo sozinho comia ate 90% do engajamento.
+
+Trocado por BAIONETA de 60 graus (quarto de volta):
+  engajamento radial ....... 1.30 mm  (2.6x)
+  menor detalhe da peca .... 1.30 mm  (era 0.30 mm)
+  nenhuma geometria helicoidal
+  tolera +/- 0.3 mm sem deixar de montar nem de travar
+
+Montagem validada por CSG antes de imprimir (tools/verify-fit.cjs):
+entra a 0 graus, gira 60, trava, e resiste ao arranque axial.
+
+
+MONTAGEM DA CAMERA
+--------------------------------------------------------------
+  1. Sele o interior do corpo com 2 demaos finas de epoxi (24h)
+  2. Insertos M4 a quente (250 C) nos bosses laterais
+  3. Cole a janela de germanio Ø25x1 com Sikaflex-291i (48h)
+     NAO toque na face optica - gordura e opaca no infravermelho
+  4. Monte o carrier: MLX90640 no slot, ESP32-C3 na bandeja (VHB)
+     Disco de espuma EVA 1 mm atras tira a folga de 0.5 mm
+  5. Buck MP1584 ajustado em 5.0 V ANTES de ligar no ESP32-C3
+     3V3 / GND / SDA=GPIO8 / SCL=GPIO9 -> MLX90640
+  6. Grave o firmware por USB-C antes de fechar
+  7. Prensa-cabo: corpo por fora, contraporca no rebaixo Ø24
+  8. O-ring 37x3 engraxado na espiga, silica-gel dentro,
+     encaixe a tampa e gire 60 graus ate o clique
+
+  Montada em PETG: manter a 15 cm ou mais de superficies acima
+  de 80 C (PETG amolece nessa faixa). Para montagem junto ao
+  coletor de escape, imprimir em ASA numa impressora fechada.
+
+
+Projeto completo: https://marcelocesarreis.github.io/safeboat-termica/

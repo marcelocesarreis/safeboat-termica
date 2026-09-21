@@ -1,0 +1,9 @@
+node_modules/
+data/
+firmware/build-*/
+!firmware/build-termica-0.2.8/
+firmware/build-termica-0.2.8/*
+!firmware/build-termica-0.2.8/*.bin
+firmware/*/build/
+*.bak
+tools/fixtures/primeira-luz.bin

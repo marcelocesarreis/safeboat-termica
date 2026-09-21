@@ -1,0 +1,16 @@
+{
+  "name": "safeboat-termica",
+  "version": "1.0.0",
+  "description": "SAFEBOAT Térmica — câmera térmica MLX90640 para manutenção preditiva com IA",
+  "private": true,
+  "scripts": {
+    "stl": "node tools/generate-stl.cjs",
+    "start": "node server.cjs"
+  },
+  "dependencies": {
+    "@jscad/modeling": "^2.12.3",
+    "@jscad/stl-serializer": "^2.1.14",
+    "pngjs": "^7.0.0",
+    "three": "^0.166.0"
+  }
+}
