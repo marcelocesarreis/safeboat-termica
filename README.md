@@ -77,3 +77,13 @@ Use sempre a MESMA `--build-path` (a primeira compilação é longa; as seguinte
 Estado em 19/09/2026: USB, Wi-Fi (HTTPS ao hub, sem MQTT) e Bluetooth LE funcionando; o sensor MLX90640 parou de
 responder no I²C (conferir os 4 fios 3V3/GND/GPIO8=SDA/GPIO9=SCL). Próxima etapa: 0.3, detector a bordo — ver `firmware/PLANO-WIFI.md`.
 A senha do Wi-Fi fica só na NVS da placa (digitada na Bancada pela USB); não está em nenhum arquivo do repositório.
+
+## Hardware — PCB v1 (22/09/2026)
+
+Placa própria em `hardware/pcb/` (KiCad 10, gerada por script): **quadrada 32 × 32 mm** para o case cúbico do render
+(~36 mm externo), **montagem completa na JLCPCB (Standard, dois lados)**: ESP32-C3-MINI-1 + buck AP63203 (12 V → 3,3 V)
++ proteção (PPTC, TVS, SS34) + borne parafuso 12 V + JST p/ rabicho USB na ré; **MLX90640 110°×75°** (TO-39, THT) na
+frente. Mesma pinagem do firmware (SDA 8 / SCL 9 / LED 10) + GPIO4 (corta o sensor) e GPIO0 (tensão do barco).
+Pacote JLCPCB pronto (gerbers + BOM + CPL), esquemático com ERC 0 e netlist conferida contra a placa —
+ver `hardware/pcb/README.md`. A versão redonda Ø41,4 (case escotilha, sensor 55°) ficou em `hardware/pcb/kicad/legado-redonda/`;
+o corpo rev. D (ombro z=14) e `stl/espacador-pcb.stl` valem só para ela. Case cúbico em JSCAD: a fazer.

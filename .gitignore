@@ -7,3 +7,11 @@ firmware/build-termica-0.2.8/*
 firmware/*/build/
 *.bak
 tools/fixtures/primeira-luz.bin
+# hardware/pcb: sobras do roteador e artefatos regeneráveis (o zip de gerbers fica)
+hardware/pcb/kicad/fr-try*.log
+hardware/pcb/kicad/try2.ses
+hardware/pcb/kicad/try3.ses
+hardware/pcb/kicad/place-*.png
+hardware/pcb/kicad/render-iso.png
+hardware/pcb/jlcpcb/gerbers/
+hardware/pcb/__pycache__/

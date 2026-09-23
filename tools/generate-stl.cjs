@@ -54,7 +54,7 @@ const P = {
   lenBody: 62,           // comprimento
   boreR: 21,             // furo Ø42 — SUPERFÍCIE DE VEDAÇÃO do O-ring + piloto da espiga
   frontBoreR: 19,        // furo frontal Ø38 — forma o ombro do carrier
-  shoulderZ: 10,         // ombro do carrier
+  shoulderZ: 14,         // ombro da PCB (rev. D: era 10; +4 mm p/ a lata de 11,25 mm do MLX90640 na PCB v1)
   winR: 13.25,           // recesso da janela Ø26.5 (germânio Ø25×1 + folga p/ Sikaflex)
   winDepth: 1.8,
   apFrontR: 9.5,         // abertura óptica cônica: boca Ø19
@@ -96,6 +96,15 @@ const M = {
   pcbW: 25.4, pcbT: 1.6, slotZ: 6, canR: 5.2, len: 27.5,
 }
 const NLUG = 3           // travas / janelas
+// PCB v1 (hardware/pcb): placa redonda R 20,7 assentada no ombro; sensor TO-39 no lado da frente
+const PCB = {
+  t: 1.6,                // espessura
+  canH: 11.35,           // lata do MLX90640 acima da base (11,25 + 0,10 do flange)
+  canR: 4.65,            // Ø9,30
+  foam: 0.5,             // espuma EVA entre o espaçador e a espiga da tampa
+  spRin: 19.0, spRout: 20.7, spDeg: 20, spAngles: [20, 160, 270],   // apoios do espaçador sobre a PCB
+  ringRin: 17.5, ringH: 6,                                           // anel de encosto da espiga
+}
 
 // ------------------------------------------------------------------ helpers
 function ccw (pts) {
@@ -295,6 +304,20 @@ function buildCarrier () {
   return union(disc, shelf, ...walls)
 }
 
+// ------------------------------------------------------ 3b. ESPAÇADOR DA PCB v1
+// Tubo aberto entre a face de ré da PCB (z = shoulderZ + t) e a ponta da espiga da tampa:
+// 3 apoios estreitos (fora do módulo Wi-Fi e dos botões) + anel de encosto na ponta.
+// Imprime em pé sobre o anel. Comprimento = (67 − spigotZ1) − (shoulderZ + t) − foam.
+function buildEspacador () {
+  const len = (67 - C.spigotZ1) - (P.shoulderZ + PCB.t) - PCB.foam
+  const ring = subtract(
+    cylinder({ radius: PCB.spRout, height: PCB.ringH, center: [0, 0, len - PCB.ringH / 2], segments: SEG }),
+    cylinder({ radius: PCB.ringRin, height: PCB.ringH + 2, center: [0, 0, len - PCB.ringH / 2], segments: SEG })
+  )
+  const posts = PCB.spAngles.map(a => sectorSolid(PCB.spRin, PCB.spRout, a - PCB.spDeg / 2, a + PCB.spDeg / 2, 0, len - PCB.ringH + 0.01))
+  return union(ring, ...posts)
+}
+
 // --------------------------------------------------------------- 4. SUPORTE
 function buildSuporte () {
   const armX = 32.5, axisZ = 45
@@ -412,15 +435,19 @@ function fitReport () {
   r.push(['O-RING — veda em furo liso contínuo?', (oringBodyZ + C.grooveW / 2) < (P.bayZ0 - 0.5) ? 'SIM' : 'NÃO ✗', 'obrigatório'])
   r.push(['O-RING — margem até a zona da baioneta', mm((P.bayZ0 - 0.5) - (oringBodyZ + C.grooveW / 2)), '> 1.0'])
   // carrier / óptica / prensa-cabo
-  r.push(['CARRIER — apoio no ombro', mm(20.7 - P.frontBoreR), '> 1.0'])
-  r.push(['CARRIER — folga p/ a ponta da espiga', mm((67 - C.spigotZ1) - (P.shoulderZ + M.len)), '0.3–0.8 (espuma EVA)'])
-  const dist = (P.shoulderZ + 1) - P.winDepth
+  r.push(['PCB v1 — apoio no ombro', mm(20.7 - P.frontBoreR), '> 1.0'])
+  r.push(['PCB v1 — comprimento do espaçador', mm((67 - C.spigotZ1) - (P.shoulderZ + PCB.t) - PCB.foam), 'folga p/ espuma = ' + PCB.foam + ' mm'])
+  const lensZ = P.shoulderZ - PCB.canH
+  r.push(['PCB v1 — lente do sensor até a janela', mm(lensZ - P.winDepth), '0.5–2.0 (lata de ' + PCB.canH + ' mm)'])
+  r.push(['PCB v1 — lata dentro da garganta Ø16?', (PCB.canR < P.apRearR - 0.5 && lensZ < P.frontWall) ? 'SIM (folga ' + mm(P.apRearR - PCB.canR) + ')' : 'NÃO ✗', 'obrigatório'])
+  r.push(['CARRIER rev. C (legado, breakout GY) — folga', mm((67 - C.spigotZ1) - (P.shoulderZ + M.len)), 'negativo = não cabe mais (só rev. C com ombro 10)'])
+  const dist = Math.max(0.5, (P.shoulderZ - PCB.canH) - P.winDepth)
   const needed = dist * Math.tan(31.3 * D2R) + 1.5
   r.push(['ÓPTICA — raio exigido / disponível', mm(needed) + ' / ' + mm(P.apFrontR), needed < P.apFrontR ? 'OK (sem vinheta)' : 'VINHETA ✗'])
   r.push(['PRENSA-CABO — parede de aperto', mm(C.flangeH), '4–6 (contraporca)'])
 
   const w = [44, 14]
-  console.log('\n  RELATÓRIO DE AJUSTES (rev. C — baioneta)')
+  console.log('\n  RELATÓRIO DE AJUSTES (rev. D — baioneta + PCB v1)')
   console.log('  ' + '─'.repeat(88))
   for (const [a, b, c] of r) console.log('  ' + a.padEnd(w[0]) + b.padStart(w[1]) + '   ' + c)
   console.log('  ' + '─'.repeat(88))
@@ -437,10 +464,11 @@ function main () {
   saveSTL('carrier-interno.stl', buildCarrier())
   saveSTL('suporte.stl', buildSuporte())
   saveSTL('gabarito.stl', buildGabarito())
+  saveSTL('espacador-pcb.stl', buildEspacador())
 
   fitReport()
   console.log(`\nOK em ${((Date.now() - t0) / 1000).toFixed(1)}s`)
 }
 
-module.exports = { buildCorpo, buildTampa, buildCarrier, buildSuporte, buildGabarito, P, C, M, NLUG, fitReport }
+module.exports = { buildCorpo, buildTampa, buildCarrier, buildEspacador, buildSuporte, buildGabarito, P, C, M, PCB, NLUG, fitReport }
 main()
