@@ -2,7 +2,7 @@
 """
 SAFEBOAT TERMICA v1 — fase 3: BOM + CPL para montagem JLCPCB (gerbers pelo make_gerbers.sh).
 Gera jlcpcb/BOM-safeboat-termica-v1.csv e jlcpcb/CPL-safeboat-termica-v1.csv (dois lados: U3 no Bottom).
-Códigos LCSC verificados em 22/09/2026 (busca web) salvo os marcados VERIFICAR — regra da casa:
+Códigos LCSC verificados em 22/09 e 13/10/2026 (busca web): TODAS as linhas com código — regra da casa:
 conferir código/encapsulamento/estoque no carrinho antes de pagar (editar peça DESMARCA a linha;
 remarcar o checkbox).
 """
@@ -24,8 +24,8 @@ LCSC = {
     "J2": ("KF350-3.5-2P borne 3.5mm 2p", "C474892"),
     "Q1": ("SI2301CDS PMOS SOT-23", "C10487"),
     "D1": ("SMAJ26A-TR TVS 26V SMA", "C132945"),
-    "D2": ("SS34 Schottky 3A 40V SMA", "VERIFICAR (ex. C8678)"),
-    "D3": ("SS14 Schottky 1A 40V SMA", "VERIFICAR (ex. C2480)"),
+    "D2": ("SS34 Schottky 3A 40V SMA (MDD, basico)", "C8678"),
+    "D3": ("SS14 Schottky 1A 40V SMA (MDD, basico)", "C2480"),
     "L1": ("SWPA4020S4R7MT 4.7uH 1.34A", "C48427"),
     "F1": ("SMD1812P050TF/60 PPTC 0.5A 60V", "C462518"),
     "J1": ("JST B4B-PH-K-S 4p 2.0mm", "C131334"),
@@ -35,12 +35,12 @@ LCSC = {
     "C8": ("100nF 50V X7R 0603", "C14663"), "C10": ("100nF 50V X7R 0603", "C14663"),
     "C1": ("1uF 0603", "C15849"),
     "C3": ("10uF 0603 X5R", "C19702"),
-    "C9": ("10uF 10V X5R 0805", "basico JLC por valor"),
-    "C6": ("22uF 10V X5R 0805", "VERIFICAR"), "C7": ("22uF 10V X5R 0805", "VERIFICAR"),
-    "C5": ("10uF 50V X7R 1210", "VERIFICAR"),
+    "C9": ("10uF 25V X5R 0805 CL21A106KAYNNNE (basico)", "C15850"),
+    "C6": ("22uF 25V X5R 0805 CL21A226MAQNNNE (basico)", "C45783"), "C7": ("22uF 25V X5R 0805 CL21A226MAQNNNE (basico)", "C45783"),
+    "C5": ("10uF 50V X7R 1210 CL32B106KBJNNNE", "C138687"),
     "R1": ("10k 0603", "C25804"), "R4": ("1k 0603", "C21190"), "R6": ("1k 0603", "C21190"),
-    "R2": ("2.2k 0603", "basico JLC por valor"), "R3": ("2.2k 0603", "basico JLC por valor"),
-    "R5": ("100k 0603", "C25803"), "R7": ("200k 0603", "basico JLC por valor"), "R8": ("20k 0603", "basico JLC por valor"),
+    "R2": ("2.2k 0603 (basico)", "C4190"), "R3": ("2.2k 0603 (basico)", "C4190"),
+    "R5": ("100k 0603", "C25803"), "R7": ("200k 0603 (basico)", "C25811"), "R8": ("20k 0603 (basico)", "C4184"),
 }
 dnp = set(open(os.path.join(OUT_DIR, "kicad", "dnp.txt")).read().split())
 

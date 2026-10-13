@@ -65,12 +65,15 @@ Versão anterior (redonda Ø41,4 p/ o case escotilha, sensor 55°) guardada em `
    `BOM-safeboat-termica-v1.csv` + `CPL-safeboat-termica-v1.csv`. O sensor U3 aparece com Layer = Bottom
    (lado da frente) e os THT (U3 borne J2, JST J1) entram na montagem — confirmar no viewer que o sensor
    está do lado oposto ao módulo.
-3. **Códigos LCSC verificados em 22/09/2026**: U1 C2934569 · U2 C780769 · U3 **C17380659** (MLX90640ESF-BAA,
-   ~US$ 22) · Q1 C10487 · D1 C132945 · L1 C48427 · F1 C462518 · J1 C131334 · J2 C474892 · SW1/SW2 C72443 ·
-   LED1 C157740.
-4. **Marcados VERIFICAR** na BOM (escolher no diálogo *Edit Part* pelo valor, conferindo encapsulamento):
-   D2 SS34 (SMA), D3 SS14 (SMA), C5 10 µF **50 V** 1210, C6/C7 22 µF 10 V 0805, C9 10 µF 0805,
-   R2/R3 2k2, R7 200k, R8 20k (básicos 0603 por valor).
+3. **Códigos LCSC: todas as linhas da BOM têm código** (verificados em 22/09 e 13/10/2026): U1 C2934569 ·
+   U2 C780769 · U3 **C17380659** (MLX90640ESF-BAA 110°, ~US$ 28; LCSC tinha **34 em estoque em 13/10/2026** —
+   DigiKey/Mouser sem estoque, 16–24 semanas: pedir logo e, se for fazer mais de 5, comprar os sensores junto) ·
+   Q1 C10487 · D1 C132945 · D2 C8678 · D3 C2480 · L1 C48427 · F1 C462518 · J1 C131334 · J2 C474892 ·
+   SW1/SW2 C72443 · LED1 C157740 · C5 C138687 · C6/C7 C45783 · C9 C15850 · C3 C19702 · C1 C15849 ·
+   100 nF C14663 · R1 C25804 · R2/R3 C4190 · R4/R6 C21190 · R5 C25803 · R7 C25811 · R8 C4184.
+4. A página da JLC do sensor (C17380659) marca "Extended · Wave Soldering · Economic and Standard · dificuldade
+   alta": no viewer da PCBA confirme que o U3 ficou no lado **Bottom** (oposto ao módulo) e aceite a taxa de
+   montagem THT dos dois lados.
 5. Ao editar uma peça a linha desmarca — **remarcar o checkbox** (armadilha do site). O pedido são sempre
    2 linhas (PCB + PCBA) — não apagar a linha "PCB prototype".
 6. Depois de chegar: parafusar os 2 fios no borne (+12V no pad quadrado), gravar o firmware pelo rabicho USB
