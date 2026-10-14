@@ -183,6 +183,14 @@ def _shape_rect(fp, layer, x0, y0, x1, y1, w=0.12):
     t.SetLayer(layer); t.SetWidth(FromMM(w)); fp.Add(t)
 
 
+def _model(fp, fname):
+    """modelo 3D próprio (lib/3d, VRML gerado por make_3d_models.cjs)"""
+    m = pcbnew.FP_3DMODEL()
+    m.m_Filename = "${KIPRJMOD}/../lib/3d/" + fname
+    m.m_Show = True
+    fp.Models().push_back(m)
+
+
 def mlx90640_footprint(ref, x, y):
     """MLX90640 TO-39 (desenho mecânico do datasheet, rev. 12): pinos em círculo Ø5,84 a 45°, Ø0,45;
     flange Ø10,03; lata Ø9,30 (5,70 mm na versão 110°, 11,25 na 55°). Vista de BAIXO (pinos p/ o
@@ -198,6 +206,7 @@ def mlx90640_footprint(ref, x, y):
         _pth(fp, nm, px, py, 1.5, 0.8, pcbnew.PAD_SHAPE_RECT if nm == "1" else pcbnew.PAD_SHAPE_CIRCLE)
     _shape_circle(fp, pcbnew.F_SilkS, 5.15); _shape_circle(fp, pcbnew.F_Fab, 4.65, 0.1); _shape_circle(fp, pcbnew.F_CrtYd, 5.7, 0.05)
     _shape_rect(fp, pcbnew.F_SilkS, -0.4, 5.1, 0.4, 5.95)
+    _model(fp, "MLX90640_TO-39-110.wrl")
     board.Add(fp); FPS[ref] = fp
     fp.SetLayerAndFlip(pcbnew.B_Cu)
     fp.SetPosition(P(x, y)); fp.SetOrientationDegrees(0)
@@ -217,6 +226,7 @@ def kf350_footprint(ref, x, y):
     _shape_rect(fp, pcbnew.F_CrtYd, -3.85, -4.05, 3.85, 4.05, 0.05)
     # marca da entrada dos fios (lado +y no frame = -y no projeto)
     _shape_rect(fp, pcbnew.F_SilkS, -2.9, 2.6, -0.6, 3.8, 0.2); _shape_rect(fp, pcbnew.F_SilkS, 0.6, 2.6, 2.9, 3.8, 0.2)
+    _model(fp, "KF350-3.5-2P.wrl")
     board.Add(fp); FPS[ref] = fp
     fp.SetPosition(P(x, y)); fp.SetOrientationDegrees(0)
 

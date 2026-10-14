@@ -1,6 +1,6 @@
 SAFEBOAT TERMICA v1 — pacote para revisão (22/09/2026)
 Placa 32 x 32 mm, 2 camadas, 1,6 mm. Lado F (ré) = componentes; lado B (frente) = sensor MLX90640 110° (TO-39).
-Obs.: o render 3D não mostra o corpo do sensor nem do borne KF350 (footprints próprios, sem modelo 3D) — só os furos/serigrafia.
+Obs.: sensor e borne aparecem no 3D com modelos próprios (lib/3d, VRML gerado por make_3d_models.cjs); 10 = frente em ângulo rasante.
 
 01 ré, vista de cima            05 lateral (alturas)
 02 frente (lado do sensor)      06 cobre F + serigrafia

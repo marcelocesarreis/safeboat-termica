@@ -6092,6 +6092,17 @@
 			(uuid "adf5805d-32d1-43c9-8233-82753f3eaa4a")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../lib/3d/KF350-3.5-2P.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical"
 		(layer "F.Cu")
@@ -6695,6 +6706,17 @@
 			(uuid "d149c864-9f63-40fb-9578-db39af3ceeee")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/../lib/3d/MLX90640_TO-39-110.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(gr_poly
 		(pts
