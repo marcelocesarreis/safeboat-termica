@@ -7,3 +7,6 @@ firmware/build-termica-0.2.8/*
 firmware/*/build/
 *.bak
 tools/fixtures/primeira-luz.bin
+
+# backup de flash de placas (pode conter senhas de Wi-Fi na NVS)
+firmware/backups/

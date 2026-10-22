@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SAFEBOAT Térmica">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070c16">
+<title>SAFEBOAT Térmica</title>
+<!--
+  Tela de exposição (estande / tótem). Servida pela própria câmera (firmware termica-expo, http://192.168.4.1)
+  e embutida no firmware por tools/build-expo.cjs, que cola aqui dentro os scripts e a logo.
+    ?demo      cena sintética, sem câmera            ?cam=192.168.0.50   câmera em outro endereço (teste na bancada)
+-->
+<style>
+  :root { --bg:#070c16; --panel:#101a2c; --panel2:#16223a; --line:#24324f; --txt:#f2f5fa; --mut:#8e9bb5; --acc:#B0DE8F; --crit:#ff453a; }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent }
+  html, body { height:100%; margin:0; background:var(--bg); color:var(--txt); overflow:hidden; overscroll-behavior:none;
+    font:16px/1.35 -apple-system,'Segoe UI',Roboto,'Helvetica Neue',sans-serif; -webkit-user-select:none; user-select:none; touch-action:manipulation }
+  .app { height:100%; display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:16px;
+    padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)) }
+  .stage { position:relative; min-width:0; min-height:0; display:flex; align-items:center; justify-content:center }
+  .view { position:relative; width:100%; max-height:100%; aspect-ratio:4/3; border-radius:18px; overflow:hidden; background:#000; border:1px solid var(--line) }
+  @supports not (aspect-ratio:1) { .view { height:100% } }
+  canvas { position:absolute; inset:0; width:100%; height:100%; display:block }
+  .banner { position:absolute; left:14px; right:14px; top:14px; padding:14px 18px; border-radius:14px; background:rgba(190,24,16,.93); color:#fff;
+    box-shadow:0 8px 30px rgba(255,69,58,.45); display:none; animation:pulse 1.1s ease-in-out infinite }
+  .banner.on { display:block }
+  .banner b { display:block; font-size:22px; letter-spacing:.02em }
+  .banner span { font-size:15px; opacity:.95 }
+  @keyframes pulse { 50% { box-shadow:0 8px 44px rgba(255,69,58,.9) } }
+  .wait { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:rgba(7,12,22,.86); color:var(--mut); font-size:18px; text-align:center; padding:24px }
+  .wait.off { display:none }
+  .wait i { width:34px; height:34px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--acc); animation:spin 1s linear infinite }
+  @keyframes spin { to { transform:rotate(360deg) } }
+  .scale { position:absolute; right:12px; top:50%; transform:translateY(-50%); height:56%; width:12px; border-radius:6px; border:1px solid rgba(255,255,255,.35) }
+  .scale em { position:absolute; right:18px; font-style:normal; font-size:12px; font-weight:600; color:#fff; text-shadow:0 1px 3px #000; white-space:nowrap }
+  .scale em.hi { top:-4px } .scale em.lo { bottom:-4px }
+  .fs { position:absolute; left:14px; bottom:14px; background:rgba(7,12,22,.78); color:var(--txt); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600; display:none }
+  .fs.on { display:block }
+
+  aside { display:flex; flex-direction:column; gap:12px; min-height:0 }
+  .brand { display:flex; align-items:center; gap:12px; padding:4px 2px 0 }
+  .brand img { height:30px; width:auto }
+  .brand span { margin-left:auto; color:var(--bg); background:var(--acc); font-weight:800; font-size:12px; letter-spacing:.16em; padding:4px 9px; border-radius:6px }
+  h1 { margin:6px 2px 0; font-size:25px; line-height:1.15; font-weight:700; letter-spacing:-.01em }
+  .lead { margin:0 2px; color:var(--mut); font-size:15px }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px }
+  .kv { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:9px 10px }
+  .kv b { display:block; color:var(--mut); font-size:10.5px; font-weight:600; letter-spacing:.09em; text-transform:uppercase }
+  .kv i { font-style:normal; font-size:24px; font-weight:700; font-variant-numeric:tabular-nums }
+  .kv i small { font-size:13px; color:var(--mut); font-weight:600 }
+  h2 { margin:4px 2px -4px; font-size:11px; color:var(--mut); letter-spacing:.12em; text-transform:uppercase; font-weight:700 }
+  .list { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:8px }
+  .det { display:grid; grid-template-columns:10px 1fr auto; gap:4px 10px; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px }
+  .det.alert { border-color:var(--crit); background:#2a1213 }
+  .det u { width:10px; height:10px; border-radius:50%; text-decoration:none }
+  .det b { font-size:17px } .det .t { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums }
+  .det p { grid-column:2 / 4; margin:0; color:var(--mut); font-size:13px; display:flex; gap:8px; align-items:center }
+  .det p s { flex:0 0 64px; height:4px; border-radius:2px; background:var(--panel2); overflow:hidden; text-decoration:none; margin-left:auto }
+  .det p s q { display:block; height:100%; background:var(--acc) } .det p s q::before, .det p s q::after { content:none }
+  .hint { background:var(--panel); border:1px dashed var(--line); border-radius:12px; padding:14px; color:var(--mut); font-size:15px }
+  .hint b { display:block; color:var(--txt); font-size:18px; margin-bottom:6px }
+  .hint ul { margin:6px 0 0; padding-left:18px } .hint li { margin:3px 0 }
+  footer { color:var(--mut); font-size:11.5px; display:flex; align-items:center; gap:8px; padding:0 2px }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--crit); flex:none } .dot.on { background:var(--acc) }
+  .gear { margin-left:auto; background:none; border:0; color:var(--mut); font-size:20px; padding:6px 4px; opacity:.55 }
+
+  dialog { background:var(--panel); color:var(--txt); border:1px solid var(--line); border-radius:16px; padding:20px; width:min(440px,92vw) }
+  dialog::backdrop { background:rgba(0,0,0,.6) }
+  dialog h3 { margin:0 0 12px } dialog label { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:9px 0; border-top:1px solid var(--line); font-size:15px }
+  dialog input[type=checkbox] { width:22px; height:22px } dialog input[type=range] { width:150px }
+  dialog .row { display:flex; gap:8px; margin-top:14px } dialog button { flex:1; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--panel2); color:var(--txt); font-size:15px }
+  dialog pre { margin:10px 0 0; font-size:11px; color:var(--mut); white-space:pre-wrap; word-break:break-all; max-height:90px; overflow:auto; -webkit-user-select:text; user-select:text }
+
+  @media (orientation:portrait) { .app { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) } .stage { align-items:flex-start } .lead { display:none } }
+  @media (max-height:700px) and (orientation:landscape) { .lead { display:none } h1 { font-size:21px } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage">
+    <div class="view" id="view">
+      <canvas id="cv"></canvas>
+      <div class="scale" id="scale"><em class="hi" id="shi">–</em><em class="lo" id="slo">–</em></div>
+      <div class="banner" id="banner"><b id="btitle"></b><span>No barco, o SAFEBOAT avisaria você no app — antes da falha.</span></div>
+      <button class="fs" id="fs">⛶ Tela cheia</button>
+      <div class="wait" id="wait"><i></i><div id="waitmsg">Conectando à câmera…</div></div>
+    </div>
+  </div>
+  <aside>
+    <div class="brand"><img src="img/logo-safeboat-branco.png" alt="SAFEBOAT"><span>TÉRMICA</span></div>
+    <h1>Visão térmica com inteligência artificial</h1>
+    <p class="lead">Cada ponto desta imagem é uma temperatura medida. A IA reconhece o que está à frente pelo calor — como faz na praça de máquinas, 24 h por dia.</p>
+    <div class="stats">
+      <div class="kv"><b>Pessoas</b><i id="kpeople">0</i></div>
+      <div class="kv"><b>Mais quente</b><i id="kmax">–</i></div>
+      <div class="kv"><b>Ambiente</b><i id="kamb">–</i></div>
+    </div>
+    <h2>Detectado agora</h2>
+    <div class="list" id="list"></div>
+    <footer><span class="dot" id="dot"></span><span id="foot">MLX90640 · 768 píxeis</span><button class="gear" id="gear" aria-label="Ajustes">⚙</button></footer>
+  </aside>
+</div>
+
+<dialog id="dlg">
+  <h3>Ajustes do estande</h3>
+  <label>Espelhar (efeito espelho para o visitante)<input type="checkbox" id="oFlipH"></label>
+  <label>Inverter na vertical (câmera de cabeça para baixo)<input type="checkbox" id="oFlipV"></label>
+  <label>Alerta a partir de <span><b id="vAlert"></b> °C</span><input type="range" id="oAlert" min="45" max="120" step="5"></label>
+  <label>Sensibilidade a pessoas <span>+<b id="vWarm"></b> °C</span><input type="range" id="oWarm" min="2" max="6" step="0.5"></label>
+  <label>Cena de demonstração (sem câmera)<input type="checkbox" id="oDemo"></label>
+  <pre id="diag"></pre>
+  <div class="row"><button id="bFull">Tela cheia</button><button id="bClose">Fechar</button></div>
+</dialog>
+
+<script src="serial-parser.js"></script>
+<script src="expo-ai.js"></script>
+<script>
+(function () {
+  'use strict'
+  const { W, H, ExpoAI, DemoScene } = window.TermicaExpo
+  const N = W * H, UP = 8, IW = W * UP, IH = H * UP
+  const $ = id => document.getElementById(id)
+  const qs = new URLSearchParams(location.search)
+  const CAM = qs.get('cam') || location.hostname
+  const fmt = (v, d = 1) => v.toFixed(d).replace('.', ',')
+
+  // ---- ajustes (ficam no iPad)
+  // câmera montada de cabeça para baixo no tótem (adesivo): girar 180° = espelho desligado + vertical invertida.
+  // ORIENT muda quando a montagem muda: um iPad com ajuste antigo salvo recebe a orientação nova.
+  const ORIENT = 2, DEF_FLIP = { flipH: false, flipV: true }
+  const cfg = Object.assign({ alertT: 65, warmD: 3, demo: false }, DEF_FLIP, (() => { try { return JSON.parse(localStorage.getItem('expo-cfg') || '{}') } catch (e) { return {} } })())
+  if (cfg.orient !== ORIENT) Object.assign(cfg, DEF_FLIP, { orient: ORIENT })
+  if (qs.has('demo')) cfg.demo = true
+  const save = () => { try { localStorage.setItem('expo-cfg', JSON.stringify(cfg)) } catch (e) {} }
+  const ai = new ExpoAI({ alertT: cfg.alertT, warmD: cfg.warmD })
+
+  // ---- paleta ironbow em tabela
+  const STOPS = [[0, 0, 0, 16], [.14, 38, 6, 96], [.32, 118, 10, 138], [.5, 196, 36, 96], [.66, 236, 96, 36], [.82, 252, 176, 28], [.93, 255, 232, 110], [1, 255, 255, 244]]
+  const LUT = new Uint8Array(256 * 3)
+  for (let i = 0; i < 256; i++) {
+    const t = i / 255; let k = 1; while (k < STOPS.length - 1 && t > STOPS[k][0]) k++
+    const a = STOPS[k - 1], b = STOPS[k], u = (t - a[0]) / (b[0] - a[0])
+    for (let c = 0; c < 3; c++) LUT[i * 3 + c] = a[c + 1] + (b[c + 1] - a[c + 1]) * u
+  }
+  $('scale').style.background = 'linear-gradient(to top,' + STOPS.map(s => `rgb(${s[1]},${s[2]},${s[3]}) ${s[0] * 100}%`).join(',') + ')'
+
+  const cv = $('cv'), ctx = cv.getContext('2d')
+  const off = document.createElement('canvas'); off.width = IW; off.height = IH
+  const octx = off.getContext('2d'), img = octx.createImageData(IW, IH)
+  for (let i = 3; i < img.data.length; i += 4) img.data[i] = 255
+
+  function fit () {
+    const r = $('view').getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1)
+    cv.width = Math.max(320, Math.round(r.width * dpr)); cv.height = Math.max(240, Math.round(r.height * dpr))
+  }
+  window.addEventListener('resize', fit); window.addEventListener('orientationchange', () => setTimeout(fit, 300))
+
+  // ---- quadro: orienta → suaviza no tempo → IA → desenha
+  let smooth = null, lo = 20, hi = 38, lastFrameAt = 0, fpsN = 0, fpsT0 = performance.now(), fps = 0, lastRes = null
+  const oriented = new Float32Array(N)
+  function onFrame (t, synthetic) {   // a orientação é da câmera: a cena sintética já vem em pé
+    const fh = !synthetic && cfg.flipH, fv = !synthetic && cfg.flipV
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) oriented[y * W + x] = t[(fv ? H - 1 - y : y) * W + (fh ? W - 1 - x : x)]
+    if (!smooth) smooth = Float32Array.from(oriented)
+    else for (let i = 0; i < N; i++) { const d = oriented[i] - smooth[i]; smooth[i] += d * (Math.abs(d) > 4 ? 1 : 0.55) }   // ruído some; movimento real não arrasta
+    const now = performance.now()
+    lastFrameAt = now; fpsN++
+    if (now - fpsT0 > 2000) { fps = fpsN * 1000 / (now - fpsT0); fpsN = 0; fpsT0 = now }
+    const res = ai.process(smooth, now / 1000); lastRes = res
+    draw(smooth, res); panel(res)
+    $('wait').classList.add('off'); $('dot').classList.add('on')
+  }
+
+  function draw (f, res) {
+    // escala: pessoas sempre bem contrastadas (até o "joelho"); acima dele o quente é comprimido no topo da paleta
+    const knee = Math.max(res.amb + 12, 36.5), tlo = res.amb - 2.5, thi = Math.max(knee + 1, res.hottest)
+    lo += (tlo - lo) * 0.15; hi += (thi - hi) * 0.25
+    const kx = 204 / (knee - lo), kh = 51 / Math.max(1, hi - knee), d = img.data
+    for (let y = 0; y < IH; y++) {
+      const fy = Math.max(0, Math.min(H - 1, (y + 0.5) / UP - 0.5)), y0 = fy | 0, y1 = Math.min(H - 1, y0 + 1), ty = fy - y0
+      for (let x = 0; x < IW; x++) {
+        const fx = Math.max(0, Math.min(W - 1, (x + 0.5) / UP - 0.5)), x0 = fx | 0, x1 = Math.min(W - 1, x0 + 1), tx = fx - x0
+        const v = (f[y0 * W + x0] * (1 - tx) + f[y0 * W + x1] * tx) * (1 - ty) + (f[y1 * W + x0] * (1 - tx) + f[y1 * W + x1] * tx) * ty
+        let c = v <= knee ? (v - lo) * kx : 204 + (v - knee) * kh
+        c = c < 0 ? 0 : c > 255 ? 255 : c | 0
+        const o = (y * IW + x) * 4; d[o] = LUT[c * 3]; d[o + 1] = LUT[c * 3 + 1]; d[o + 2] = LUT[c * 3 + 2]
+      }
+    }
+    octx.putImageData(img, 0, 0)
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'
+    ctx.drawImage(off, 0, 0, cv.width, cv.height)
+    $('shi').textContent = fmt(hi, 0) + ' °C'; $('slo').textContent = fmt(lo, 0) + ' °C'
+
+    const sx = cv.width / W, sy = cv.height / H, u = cv.width / 900
+    for (const k of res.objects) {
+      const pad = 0.6, x = (k.x0 - pad) * sx, y = (k.y0 - pad) * sy, w = (k.x1 - k.x0 + 1 + 2 * pad) * sx, h = (k.y1 - k.y0 + 1 + 2 * pad) * sy
+      ctx.lineWidth = 3 * u; ctx.strokeStyle = k.cor; ctx.shadowColor = 'rgba(0,0,0,.7)'; ctx.shadowBlur = 6 * u
+      corners(x, y, w, h, Math.min(w, h) * 0.28)
+      ctx.shadowBlur = 0
+      const txt = `${k.label} · ${fmt(k.temp)} °C`
+      ctx.font = `700 ${Math.round(17 * u)}px -apple-system,'Segoe UI',sans-serif`
+      const tw = ctx.measureText(txt).width + 18 * u, th = 27 * u
+      let lx = Math.max(4, Math.min(cv.width - tw - 4, x)), ly = y - th - 5 * u; if (ly < 4) ly = Math.min(cv.height - th - 4, y + h + 5 * u)
+      ctx.fillStyle = 'rgba(7,12,22,.84)'; rr(lx, ly, tw, th, 7 * u); ctx.fill()
+      ctx.fillStyle = k.cor; ctx.textBaseline = 'middle'; ctx.fillText(txt, lx + 9 * u, ly + th / 2 + u)
+    }
+  }
+  function rr (x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath() }
+  function corners (x, y, w, h, l) {   // mira de cantos: lê melhor que um retângulo cheio sobre a imagem
+    ctx.beginPath()
+    ctx.moveTo(x, y + l); ctx.lineTo(x, y); ctx.lineTo(x + l, y)
+    ctx.moveTo(x + w - l, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + l)
+    ctx.moveTo(x + w, y + h - l); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w - l, y + h)
+    ctx.moveTo(x + l, y + h); ctx.lineTo(x, y + h); ctx.lineTo(x, y + h - l)
+    ctx.stroke()
+  }
+
+  const HINT = '<div class="hint"><b>Aproxime-se da câmera</b>Ela enxerga o seu calor, não a sua imagem. Experimente:<ul><li>mostrar a palma da mão</li><li>um café ou chá quente</li><li>uma bebida gelada</li></ul></div>'
+  let listKey = ''
+  function panel (res) {
+    $('kpeople').textContent = res.people
+    $('kmax').innerHTML = fmt(res.hottest) + '<small> °C</small>'
+    $('kamb').innerHTML = fmt(res.amb) + '<small> °C</small>'
+    const top = res.objects.slice(0, 4)
+    const html = top.length ? top.map(k => `<div class="det${k.alert ? ' alert' : ''}"><u style="background:${k.cor}"></u><b>${k.label}</b><span class="t">${fmt(k.temp)} °C</span>` +
+      `<p>${k.detail || ''}<s><q style="width:${k.conf}%"></q></s>${k.conf}%</p></div>`).join('') : HINT
+    const key = top.map(k => k.id + k.kind + k.detail + Math.round(k.temp * 2) + Math.round(k.conf / 5)).join('|')
+    if (key !== listKey || !top.length && listKey !== '-') { $('list').innerHTML = html; listKey = top.length ? key : '-' }
+    const a = res.alert
+    $('banner').classList.toggle('on', !!a)
+    if (a) $('btitle').textContent = `⚠ PONTO QUENTE · ${fmt(a.temp, 0)} °C`
+    $('foot').textContent = (autoDemo || cfg.demo) ? 'Cena de demonstração · IA local, sem internet' : `MLX90640 · 768 píxeis · ${fmt(fps)} quadros/s · IA local, sem internet`
+  }
+
+  // ---- fontes de quadros: câmera (WebSocket) ou cena de demonstração
+  // Demonstração automática: sem quadros da câmera por 6 s (sensor morto, cabo solto) a tela roda a cena sintética
+  // sozinha e volta ao vivo no primeiro quadro real — no estande ninguém precisa mexer no ajuste.
+  const parser = new window.TermicaSerial.FrameParser()
+  let ws = null, gen = 0, demoTimer = null, autoDemo = false
+  parser.onFrame = fr => { if (autoDemo) { clearInterval(demoTimer); demoTimer = null; autoDemo = false; smooth = null; ai.reset() } onFrame(fr.t) }
+  const demoStart = () => { clearInterval(demoTimer); const sc = new DemoScene(), t0 = performance.now(); demoTimer = setInterval(() => onFrame(sc.frame((performance.now() - t0) / 1000), true), 125) }
+  function connect () {
+    const my = ++gen
+    try { ws = new WebSocket('ws://' + (CAM.includes(':') ? CAM : CAM + ':81') + '/') } catch (e) { setTimeout(() => my === gen && connect(), 1500); return }
+    ws.binaryType = 'arraybuffer'
+    ws.onmessage = e => { if (my === gen && typeof e.data !== 'string') parser.push(new Uint8Array(e.data)) }
+    ws.onclose = ws.onerror = () => { if (my !== gen) return; gen++; ws = null; setTimeout(() => { if (!cfg.demo) connect() }, 1500) }   // só reconecta: não mexe na demonstração automática
+  }
+  function start () {
+    gen++; if (ws) { try { ws.close() } catch (e) {} ws = null }
+    clearInterval(demoTimer); demoTimer = null; autoDemo = false
+    if (cfg.demo) demoStart()
+    else connect()
+  }
+  let noFrameSince = performance.now()
+  setInterval(() => {   // vigia: sem quadro há 3 s → avisa e reconecta; há 6 s → demonstração automática
+    if (performance.now() - lastFrameAt < 3000) { noFrameSince = performance.now(); return }
+    $('dot').classList.remove('on'); $('wait').classList.remove('off'); $('banner').classList.remove('on')
+    $('waitmsg').textContent = cfg.demo ? 'Iniciando demonstração…' : 'Conectando à câmera…'
+    if (!cfg.demo && lastFrameAt && ws && ws.readyState === 1) { gen++; try { ws.close() } catch (e) {} ws = null; connect() }   // ligado mas mudo: refaz
+    if (!cfg.demo && !autoDemo && performance.now() - noFrameSince > 6000) { autoDemo = true; demoStart() }
+  }, 1500)
+
+  // ---- ajustes
+  const dlg = $('dlg')
+  function syncUi () { $('oFlipH').checked = cfg.flipH; $('oFlipV').checked = cfg.flipV; $('oDemo').checked = cfg.demo; $('oAlert').value = cfg.alertT; $('oWarm').value = cfg.warmD; $('vAlert').textContent = cfg.alertT; $('vWarm').textContent = fmt(+cfg.warmD) }
+  $('gear').onclick = () => { syncUi(); $('diag').textContent = `câmera ws://${CAM}:81 · ${parser.stats.frames} quadros · ${parser.stats.lost} perdidos · ${parser.stats.bad} inválidos` + (lastRes ? ` · ambiente ${fmt(lastRes.amb)} °C` : ''); dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '') }
+  $('bClose').onclick = () => dlg.close ? dlg.close() : dlg.removeAttribute('open')
+  // Tela cheia: o Safari do iPad aceita a API por toque (o iPhone não). Aberta pela Tela de Início com o manifesto
+  // (display: fullscreen) já vem sem barra — aí navigator.standalone é true e o botão nem aparece.
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement
+  const goFull = () => { const el = document.documentElement; try { (el.requestFullscreen || el.webkitRequestFullscreen || function () {}).call(el) } catch (e) {} }
+  const fsBtn = () => $('fs').classList.toggle('on', !navigator.standalone && !fsEl() && !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen))
+  document.addEventListener('fullscreenchange', fsBtn); document.addEventListener('webkitfullscreenchange', fsBtn)
+  $('fs').onclick = goFull
+  $('bFull').onclick = () => { goFull(); $('bClose').onclick() }
+  $('oFlipH').onchange = e => { cfg.flipH = e.target.checked; smooth = null; ai.reset(); save() }
+  $('oFlipV').onchange = e => { cfg.flipV = e.target.checked; smooth = null; ai.reset(); save() }
+  $('oAlert').oninput = e => { cfg.alertT = +e.target.value; ai.o.alertT = cfg.alertT; syncUi(); save() }
+  $('oWarm').oninput = e => { cfg.warmD = +e.target.value; ai.o.warmD = cfg.warmD; syncUi(); save() }
+  $('oDemo').onchange = e => { cfg.demo = e.target.checked; save(); smooth = null; ai.reset(); lastFrameAt = 0; start() }
+
+  fit(); $('list').innerHTML = HINT; fsBtn(); start()
+})()
+</script>
+</body>
+</html>
