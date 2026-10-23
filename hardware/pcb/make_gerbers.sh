@@ -1,5 +1,5 @@
 #!/bin/bash
-# SAFEBOAT TERMICA v1 — pacote de fabricacao JLCPCB (gerbers + drill + zip)
+# SAFEBOAT TERMICA v2 — pacote de fabricacao JLCPCB 4 camadas (gerbers + drill + zip)
 set -e
 cd "$(dirname "$0")"
 KCLI="$LOCALAPPDATA/Programs/KiCad/10.0/bin/kicad-cli.exe"
@@ -9,7 +9,7 @@ OUT=jlcpcb/gerbers
 rm -rf "$OUT" && mkdir -p "$OUT"
 
 "$KCLI" pcb export gerbers \
-  --layers "F.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,F.Paste,B.Paste,Edge.Cuts" \
+  --layers "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Mask,B.Mask,F.SilkS,B.SilkS,F.Paste,B.Paste,Edge.Cuts" \
   --subtract-soldermask --use-drill-file-origin \
   --output "$OUT/" "$BOARD"
 

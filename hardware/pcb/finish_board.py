@@ -14,9 +14,9 @@ OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 NAME = "safeboat-termica-v1"
 BOARD_PATH = os.path.join(OUT_DIR, "kicad", NAME + ".kicad_pcb")
 SES_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(OUT_DIR, "kicad", "try1.ses")
-OX, OY, HW, HH = 100.0, 100.0, 16.0, 16.0
-ANT = (6.6, 10.55)     # keepout da antena: |x| <= 6.6 e y >= 10.55
-SENSOR_C = (0.0, -9.5)
+OX, OY, HW, HH = 100.0, 100.0, 20.0, 20.0
+ANT = (10.2, 14.35)    # keepout da antena + recortes: |x| <= 10.2 e y >= 14.35
+SENSOR_C = (0.0, -12.0)
 
 
 def P(x, y):
@@ -43,7 +43,7 @@ class _Nets(dict):
 nets = _Nets()
 FPS = {fp.GetReference(): fp for fp in board.GetFootprints()}
 
-POWER = {"VIN_RAW", "VIN_F", "VIN", "3V3", "VDD_MLX", "VBUS"}
+POWER = {"VIN_RAW", "VIN_F", "VIN", "3V3", "VDD_MLX", "VBUS", "SW"}
 
 
 def _segd(p, a, b):
@@ -120,19 +120,19 @@ def silk(text, x, y, size=0.8, layer=pcbnew.F_SilkS, mirror=False, angle=0):
     board.Add(t)
 
 
-silk("+12V", -13.35, -7.0, 0.55); silk("GND", -9.85, -7.0, 0.55)
-silk("USB 1:5V 2:D- 3:D+ 4:GND", 9.0, -6.9, 0.5)
-silk("RST", 8.0, 13.8, 0.5, angle=90); silk("BOOT", 8.0, 9.7, 0.5, angle=90)
-silk("TERMICA v1", -1.0, -6.0, 0.55)
+silk("+VIN", -4.1, -19.3, 0.5); silk("8-32V", -1.3, -19.3, 0.5); silk("GND", 5.3, -14.1, 0.5, angle=90)
+silk("USB 1:5V 2:D- 3:D+ 4:GND", -9.0, 1.1, 0.5)
+silk("BOOT", -17.6, -10.3, 0.5); silk("RST", -9.5, -9.95, 0.5)
+silk("SAFEBOAT TERMICA v2", 9.6, 1.6, 0.6)
 # frente (lado do sensor): rótulos dos pinos + identificação
 B = pcbnew.B_SilkS
-silk("SDA", SENSOR_C[0] + 5.4, SENSOR_C[1] + 4.8, 0.5, B, True)
-silk("VDD", SENSOR_C[0] + 5.4, SENSOR_C[1] - 4.8, 0.5, B, True)
-silk("GND", SENSOR_C[0] - 5.4, SENSOR_C[1] - 4.8, 0.5, B, True)
-silk("SCL", SENSOR_C[0] - 5.4, SENSOR_C[1] + 4.8, 0.5, B, True)
-silk("SAFEBOAT TERMICA v1", 0, 5.0, 0.9, B, True)
-silk("MLX90640 110: aba entre SCL e SDA", 0, 2.5, 0.6, B, True)
-silk("frente: janela de germanio", 0, 0.5, 0.6, B, True)
+silk("SDA", SENSOR_C[0] + 6.0, SENSOR_C[1] + 2.1, 0.5, B, True)
+silk("VDD", SENSOR_C[0] + 3.6, SENSOR_C[1] - 4.3, 0.5, B, True)
+silk("GND", SENSOR_C[0] - 6.0, SENSOR_C[1] - 2.1, 0.5, B, True)
+silk("SCL", SENSOR_C[0] - 6.0, SENSOR_C[1] + 2.1, 0.5, B, True)
+silk("SAFEBOAT TERMICA v2", 0, 6.5, 0.9, B, True)
+silk("MLX90640 110: aba entre SCL e SDA", 0, 4.0, 0.6, B, True)
+silk("frente (lata exposta: vedar em volta)", 0, 2.0, 0.6, B, True)
 
 # logo oficial vetorizada (arte única da família: safeboat-vibra/tools/logo-contours.json)
 _logo_path = os.path.join(OUT_DIR, "..", "..", "..", "safeboat-vibra", "tools", "logo-contours.json")
@@ -179,7 +179,7 @@ if os.path.exists(_logo_path):
             sh.SetPolyShape(single); sh.SetFilled(True); sh.SetWidth(0)
             sh.SetLayer(layer); board.Add(sh)
 
-    add_logo_silk(5.5, 0.0, 11.0, pcbnew.B_SilkS, True)
+    add_logo_silk(5.5, 0.0, 11.8, pcbnew.B_SilkS, True)
 else:
     print("logo-contours.json nao encontrado — sem logo")
 
@@ -323,14 +323,14 @@ print("fase 2 ok — itens de trilha:", len(list(board.GetTracks())))
 
 pro = {
     "board": {"design_settings": {"rules": {
-        "min_clearance": 0.0, "min_connection": 0.0, "min_copper_edge_clearance": 0.3, "min_hole_clearance": 0.25,
+        "min_clearance": 0.2, "min_connection": 0.0, "min_copper_edge_clearance": 0.3, "min_hole_clearance": 0.25,
         "min_hole_to_hole": 0.25, "min_microvia_diameter": 0.2, "min_microvia_drill": 0.1, "min_silk_clearance": 0.0,
         "min_text_height": 0.5, "min_text_thickness": 0.08, "min_through_hole_diameter": 0.3, "min_track_width": 0.15,
         "min_via_annular_width": 0.1, "min_via_diameter": 0.5},
         "rule_severities": {"lib_footprint_issues": "ignore", "lib_footprint_mismatch": "ignore",
                             "silk_overlap": "warning", "silk_over_copper": "warning", "footprint_type_mismatch": "ignore"}}},
     "net_settings": {"classes": [{
-        "name": "Default", "bus_width": 12, "clearance": 0.148, "diff_pair_gap": 0.25, "diff_pair_via_gap": 0.25,
+        "name": "Default", "bus_width": 12, "clearance": 0.2, "diff_pair_gap": 0.25, "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2, "line_style": 0, "microvia_diameter": 0.3, "microvia_drill": 0.1,
         "pcb_color": "rgba(0, 0, 0, 0.000)", "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.25, "via_diameter": 0.6, "via_drill": 0.3, "wire_width": 6}], "meta": {"version": 4}},

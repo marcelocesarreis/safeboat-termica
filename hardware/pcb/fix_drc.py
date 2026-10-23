@@ -13,11 +13,19 @@ for v in d.get("violations", []):
     for it in v.get("items", []):
         if it["description"].startswith("Trilha") or it["description"].startswith("Track"):
             pts.append((it["pos"]["x"], it["pos"]["y"]))
+# alívio térmico faminto: o pad passa a conexão sólida com o plano (reflow da JLC não se importa)
+starved = [(it["pos"]["x"], it["pos"]["y"]) for v in d.get("violations", []) if v["type"] == "starved_thermal" for it in v.get("items", []) if "Ilha" in it["description"] or "Pad" in it["description"]]
 dang = []   # tocos pendurados: só aviso (remover quebrava a conexão quando a ponta caía num plano)
-if not pts and not dang:
+if not pts and not dang and not starved:
     print("fix_drc: nada a corrigir"); raise SystemExit(0)
 b = pcbnew.LoadBoard(BOARD)
 n = 0
+ns = 0
+for fp in b.GetFootprints():
+    for pd in fp.Pads():
+        px, py = pcbnew.ToMM(pd.GetPosition().x), pcbnew.ToMM(pd.GetPosition().y)
+        if any(math.hypot(px - sx, py - sy) < 0.05 for sx, sy in starved):
+            pd.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL); ns += 1
 # lição do VIB: SWIG quebra os iteradores depois de Remove() — capturar a lista UMA vez antes
 TRK = [t for t in b.GetTracks() if t.GetClass() == "PCB_TRACK"]
 removed = set()
@@ -44,4 +52,4 @@ for t in TRK:
         b.Remove(t)
 pcbnew.ZONE_FILLER(b).Fill(b.Zones())
 pcbnew.SaveBoard(BOARD, b)
-print("fix_drc: trilhas estreitadas:", n, "| penduradas removidas:", len(removed))
+print("fix_drc: trilhas estreitadas:", n, "| penduradas removidas:", len(removed), "| pads solidos:", ns)

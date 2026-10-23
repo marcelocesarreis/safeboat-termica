@@ -5,25 +5,24 @@
 	(uuid "7e2c4b10-5a1e-4c1e-9c1d-0000000000a1")
 	(paper "A3")
 	(title_block
-		(title "SAFEBOAT TERMICA v1 — camera termica MLX90640 + ESP32-C3")
-		(date "2026-09-22")
-		(rev "v1")
+		(title "SAFEBOAT TERMICA v2 — camera termica MLX90640 110 + ESP32-C3, 8-32 V")
+		(date "2026-10-22")
+		(rev "v2")
 		(company "SAFEBOAT Tecnologia")
 		(comment 1 "Gerado por hardware/pcb/gen_schematic.py — netlist idêntica a make_board.py (PCB)")
 	)
 	(lib_symbols
-	(symbol "Connector_Generic:Conn_01x02"
+	(symbol "SAFEBOAT:WirePad"
 		(pin_names
 			(offset 1.016)
-			(hide yes)
 		)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "J"
-			(at 0 2.54 0)
+		(property "Reference" "U"
+			(at 0 7.62 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -32,8 +31,8 @@
 				)
 			)
 		)
-		(property "Value" "Conn_01x02"
-			(at 0 -5.08 0)
+		(property "Value" "pad"
+			(at 0 -7.62 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -64,7 +63,7 @@
 				)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+		(property "Description" "Pad de fio (cabo 12 V)"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -75,32 +74,10 @@
 				)
 			)
 		)
-		(property "ki_keywords" "connector"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "Connector*:*_1x??_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "Conn_01x02_1_1"
+		(symbol "WirePad_0_1"
 			(rectangle
-				(start -1.27 1.27)
-				(end 1.27 -3.81)
+				(start -5.08 2.54)
+				(end 5.08 -2.54)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -109,32 +86,12 @@
 					(type background)
 				)
 			)
-			(rectangle
-				(start -1.27 0.127)
-				(end 0 -0.127)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(rectangle
-				(start -1.27 -2.413)
-				(end 0 -2.667)
-				(stroke
-					(width 0.1524)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
+		)
+		(symbol "WirePad_1_1"
 			(pin passive line
-				(at -5.08 0 0)
-				(length 3.81)
-				(name "Pin_1"
+				(at -7.62 0 0)
+				(length 2.54)
+				(name "1"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -142,24 +99,6 @@
 					)
 				)
 				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at -5.08 -2.54 0)
-				(length 3.81)
-				(name "Pin_2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -822,7 +761,7 @@
 		)
 		(embedded_fonts no)
 	)
-	(symbol "SAFEBOAT:AP63203"
+	(symbol "SAFEBOAT:MP4560"
 		(pin_names
 			(offset 1.016)
 		)
@@ -832,7 +771,7 @@
 		(in_pos_files yes)
 		(duplicate_pin_numbers_are_jumpers no)
 		(property "Reference" "U"
-			(at 0 12.7 0)
+			(at 0 17.78 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -841,8 +780,8 @@
 				)
 			)
 		)
-		(property "Value" "AP63203WU-7"
-			(at 0 -12.7 0)
+		(property "Value" "MP4560DN-LF-Z"
+			(at 0 -17.78 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -873,7 +812,7 @@
 				)
 			)
 		)
-		(property "Description" "Buck síncrono 3,8–32 V, 3,3 V fixo, 2 A, 1,1 MHz, TSOT26 (1 FB 2 EN 3 VIN 4 GND 5 SW 6 BST)"
+		(property "Description" "Buck 3,8–55 V, 2 A, não síncrono, SOIC-8 EP (1 SW 2 EN 3 COMP 4 FB 5 GND 6 FREQ 7 VIN 8 BST); Vfb 0,8 V"
 			(at 0 0 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -884,10 +823,10 @@
 				)
 			)
 		)
-		(symbol "AP63203_0_1"
+		(symbol "MP4560_0_1"
 			(rectangle
-				(start -7.62 7.62)
-				(end 7.62 -7.62)
+				(start -10.16 12.7)
+				(end 10.16 -12.7)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -897,9 +836,9 @@
 				)
 			)
 		)
-		(symbol "AP63203_1_1"
+		(symbol "MP4560_1_1"
 			(pin power_in line
-				(at -12.7 5.08 0)
+				(at -12.7 7.62 0)
 				(length 2.54)
 				(name "VIN"
 					(effects
@@ -908,7 +847,7 @@
 						)
 					)
 				)
-				(number "3"
+				(number "7"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -917,7 +856,7 @@
 				)
 			)
 			(pin input line
-				(at -12.7 0 0)
+				(at -12.7 2.54 0)
 				(length 2.54)
 				(name "EN"
 					(effects
@@ -934,10 +873,64 @@
 					)
 				)
 			)
+			(pin passive line
+				(at -12.7 -2.54 0)
+				(length 2.54)
+				(name "COMP"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
 			(pin input line
-				(at -12.7 -5.08 0)
+				(at -12.7 -7.62 0)
 				(length 2.54)
 				(name "FB"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 12.7 7.62 180)
+				(length 2.54)
+				(name "BST"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_out line
+				(at 12.7 2.54 180)
+				(length 2.54)
+				(name "SW"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -953,9 +946,9 @@
 				)
 			)
 			(pin passive line
-				(at 12.7 5.08 180)
+				(at 12.7 -2.54 180)
 				(length 2.54)
-				(name "BST"
+				(name "FREQ"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -970,10 +963,10 @@
 					)
 				)
 			)
-			(pin power_out line
-				(at 12.7 0 180)
+			(pin power_in line
+				(at 0 -15.24 90)
 				(length 2.54)
-				(name "SW"
+				(name "GND"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -988,17 +981,17 @@
 					)
 				)
 			)
-			(pin power_in line
-				(at 0 -12.7 90)
+			(pin passive line
+				(at 2.54 -15.24 90)
 				(length 2.54)
-				(name "GND"
+				(name "EP"
 					(effects
 						(font
 							(size 1.27 1.27)
 						)
 					)
 				)
-				(number "4"
+				(number "9"
 					(effects
 						(font
 							(size 1.27 1.27)
@@ -3564,7 +3557,7 @@
 		(embedded_fonts no)
 	)
 	)
-	(text "SAFEBOAT TERMICA v1  —  camera termica MLX90640 + ESP32-C3, 12 V do barco  ·  esquematico p/ revisao"
+	(text "SAFEBOAT TERMICA v2  —  camera termica MLX90640 110 + ESP32-C3, 8-32 V do barco, 4 camadas  ·  esquematico p/ revisao"
 		(exclude_from_sim no)
 		(at 20 18 0)
 		(effects
@@ -3574,9 +3567,9 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "43ef77cb-1aaa-4fbe-abe9-abb7a2f3528f")
+		(uuid "4cd7846f-3239-436d-b7ec-fa94f8fd3bd3")
 	)
-	(text "Redes por label (mesma netlist pino a pino de make_board.py). Placa quadrada 32 x 32 mm; sensor no lado B (frente), resto no lado F (re). Montagem completa JLCPCB (2 lados)."
+	(text "Redes por label (mesma netlist pino a pino de make_board.py). Placa 40 x 40 mm, 4 camadas (In1 GND, In2 3V3); sensor no lado B (frente), resto no lado F (re). Montagem completa JLCPCB (2 lados)."
 		(exclude_from_sim no)
 		(at 20 24 0)
 		(effects
@@ -3585,9 +3578,9 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "1268d4f8-e972-4d78-8e3d-51d1790e0018")
+		(uuid "2b7cf8c8-180f-493b-aae3-f7443134e91d")
 	)
-	(text "1 · ALIMENTACAO — +12 V (borne J2) -> F1 PPTC 0,5 A -> D1 TVS SMBJ26A -> D2 SS34 (inversao) -> VIN -> U2 AP63203 (EN=VIN, FB=VOUT) -> L1 4,7 uH -> 3V3  ·  USB J1 -> D3 SS14 -> VIN (bancada)  ·  R7/R8 leem VIN no ADC (GPIO0)"
+	(text "1 · ALIMENTACAO — +8-32 V (pads P1/P2, fio soldado) -> F1 PPTC 0,5 A -> D1 TVS SMBJ33A -> D2 SS34 (inversao) -> VIN -> U2 MP4560 (500 kHz, EN flutuante = liga) -> L1 10 uH / D4 SS36 -> 3V3 (FB 47k/15k)  ·  USB J1 -> D3 SS14 -> VIN  ·  R7/R8 leem VIN/23 no ADC (GPIO0)"
 		(exclude_from_sim no)
 		(at 20 40 0)
 		(effects
@@ -3597,19 +3590,19 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "eb597193-f519-4f23-a12b-5f2cdd403730")
+		(uuid "2bcf7900-68c7-4f1d-8778-c97994f5e8ce")
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x02")
-		(at 34.29 62.23 0)
+		(lib_id "SAFEBOAT:WirePad")
+		(at 34.29 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3a57fad7-3866-460f-82c3-518865448123")
-		(property "Reference" "J2"
-			(at 26.67 54.61 0)
+		(uuid "d8cfae8f-2ddb-43be-ab74-6f28a94962dd")
+		(property "Reference" "P1"
+			(at 26.67 52.07 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3618,8 +3611,8 @@
 				)
 			)
 		)
-		(property "Value" "+12V (borne KF350)"
-			(at 41.91 69.85 0)
+		(property "Value" "+VIN 8-32V (pad)"
+			(at 41.91 67.31 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3628,8 +3621,8 @@
 				)
 			)
 		)
-		(property "Footprint" "SAFEBOAT:KF350-3.5-2P"
-			(at 34.29 62.23 0)
+		(property "Footprint" "SAFEBOAT:WirePad_P1"
+			(at 34.29 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -3640,7 +3633,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 34.29 62.23 0)
+			(at 34.29 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -3650,8 +3643,8 @@
 				)
 			)
 		)
-		(property "Description" "cabo 2x0,75 mm2 pelo prensa-cabo; fusivel 1 A no cabo; 1 = +12V (quadrado) 2 = GND"
-			(at 34.29 62.23 0)
+		(property "Description" "fio do cabo soldado direto; fusivel 1 A no cabo"
+			(at 34.29 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -3662,15 +3655,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "c139a586-b171-46bb-86e9-12c1c7e65c24")
-		)
-		(pin "2"
-			(uuid "7fd29414-ff0a-4d78-b710-4c97a4808048")
+			(uuid "9eeee9c0-aabc-4ed9-bb17-5579a6cef451")
 		)
 		(instances
 			(project "safeboat-termica-v1"
 				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
-					(reference "J2")
+					(reference "P1")
 					(unit 1)
 				)
 			)
@@ -3678,43 +3668,117 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 62.23) (xy 26.67 62.23)
+			(xy 26.67 59.69) (xy 24.13 59.69)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "7340790c-3e8b-451e-bd99-0e44f80db38e")
+		(uuid "1a5fe54d-0daa-4564-82c1-b5ede3428591")
 	)
 	(label "VIN_RAW"
-		(at 26.67 62.23 180)
+		(at 24.13 59.69 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "a03c26d0-331f-4b6a-a36f-82992d372773")
+		(uuid "bb8b2ea1-3360-461f-9295-292bb59cca74")
+	)
+	(symbol
+		(lib_id "SAFEBOAT:WirePad")
+		(at 34.29 73.66 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6dbbf057-f2a9-4bb2-8c88-9702526417a8")
+		(property "Reference" "P2"
+			(at 26.67 66.04 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND (pad)"
+			(at 41.91 81.28 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "SAFEBOAT:WirePad_P2"
+			(at 34.29 73.66 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 73.66 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "retorno"
+			(at 34.29 73.66 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bc8a7c08-ad7b-4023-b470-efe35b0e2e02")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "P2")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(wire
 		(pts
-			(xy 29.21 64.77) (xy 26.67 64.77)
+			(xy 26.67 73.66) (xy 24.13 73.66)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "66a63b5e-96be-4f5b-8b00-023be618d8a8")
+		(uuid "c96d871b-28cf-4527-a633-450e1eed20f8")
 	)
 	(label "GND"
-		(at 26.67 64.77 180)
+		(at 24.13 73.66 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "6a78c9b1-103f-4bf6-a574-b8c8d7b4efc1")
+		(uuid "698c1b31-b038-4b0c-847d-e05fa31c0995")
 	)
 	(symbol
 		(lib_id "Device:Polyfuse")
@@ -3724,7 +3788,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "526bf092-5a42-439a-be53-1bd6538ffbe9")
+		(uuid "2c3f115c-2db2-4e4b-a49d-d87059404d48")
 		(property "Reference" "F1"
 			(at 58.42 58.42 0)
 			(show_name no)
@@ -3781,10 +3845,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "c6867b7a-6ea9-4224-8703-0670d85ff85d")
+			(uuid "4726df19-694b-4944-b490-94d6f169cc62")
 		)
 		(pin "2"
-			(uuid "800bff50-06a0-4c2d-9d25-c64dc5eea476")
+			(uuid "0f6d10f8-c498-4fca-afe8-825bbf8c8aac")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -3803,7 +3867,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "39864050-489e-4978-a60c-65a7808e4976")
+		(uuid "c3a638b4-d4c1-4d03-b4db-56a16b04c519")
 	)
 	(label "VIN_RAW"
 		(at 55.88 53.34 90)
@@ -3813,7 +3877,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "ea401687-ed02-4fd1-b78a-73af5d433a9f")
+		(uuid "5b3f9cae-34e9-4288-b593-f6519fb736a0")
 	)
 	(wire
 		(pts
@@ -3823,7 +3887,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "115e0f3d-c11e-4e6d-aa89-8d9012f080b1")
+		(uuid "0de6b76e-f68f-4f42-9498-72e84b3b6305")
 	)
 	(label "VIN_F"
 		(at 55.88 66.04 270)
@@ -3833,7 +3897,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "c3e483fc-6aa5-404e-884f-98321cd56fa7")
+		(uuid "e88b69fc-89ae-4cec-8470-e8f2f7a0be02")
 	)
 	(symbol
 		(lib_id "Device:D_TVS")
@@ -3843,7 +3907,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e7b8a86d-8011-41c9-a5d9-382c5f81eaef")
+		(uuid "d27b65b5-7109-4006-8465-54b8f5d9c43b")
 		(property "Reference" "D1"
 			(at 68.58 52.07 0)
 			(show_name no)
@@ -3854,7 +3918,7 @@
 				)
 			)
 		)
-		(property "Value" "SMAJ26A"
+		(property "Value" "SMBJ33A"
 			(at 83.82 67.31 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3864,7 +3928,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_SMD:D_SMA"
+		(property "Footprint" "Diode_SMD:D_SMB"
 			(at 76.2 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3886,7 +3950,7 @@
 				)
 			)
 		)
-		(property "Description" "TVS 26 V standoff, 400 W (alternador / cargas indutivas)"
+		(property "Description" "TVS 33 V standoff, 600 W: clampa em ~53 V < 60 V abs. max. do MP4560"
 			(at 76.2 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3898,10 +3962,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "b36af9f7-49ad-4e11-9518-10ca0010039f")
+			(uuid "21a19182-c33c-444d-bb36-a1ba00f089f5")
 		)
 		(pin "2"
-			(uuid "aa2e8818-a95d-4152-b43b-ef8207b74cdc")
+			(uuid "595c2f0a-b904-4415-b519-e04ba19569ad")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -3920,7 +3984,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4e866f6c-aa56-4078-bb5f-a9b6d74c91b4")
+		(uuid "3bd00347-4cc1-4156-a974-972bfc3faf22")
 	)
 	(label "VIN_F"
 		(at 69.85 59.69 180)
@@ -3930,7 +3994,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "356ff15a-d0e5-492c-93d1-c4a2235d2be0")
+		(uuid "290ae24a-ed1c-4a0e-a0fa-0d0a785a840b")
 	)
 	(wire
 		(pts
@@ -3940,7 +4004,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ddef44b6-cde2-4527-b7ff-5c1a8711d02e")
+		(uuid "5209a259-c7ca-4731-947e-788a84a670a3")
 	)
 	(label "GND"
 		(at 82.55 59.69 0)
@@ -3950,7 +4014,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "92032862-677f-49d8-8dda-31ec72be343b")
+		(uuid "485df134-98b5-44a0-91c6-ad24f1abc46a")
 	)
 	(symbol
 		(lib_id "Device:D_Schottky")
@@ -3960,7 +4024,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9303753d-0f45-43bb-8f83-293d5b9566b1")
+		(uuid "b0f75a80-89a1-48e7-8a74-fbf03b52ee8d")
 		(property "Reference" "D2"
 			(at 88.9 52.07 0)
 			(show_name no)
@@ -4015,10 +4079,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "51aeef3f-d6e3-489a-846b-3d40810403c2")
+			(uuid "4453b7b6-28e0-4707-98da-1a1c74a42156")
 		)
 		(pin "2"
-			(uuid "4051bebb-d067-441f-b420-65807269144c")
+			(uuid "706c2148-bf3b-47bf-a3cf-c533e66de55d")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4037,7 +4101,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ebbff14a-d0d6-4b7d-a27c-9e07415e0068")
+		(uuid "43d66bb6-c280-45eb-b3ae-42241e4a4211")
 	)
 	(label "VIN"
 		(at 90.17 59.69 180)
@@ -4047,7 +4111,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b7d44fa2-c5a7-457b-90ae-4f3640372072")
+		(uuid "f70821a2-72e0-4dfc-8b4a-c698a64e5ba7")
 	)
 	(wire
 		(pts
@@ -4057,7 +4121,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6e905222-4796-4ae1-a7e1-022416b2b960")
+		(uuid "b080a6a7-0b05-4812-a5b2-bdc7e8fd448e")
 	)
 	(label "VIN_F"
 		(at 102.87 59.69 0)
@@ -4067,7 +4131,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "f7594bee-19d2-4837-9eb4-ba0c979023b3")
+		(uuid "a5ae494b-9dbb-44a8-9eb6-17475334d5a6")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -4077,7 +4141,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e4ce3fe0-b293-475e-9d52-4a212b6b9ab6")
+		(uuid "ebf39090-c128-4e8b-937a-221fe566ccec")
 		(property "Reference" "C5"
 			(at 118.11 58.42 0)
 			(show_name no)
@@ -4089,7 +4153,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10u/50V"
+		(property "Value" "4.7u/100V"
 			(at 118.11 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4134,10 +4198,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "0ccb58c4-9626-441d-b508-a17892aef690")
+			(uuid "2167d3a8-89ac-466c-af25-7a13aec46d3b")
 		)
 		(pin "2"
-			(uuid "068ef7e5-8a81-48bc-bba0-5d1e1fac64b8")
+			(uuid "1b1e4dfe-2988-4304-bb14-eda40766e779")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4156,7 +4220,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ff1a8a5a-044b-4883-8110-7bebf32bfb6c")
+		(uuid "a826d39e-e749-4546-80ad-29d333aabfa9")
 	)
 	(label "VIN"
 		(at 115.57 53.34 90)
@@ -4166,7 +4230,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "c8c2ff37-0235-499b-9466-865f1fad165e")
+		(uuid "330a4efb-bd23-45aa-89bd-cbcaaa1e3031")
 	)
 	(wire
 		(pts
@@ -4176,7 +4240,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "622ff472-9a68-4afd-8d56-4205edb31bb3")
+		(uuid "b530776c-14b6-4b4b-8039-830e3e8603fd")
 	)
 	(label "GND"
 		(at 115.57 66.04 270)
@@ -4186,39 +4250,41 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "864911ba-df8d-4cf9-97b6-3294e8edd85d")
+		(uuid "e6cfdba1-341b-421a-9ede-2c0ccf93bcd7")
 	)
 	(symbol
-		(lib_id "SAFEBOAT:AP63203")
-		(at 149.86 62.23 0)
+		(lib_id "Device:C")
+		(at 129.54 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "693b87d2-012a-4ca8-acb6-e2e8724d74ca")
-		(property "Reference" "U2"
-			(at 142.24 44.45 0)
+		(uuid "f223905d-02f8-4aa8-9fc9-49b85965aef5")
+		(property "Reference" "C11"
+			(at 132.08 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Value" "AP63203WU-7"
-			(at 157.48 80.01 0)
+		(property "Value" "4.7u/100V"
+			(at 132.08 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_SMD:TSOT-23-6"
-			(at 149.86 62.23 0)
+		(property "Footprint" "Capacitor_SMD:C_1210_3225Metric"
+			(at 129.54 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4229,7 +4295,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 149.86 62.23 0)
+			(at 129.54 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4239,8 +4305,8 @@
 				)
 			)
 		)
-		(property "Description" "buck 3,3 V fixo; EN ligado a VIN (datasheet: 'attach to VIN'); FB direto no VOUT"
-			(at 149.86 62.23 0)
+		(property "Description" "entrada do buck"
+			(at 129.54 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4249,24 +4315,150 @@
 					(size 1.27 1.27)
 				)
 			)
-		)
-		(pin "3"
-			(uuid "9d68bc27-3298-425c-87bb-a1947aff9e24")
-		)
-		(pin "2"
-			(uuid "98df8efb-8f41-4d42-ac91-e3a5e07d83f0")
 		)
 		(pin "1"
-			(uuid "8f9f5db0-245b-4a4a-8adb-60f5f423134d")
+			(uuid "9f3eeb5a-72a8-4214-a832-9bf5367fa5b3")
 		)
-		(pin "6"
-			(uuid "76e444df-df9a-4aca-a2f8-c54a84d90eee")
+		(pin "2"
+			(uuid "4d929a0e-e719-463a-bac7-c0ecdc765356")
 		)
-		(pin "5"
-			(uuid "ef79f605-cb1f-41dd-ae03-59024f1a10cb")
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 129.54 55.88) (xy 129.54 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "57fd2f59-d0e1-4f4e-9fb5-2a4f0a04cb52")
+	)
+	(label "VIN"
+		(at 129.54 53.34 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "5275cd9d-bd56-48c4-838a-7320cdf85c23")
+	)
+	(wire
+		(pts
+			(xy 129.54 63.5) (xy 129.54 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a4335ec4-372b-4f16-931e-1c71177c5020")
+	)
+	(label "GND"
+		(at 129.54 66.04 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "573f8dd0-ba2f-4e50-a6ec-5e5176303267")
+	)
+	(symbol
+		(lib_id "SAFEBOAT:MP4560")
+		(at 160.02 66.04 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b4deaa16-ce77-4034-a009-f577a33256a9")
+		(property "Reference" "U2"
+			(at 152.4 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MP4560DN-LF-Z"
+			(at 167.64 86.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_SO:HSOP-8-1EP_3.9x4.9mm_P1.27mm_EP2.41x3.1mm_ThermalVias"
+			(at 160.02 66.04 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 160.02 66.04 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "EN flutuante = habilitado (abs. max. 5 V: NAO ligar a VIN); fsw = 100000/(R11+5) kHz"
+			(at 160.02 66.04 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "7"
+			(uuid "b57003f0-f71b-483a-a62f-979f378e18a0")
+		)
+		(pin "2"
+			(uuid "d4234ca0-4133-4c65-ba56-b64c7178fac0")
+		)
+		(pin "3"
+			(uuid "fa25e60d-a4d5-4211-a7ab-b2fb80658e6b")
 		)
 		(pin "4"
-			(uuid "c046e540-d482-49c9-91a0-ffafa127699b")
+			(uuid "bd87a149-289c-4351-ab81-98e7ad004de9")
+		)
+		(pin "8"
+			(uuid "fc1731c6-0201-4e49-a683-6a0b67702621")
+		)
+		(pin "1"
+			(uuid "83a3d108-48b5-4c87-8d6d-fcc9bbea9ccb")
+		)
+		(pin "6"
+			(uuid "253dd090-1c52-485d-b911-474e42ae41ff")
+		)
+		(pin "5"
+			(uuid "7c87f882-3de6-4323-a0b9-c9e1a1f98c3c")
+		)
+		(pin "9"
+			(uuid "80efb091-3a74-427d-b0f3-4376c4590c8b")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4279,135 +4471,179 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 57.15) (xy 134.62 57.15)
+			(xy 147.32 58.42) (xy 144.78 58.42)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "3d17a479-87fe-45e9-bb6d-d7a74e9be8c3")
+		(uuid "9290073c-6315-4a1d-aa31-ba09ea2f395b")
 	)
 	(label "VIN"
-		(at 134.62 57.15 180)
+		(at 144.78 58.42 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "d319f24f-4b22-4ed2-9c9d-47e740ed3d4c")
+		(uuid "fa078c08-ebf0-4f97-b29a-b03479d0488d")
+	)
+	(no_connect
+		(at 147.32 63.5)
+		(uuid "625c72ff-e832-42dc-b6c7-060032905805")
 	)
 	(wire
 		(pts
-			(xy 137.16 62.23) (xy 134.62 62.23)
+			(xy 147.32 68.58) (xy 144.78 68.58)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "789914e9-53e4-4a26-8d0a-719d3b6c91f4")
+		(uuid "60717aab-774e-4520-84fa-731b99bf652b")
 	)
-	(label "VIN"
-		(at 134.62 62.23 180)
+	(label "COMP"
+		(at 144.78 68.58 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "77db9bce-db1d-423e-b52b-a5ee26a40df2")
+		(uuid "95a20892-f475-4b2b-b3a2-59b6d419172e")
 	)
 	(wire
 		(pts
-			(xy 137.16 67.31) (xy 134.62 67.31)
+			(xy 147.32 73.66) (xy 144.78 73.66)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "fe66dd1f-3638-4ffc-b7b4-2ebe20817513")
+		(uuid "b7116b44-7834-4725-bae8-8fe1fa796504")
 	)
-	(label "3V3"
-		(at 134.62 67.31 180)
+	(label "FB"
+		(at 144.78 73.66 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "eca7238d-441e-49f8-803d-9129a9d67f27")
+		(uuid "af2e2422-0dfb-4b51-8031-217fe110b74a")
 	)
 	(wire
 		(pts
-			(xy 162.56 57.15) (xy 165.1 57.15)
+			(xy 172.72 58.42) (xy 175.26 58.42)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "4b0bce77-3780-4c46-8f7c-15b8de551eab")
+		(uuid "bbe5f5b5-277f-4665-9f52-8f33c51282ac")
 	)
 	(label "BST"
-		(at 165.1 57.15 0)
+		(at 175.26 58.42 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "3f4cd26b-74cc-4a36-aba5-5e42b3750576")
+		(uuid "f52d3784-6718-4a24-b203-3ff5d260e9da")
 	)
 	(wire
 		(pts
-			(xy 162.56 62.23) (xy 165.1 62.23)
+			(xy 172.72 63.5) (xy 175.26 63.5)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "458502bc-bf7b-4557-92d7-4426f9b956df")
+		(uuid "085767a8-6798-4f89-8520-156251d3a7d1")
 	)
 	(label "SW"
-		(at 165.1 62.23 0)
+		(at 175.26 63.5 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "0b783a51-f8f9-4692-8ee7-673212dba040")
+		(uuid "c1622182-b654-4b0f-a297-9ebf05b67ec9")
 	)
 	(wire
 		(pts
-			(xy 149.86 74.93) (xy 149.86 77.47)
+			(xy 172.72 68.58) (xy 175.26 68.58)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "5d0a6518-9490-4078-92bf-9de853f7124f")
+		(uuid "3d1cddac-a042-49cb-b8cc-c06c4d31a7fa")
+	)
+	(label "FREQ"
+		(at 175.26 68.58 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "00988a2e-17a0-4bdb-8420-3354b37954ed")
+	)
+	(wire
+		(pts
+			(xy 160.02 81.28) (xy 160.02 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bd002d29-4c70-4299-88fc-4b0c3f7d6833")
 	)
 	(label "GND"
-		(at 149.86 77.47 270)
+		(at 160.02 83.82 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "9375461a-b5cb-44fe-88ef-ff1109608ef9")
+		(uuid "aa58e005-db41-4ac2-9345-8cfb49938464")
+	)
+	(wire
+		(pts
+			(xy 162.56 81.28) (xy 162.56 83.82)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "95575b85-7623-4baf-bd8c-b40bdd2e363b")
+	)
+	(label "GND"
+		(at 162.56 83.82 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b77cf4bd-cd02-4a4b-b859-84350e13f3c8")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 176.53 59.69 0)
+		(at 185.42 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3727c730-c498-4d32-9fee-781a79244ce9")
+		(uuid "2de1aac5-14ec-4f04-ba36-8204aa8a4e16")
 		(property "Reference" "C8"
-			(at 179.07 58.42 0)
+			(at 187.96 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4418,7 +4654,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 179.07 60.96 0)
+			(at 187.96 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4429,7 +4665,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 176.53 59.69 0)
+			(at 185.42 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4440,7 +4676,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 176.53 59.69 0)
+			(at 185.42 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4451,7 +4687,7 @@
 			)
 		)
 		(property "Description" "bootstrap"
-			(at 176.53 59.69 0)
+			(at 185.42 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4462,10 +4698,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "01989545-7357-4f4d-8744-bdf35cf1bfcb")
+			(uuid "05197a0b-b8dc-4384-a6ab-addc73553faa")
 		)
 		(pin "2"
-			(uuid "a06f0273-d2bf-415f-b7b9-7036372744e1")
+			(uuid "3f961004-e1d6-4f8c-8f5f-60fa4837da3c")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4478,55 +4714,55 @@
 	)
 	(wire
 		(pts
-			(xy 176.53 55.88) (xy 176.53 53.34)
+			(xy 185.42 55.88) (xy 185.42 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "991cbc51-6520-46b1-a7b4-bde6459d732d")
+		(uuid "0e4cae59-0853-4b0e-9604-9e8ce8359ea3")
 	)
 	(label "SW"
-		(at 176.53 53.34 90)
+		(at 185.42 53.34 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "1f63f3d4-f401-471d-9a3a-b3f1685d8d5b")
+		(uuid "42ac1152-b3ac-4a70-aa16-020ea2b4eb12")
 	)
 	(wire
 		(pts
-			(xy 176.53 63.5) (xy 176.53 66.04)
+			(xy 185.42 63.5) (xy 185.42 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "3403a312-d77f-4668-adba-d157b13cc782")
+		(uuid "914ff5e6-0ac1-4215-84e3-3d3fb813dd5a")
 	)
 	(label "BST"
-		(at 176.53 66.04 270)
+		(at 185.42 66.04 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "b7a6ceb0-728c-4a16-8958-b0ce394a2adf")
+		(uuid "4f0f51c0-3f74-47ca-87dc-a35ac0e75c70")
 	)
 	(symbol
 		(lib_id "Device:L")
-		(at 195.58 59.69 0)
+		(at 205.74 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4a631031-3de8-4ace-8ece-2bc2380ac96c")
+		(uuid "075c4993-b946-4ed6-aac6-1891133b4931")
 		(property "Reference" "L1"
-			(at 198.12 58.42 0)
+			(at 208.28 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4536,8 +4772,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "4.7u SWPA4020S"
-			(at 198.12 60.96 0)
+		(property "Value" "10u SWPA5040S"
+			(at 208.28 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4547,8 +4783,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_Sunlord_SWPA4020S"
-			(at 195.58 59.69 0)
+		(property "Footprint" "Inductor_SMD:L_Sunlord_SWPA5040S"
+			(at 205.74 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4559,7 +4795,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 195.58 59.69 0)
+			(at 205.74 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4569,8 +4805,8 @@
 				)
 			)
 		)
-		(property "Description" "4x4x2 mm, 1,34 A"
-			(at 195.58 59.69 0)
+		(property "Description" "5x5x4 mm, 2,1 A"
+			(at 205.74 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4581,10 +4817,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "8e5b50ff-dda0-4e12-977a-a28a5605c8ac")
+			(uuid "c1e51987-c6a9-4498-964e-aaf400ec7889")
 		)
 		(pin "2"
-			(uuid "526e15dd-bf89-426c-9759-bf002a1fd02c")
+			(uuid "9f935d8d-cb29-46be-9957-265548ccae96")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4597,77 +4833,75 @@
 	)
 	(wire
 		(pts
-			(xy 195.58 55.88) (xy 195.58 53.34)
+			(xy 205.74 55.88) (xy 205.74 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "bdd1ee79-e701-4cd5-9d1b-d29260175edf")
+		(uuid "2e11eeda-4182-4a43-a8e2-583f95d617de")
 	)
 	(label "SW"
-		(at 195.58 53.34 90)
+		(at 205.74 53.34 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "507b1a7e-1ce7-43d3-aa6c-e256f4c3044e")
+		(uuid "c2be9ae5-f72b-4837-8ed6-8989e52262e8")
 	)
 	(wire
 		(pts
-			(xy 195.58 63.5) (xy 195.58 66.04)
+			(xy 205.74 63.5) (xy 205.74 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c46a324c-7c40-434c-9d5d-481aa9904d32")
+		(uuid "51650ea3-16b3-455c-8f2a-80096cc63df2")
 	)
 	(label "3V3"
-		(at 195.58 66.04 270)
+		(at 205.74 66.04 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "faefdd40-d9cd-472d-b000-269245642745")
+		(uuid "5c332d1b-6a24-4375-b236-25c1d5aef46d")
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 214.63 59.69 0)
+		(lib_id "Device:D_Schottky")
+		(at 226.06 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4012d6b8-a4e6-452d-bbdf-698dbd86e1cb")
-		(property "Reference" "C6"
-			(at 217.17 58.42 0)
+		(uuid "75940971-7234-419e-943d-05bcb799b0bc")
+		(property "Reference" "D4"
+			(at 218.44 52.07 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Value" "22u"
-			(at 217.17 60.96 0)
+		(property "Value" "SS36"
+			(at 233.68 67.31 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 214.63 59.69 0)
+		(property "Footprint" "Diode_SMD:D_SMA"
+			(at 226.06 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4678,7 +4912,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 214.63 59.69 0)
+			(at 226.06 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4688,8 +4922,8 @@
 				)
 			)
 		)
-		(property "Description" "saida"
-			(at 214.63 59.69 0)
+		(property "Description" "roda livre 60 V (anodo GND, catodo SW)"
+			(at 226.06 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4700,10 +4934,129 @@
 			)
 		)
 		(pin "1"
-			(uuid "e8c7ae48-b4e4-4f8e-b471-654ae8471931")
+			(uuid "c7beba8e-8a73-44e1-afec-fdeb9b3b93de")
 		)
 		(pin "2"
-			(uuid "bbbe10d7-da1e-49a4-b072-bf519a535f36")
+			(uuid "b79ce076-6f87-4560-93f2-235f87447ff9")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "D4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 222.25 59.69) (xy 219.71 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2ce72173-85eb-429a-b101-3fe46325fceb")
+	)
+	(label "SW"
+		(at 219.71 59.69 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "d5d44db1-af77-4965-aa44-56d4195cf53e")
+	)
+	(wire
+		(pts
+			(xy 229.87 59.69) (xy 232.41 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fbb79a10-0df3-4d02-8a17-9be3d762907c")
+	)
+	(label "GND"
+		(at 232.41 59.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8a2531d0-8c66-4ab5-a22c-bc07123917e6")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 246.38 59.69 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7c0a0482-4ccd-48bd-b9f1-3f8423379519")
+		(property "Reference" "C6"
+			(at 248.92 58.42 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "22u"
+			(at 248.92 60.96 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 246.38 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 246.38 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "saida"
+			(at 246.38 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7a1396f7-8a27-4841-976a-bd06649e6bfc")
+		)
+		(pin "2"
+			(uuid "8bf38d59-79ad-463e-b7c9-c9eb46e1d0f9")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4716,55 +5069,55 @@
 	)
 	(wire
 		(pts
-			(xy 214.63 55.88) (xy 214.63 53.34)
+			(xy 246.38 55.88) (xy 246.38 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "1137a014-a30b-4b02-9746-11054285a36b")
+		(uuid "9ac943fb-f9e9-4f11-b289-c4ebde81cec4")
 	)
 	(label "3V3"
-		(at 214.63 53.34 90)
+		(at 246.38 53.34 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "b2804aca-4f27-4f5a-9813-185d75af3f33")
+		(uuid "9641f847-f97a-44f1-84a7-f11a70ef98a9")
 	)
 	(wire
 		(pts
-			(xy 214.63 63.5) (xy 214.63 66.04)
+			(xy 246.38 63.5) (xy 246.38 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "1ac396a0-308e-4798-8f28-b6b147bb4d77")
+		(uuid "54815e80-fb9c-4842-97cf-4e98e703347a")
 	)
 	(label "GND"
-		(at 214.63 66.04 270)
+		(at 246.38 66.04 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "a0618215-ab54-4eed-bc7d-2225bf9d048a")
+		(uuid "ba769080-0f34-4ff0-bec4-9784f289e958")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 228.6 59.69 0)
+		(at 260.35 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "21da846f-beaa-497e-b867-e520cc81ed76")
+		(uuid "346b02e5-b4ad-4915-bda4-cb1fb8f8f165")
 		(property "Reference" "C7"
-			(at 231.14 58.42 0)
+			(at 262.89 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4775,7 +5128,7 @@
 			)
 		)
 		(property "Value" "22u"
-			(at 231.14 60.96 0)
+			(at 262.89 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4786,7 +5139,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 228.6 59.69 0)
+			(at 260.35 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4797,7 +5150,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 228.6 59.69 0)
+			(at 260.35 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4808,7 +5161,7 @@
 			)
 		)
 		(property "Description" "saida"
-			(at 228.6 59.69 0)
+			(at 260.35 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4819,10 +5172,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "9d9f3667-9cdb-4ef7-b58b-2dbc504d68cd")
+			(uuid "d66f3b17-b6b4-49b9-94e5-c81817e9148f")
 		)
 		(pin "2"
-			(uuid "88571591-f9d1-44d5-8e09-0104252e24cb")
+			(uuid "967c1dc6-eee6-4d4f-bf90-50befbd87d2c")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4835,55 +5188,55 @@
 	)
 	(wire
 		(pts
-			(xy 228.6 55.88) (xy 228.6 53.34)
+			(xy 260.35 55.88) (xy 260.35 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c3a91d0e-2371-4b59-bf84-82f79432441d")
+		(uuid "d42a3742-d361-4a91-9ea2-0cf1f845484f")
 	)
 	(label "3V3"
-		(at 228.6 53.34 90)
+		(at 260.35 53.34 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "776fd471-b2c6-4c8a-aaf0-371960ded4f4")
+		(uuid "fa5e995c-b9e0-4687-8bc3-e45ee1fab0b6")
 	)
 	(wire
 		(pts
-			(xy 228.6 63.5) (xy 228.6 66.04)
+			(xy 260.35 63.5) (xy 260.35 66.04)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "65726df4-fb11-4cb6-b676-aef6dfa98c28")
+		(uuid "8a9f2647-9426-438d-9933-65a5e5b53bf6")
 	)
 	(label "GND"
-		(at 228.6 66.04 270)
+		(at 260.35 66.04 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "403270bb-248a-4a5e-b4c8-75ed7991d4a5")
+		(uuid "47dfb435-cf20-480e-802e-0e94bff2b9d4")
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 247.65 59.69 0)
+		(at 279.4 59.69 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c71cd087-0eb7-4f0d-8dd3-5b61e0f79268")
-		(property "Reference" "R7"
-			(at 250.19 58.42 0)
+		(uuid "863f6d94-390b-425d-86f0-050612c6fd26")
+		(property "Reference" "R9"
+			(at 281.94 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4893,8 +5246,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "200k"
-			(at 250.19 60.96 0)
+		(property "Value" "47k"
+			(at 281.94 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4905,7 +5258,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 247.65 59.69 0)
+			(at 279.4 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4916,7 +5269,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 247.65 59.69 0)
+			(at 279.4 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4926,8 +5279,8 @@
 				)
 			)
 		)
-		(property "Description" "leitura da tensao do barco: VIN/11"
-			(at 247.65 59.69 0)
+		(property "Description" "FB: 0,8 V x (1 + 47/15) = 3,31 V (basicos JLC)"
+			(at 279.4 59.69 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -4938,10 +5291,605 @@
 			)
 		)
 		(pin "1"
-			(uuid "ce34e38f-883f-4524-9425-ba4c394398f9")
+			(uuid "7c786c7b-651a-4eac-b7ed-14cd5c08fe9d")
 		)
 		(pin "2"
-			(uuid "4e0e0b97-2066-4f90-9a33-c46d4c50fafe")
+			(uuid "7c2bc2e9-bf31-4f67-9a87-3c8bb267a1c2")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "R9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 279.4 55.88) (xy 279.4 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "403967b8-e7da-4fa8-a807-fcf25be1f4d3")
+	)
+	(label "3V3"
+		(at 279.4 53.34 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "870c773c-e68e-407a-9af3-e24ed41f62a3")
+	)
+	(wire
+		(pts
+			(xy 279.4 63.5) (xy 279.4 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "013d5763-ed27-4626-8b5a-8cb64a67b913")
+	)
+	(label "FB"
+		(at 279.4 66.04 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a580440b-ff0c-4f53-8bc4-9463c0ff713d")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 293.37 59.69 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cb696bf0-af9a-4666-a532-4bc8a464a4d7")
+		(property "Reference" "R10"
+			(at 295.91 58.42 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "15k"
+			(at 295.91 60.96 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 293.37 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 293.37 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "divisor"
+			(at 293.37 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d7c4db87-d8ff-481e-9fdd-b29be85bf928")
+		)
+		(pin "2"
+			(uuid "b8e92f72-e1cc-4b93-9ab0-54b62e7a5868")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "R10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 293.37 55.88) (xy 293.37 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "68a401b3-95cd-4cf6-ae5b-02dd31fcb6c1")
+	)
+	(label "FB"
+		(at 293.37 53.34 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2676779f-14fb-489c-9f12-268a3b69ce43")
+	)
+	(wire
+		(pts
+			(xy 293.37 63.5) (xy 293.37 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4a9fe7b2-541f-40c5-a82e-ac86ab55bef3")
+	)
+	(label "GND"
+		(at 293.37 66.04 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "453b01b6-fd18-4418-ba8a-69aaf10ce3c6")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 55.88 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "69a894f0-7163-41a4-8501-80d81da563ac")
+		(property "Reference" "R12"
+			(at 58.42 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "68k"
+			(at 58.42 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 55.88 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 55.88 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "compensacao (tabela 3 do datasheet p/ 3,3 V)"
+			(at 55.88 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "02fdfead-cc14-4fdf-b461-00fbd6c44e40")
+		)
+		(pin "2"
+			(uuid "1efa9dc0-9a8f-48da-b8d8-e25fb352c7b3")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 55.88 80.01) (xy 55.88 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aa82afd9-0c18-4db2-b3b7-b7e26aa3c301")
+	)
+	(label "COMP"
+		(at 55.88 77.47 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "eba13516-6835-4c52-a7a4-753642d97d95")
+	)
+	(wire
+		(pts
+			(xy 55.88 87.63) (xy 55.88 90.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2b01c01d-5b07-4104-a24e-81a3e564f22b")
+	)
+	(label "COMP_C"
+		(at 55.88 90.17 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b9a6e3e0-7fa6-4078-9b12-439ef8600946")
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 69.85 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "611d37aa-7145-4ca7-960a-01e3309024fc")
+		(property "Reference" "C12"
+			(at 72.39 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1n"
+			(at 72.39 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 69.85 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "compensacao: zero em 2,3 kHz (< fc/4)"
+			(at 69.85 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6df0f22b-5625-4fd4-8591-be6be8d92272")
+		)
+		(pin "2"
+			(uuid "a51448b0-3018-4ca7-baf8-c131528b4c38")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 69.85 80.01) (xy 69.85 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0739a4ff-9567-47d1-b1e4-1c3fbc20af09")
+	)
+	(label "COMP_C"
+		(at 69.85 77.47 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c67a7c46-7816-4bb2-bf0e-5e0b97ed8b05")
+	)
+	(wire
+		(pts
+			(xy 69.85 87.63) (xy 69.85 90.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bab28866-3be4-43e6-9015-4c539d9fd402")
+	)
+	(label "GND"
+		(at 69.85 90.17 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a15dfc05-e64c-47d1-8aa3-09f31f145b8f")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 83.82 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "54f60997-a8a1-401c-b643-fb4a079e2300")
+		(property "Reference" "R11"
+			(at 86.36 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "200k"
+			(at 86.36 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 83.82 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 83.82 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "fsw = 100000/(200+5) = 488 kHz"
+			(at 83.82 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f474e212-73f0-40e8-a4a2-6a4681b46705")
+		)
+		(pin "2"
+			(uuid "c5d17c18-4428-462b-9c0a-c9fd3e6cd775")
+		)
+		(instances
+			(project "safeboat-termica-v1"
+				(path "/7e2c4b10-5a1e-4c1e-9c1d-0000000000a1"
+					(reference "R11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 83.82 80.01) (xy 83.82 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2fc1091f-56dc-40f1-b405-07e1a4ba6302")
+	)
+	(label "FREQ"
+		(at 83.82 77.47 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3b348cd4-509e-4d26-a3de-21334949dec4")
+	)
+	(wire
+		(pts
+			(xy 83.82 87.63) (xy 83.82 90.17)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "43b2f907-ce95-4b56-8171-e6a3cb25f4d0")
+	)
+	(label "GND"
+		(at 83.82 90.17 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c3068fd0-7e35-474d-86ba-6d25071cfea1")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 104.14 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c4cbbf11-214e-454f-8d15-38e9e2e265a1")
+		(property "Reference" "R7"
+			(at 106.68 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "330k"
+			(at 106.68 85.09 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 104.14 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 104.14 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "leitura da tensao do barco: VIN/23 (55 V -> 2,4 V)"
+			(at 104.14 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "23a0f9b8-eb68-45d3-9c9d-07e1405f8a12")
+		)
+		(pin "2"
+			(uuid "17f731b7-65f3-445f-8f49-0ce73fc4375e")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -4954,55 +5902,55 @@
 	)
 	(wire
 		(pts
-			(xy 247.65 55.88) (xy 247.65 53.34)
+			(xy 104.14 80.01) (xy 104.14 77.47)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "720c693a-b648-423c-8e22-cf562014c07e")
+		(uuid "3b4808e3-999d-4a38-9992-e4da7c2b3697")
 	)
 	(label "VIN"
-		(at 247.65 53.34 90)
+		(at 104.14 77.47 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "5d0b6be1-a8bc-471e-bafc-d8f704651524")
+		(uuid "b5f6ab26-3589-4a72-812a-de44dade6a51")
 	)
 	(wire
 		(pts
-			(xy 247.65 63.5) (xy 247.65 66.04)
+			(xy 104.14 87.63) (xy 104.14 90.17)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "6a45485d-e340-419f-8c95-90eb8f1a12bc")
+		(uuid "c27ace01-4f98-4c10-a277-46c0e9f5dedc")
 	)
 	(label "VSENSE"
-		(at 247.65 66.04 270)
+		(at 104.14 90.17 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "ebc525d7-9bd4-4e76-aae5-60d3d67c5121")
+		(uuid "aafadd62-37a2-4b29-a36d-a6621d1a2c94")
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 261.62 59.69 0)
+		(at 118.11 83.82 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "6069a95c-4f5c-46a7-85bc-88fb28df1a24")
+		(uuid "b4034a2c-b459-4aa2-8e68-fb5f4b45d9ca")
 		(property "Reference" "R8"
-			(at 264.16 58.42 0)
+			(at 120.65 82.55 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5012,8 +5960,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "20k"
-			(at 264.16 60.96 0)
+		(property "Value" "15k"
+			(at 120.65 85.09 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5024,7 +5972,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
-			(at 261.62 59.69 0)
+			(at 118.11 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5035,7 +5983,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 261.62 59.69 0)
+			(at 118.11 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5046,7 +5994,7 @@
 			)
 		)
 		(property "Description" "divisor"
-			(at 261.62 59.69 0)
+			(at 118.11 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5057,10 +6005,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "dc6432ec-2358-4043-b247-cd306cb7f01a")
+			(uuid "0560413c-f3ba-472f-87e5-27d0b24efd01")
 		)
 		(pin "2"
-			(uuid "081ddbc7-aa20-4919-aae3-e6e0eb228152")
+			(uuid "a9fea4bc-ffad-4ca3-ab24-efd32bfdfd14")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -5073,55 +6021,55 @@
 	)
 	(wire
 		(pts
-			(xy 261.62 55.88) (xy 261.62 53.34)
+			(xy 118.11 80.01) (xy 118.11 77.47)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "8f9911ae-d1ab-49b3-a8b5-fcef9931c373")
+		(uuid "d0e76706-9927-4fc8-962f-b3335b14494b")
 	)
 	(label "VSENSE"
-		(at 261.62 53.34 90)
+		(at 118.11 77.47 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "8230fdb6-6e35-4792-bd97-cb0a43f51d5d")
+		(uuid "3e3dbf46-a7d9-44b4-baaa-eed9ceca722f")
 	)
 	(wire
 		(pts
-			(xy 261.62 63.5) (xy 261.62 66.04)
+			(xy 118.11 87.63) (xy 118.11 90.17)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "7e20ef04-22ce-45b1-b39f-3801bf109b21")
+		(uuid "60e4697d-0016-4457-919a-34ceeea33464")
 	)
 	(label "GND"
-		(at 261.62 66.04 270)
+		(at 118.11 90.17 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "944ab328-fde4-4912-86d5-3ea2d69260a3")
+		(uuid "66d9e8a6-56e3-4fc4-91a5-b44c2891a634")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 275.59 59.69 0)
+		(at 132.08 83.82 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e185c01c-02db-4190-be9c-affd5bc3a39e")
+		(uuid "c0687bed-8247-40ed-b492-8b7970c1452b")
 		(property "Reference" "C4"
-			(at 278.13 58.42 0)
+			(at 134.62 82.55 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5132,7 +6080,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 278.13 60.96 0)
+			(at 134.62 85.09 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5143,7 +6091,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
-			(at 275.59 59.69 0)
+			(at 132.08 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5154,7 +6102,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 275.59 59.69 0)
+			(at 132.08 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5165,7 +6113,7 @@
 			)
 		)
 		(property "Description" "filtro do ADC"
-			(at 275.59 59.69 0)
+			(at 132.08 83.82 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5176,10 +6124,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "2babccca-519f-4fd4-b27e-cc3b35092522")
+			(uuid "b72e703b-11fe-406a-8401-3352a1d18d3c")
 		)
 		(pin "2"
-			(uuid "cbde9e02-6e70-4679-944d-8532a73d890a")
+			(uuid "272112df-86a3-48a0-a4da-b1923db5809b")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -5192,55 +6140,55 @@
 	)
 	(wire
 		(pts
-			(xy 275.59 55.88) (xy 275.59 53.34)
+			(xy 132.08 80.01) (xy 132.08 77.47)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "e103d8a2-82e2-476e-99ee-f9535d62b59c")
+		(uuid "e383d72e-f4be-494e-9073-5e50c7f2ca6d")
 	)
 	(label "VSENSE"
-		(at 275.59 53.34 90)
+		(at 132.08 77.47 90)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "2a3d6632-e30f-44e0-9af9-1d4acf3789fe")
+		(uuid "038b83b1-ed1d-437c-bbf4-d050635f397a")
 	)
 	(wire
 		(pts
-			(xy 275.59 63.5) (xy 275.59 66.04)
+			(xy 132.08 87.63) (xy 132.08 90.17)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "6c908462-6371-4fb1-953f-a31de1919633")
+		(uuid "999f86ae-afaa-4d8d-83e4-d1a10e672211")
 	)
 	(label "GND"
-		(at 275.59 66.04 270)
+		(at 132.08 90.17 270)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "e2f10226-85c2-4c06-bc9e-2117e0417e22")
+		(uuid "dabebc39-21ed-43fd-9a35-0be4dfbd34bd")
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
-		(at 34.29 96.52 0)
+		(at 160.02 96.52 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "db17012d-1275-4297-8dc1-745ddfce6aea")
+		(uuid "3af24467-735d-4433-a36d-7d3873de1dd6")
 		(property "Reference" "J1"
-			(at 26.67 86.36 0)
+			(at 152.4 86.36 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5250,7 +6198,7 @@
 			)
 		)
 		(property "Value" "USB (JST-PH 4)"
-			(at 41.91 106.68 0)
+			(at 167.64 106.68 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5260,7 +6208,7 @@
 			)
 		)
 		(property "Footprint" "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical"
-			(at 34.29 96.52 0)
+			(at 160.02 96.52 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5271,7 +6219,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 34.29 96.52 0)
+			(at 160.02 96.52 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5282,7 +6230,7 @@
 			)
 		)
 		(property "Description" "rabicho p/ USB-C femea: 1 5V · 2 D- · 3 D+ · 4 GND"
-			(at 34.29 96.52 0)
+			(at 160.02 96.52 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5293,16 +6241,16 @@
 			)
 		)
 		(pin "1"
-			(uuid "57c1738f-f4e2-4089-a470-a87a04f444be")
+			(uuid "73515325-f1d7-47d5-863a-327a8fdc2a99")
 		)
 		(pin "2"
-			(uuid "b9aa2973-2420-4b6e-af0d-f199447126b7")
+			(uuid "b30c423b-0607-4c92-941d-55be09a623f0")
 		)
 		(pin "3"
-			(uuid "0b9c3502-5aef-469b-958a-0c415c2d0333")
+			(uuid "c61f4748-3131-4991-a356-9ac0301529d5")
 		)
 		(pin "4"
-			(uuid "f0129162-b49a-402d-8264-0ec29cd0bad8")
+			(uuid "5f3f94e6-1fea-4b2e-b6de-bd11b4c56435")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -5315,95 +6263,95 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 93.98) (xy 26.67 93.98)
+			(xy 154.94 93.98) (xy 152.4 93.98)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "3a00477b-d5d7-4993-9a15-ee6012181892")
+		(uuid "19d0b1f0-325b-4c1e-9325-474179aa6afc")
 	)
 	(label "VBUS"
-		(at 26.67 93.98 180)
+		(at 152.4 93.98 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "7d3f5101-40d4-4151-b4ff-0b8196c074c2")
+		(uuid "20d05fed-5080-4fa5-827e-721e8441fd5f")
 	)
 	(wire
 		(pts
-			(xy 29.21 96.52) (xy 26.67 96.52)
+			(xy 154.94 96.52) (xy 152.4 96.52)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c1195e35-2d0f-4c09-9a76-20ad0eeafdf3")
+		(uuid "3124f09d-10f1-4485-b53f-ca1b12ac97ec")
 	)
 	(label "USB_DM"
-		(at 26.67 96.52 180)
+		(at 152.4 96.52 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "b9e633ec-8105-4724-b9dc-896e7eec2b4d")
+		(uuid "a5dad333-ea6b-414e-adaa-1ab3d5f48820")
 	)
 	(wire
 		(pts
-			(xy 29.21 99.06) (xy 26.67 99.06)
+			(xy 154.94 99.06) (xy 152.4 99.06)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "386bfcd1-507b-4277-8a77-a2de9207a31d")
+		(uuid "94dea5ad-0328-4bd9-bd19-b361f43bc301")
 	)
 	(label "USB_DP"
-		(at 26.67 99.06 180)
+		(at 152.4 99.06 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "731d8e50-40a4-4e98-a565-c5ad619a648d")
+		(uuid "cd904440-bc67-4cd7-a8b6-e3df37051c8d")
 	)
 	(wire
 		(pts
-			(xy 29.21 101.6) (xy 26.67 101.6)
+			(xy 154.94 101.6) (xy 152.4 101.6)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "b1bec24b-8882-4445-837f-2c9f58d27f4c")
+		(uuid "57d03959-5c93-4242-8a37-ea1e752f9fe0")
 	)
 	(label "GND"
-		(at 26.67 101.6 180)
+		(at 152.4 101.6 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "d8fcbaad-4bac-421d-a783-b0d23f85386d")
+		(uuid "aa0ef33e-d266-4d29-8014-a82554e63553")
 	)
 	(symbol
 		(lib_id "Device:D_Schottky")
-		(at 62.23 96.52 0)
+		(at 187.96 96.52 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ae9674c9-2156-43e3-9e21-c6820e9fc89d")
+		(uuid "05b96d14-2298-4ff7-b49e-c7fab69eff57")
 		(property "Reference" "D3"
-			(at 54.61 88.9 0)
+			(at 180.34 88.9 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5413,7 +6361,7 @@
 			)
 		)
 		(property "Value" "SS14"
-			(at 69.85 104.14 0)
+			(at 195.58 104.14 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5423,7 +6371,7 @@
 			)
 		)
 		(property "Footprint" "Diode_SMD:D_SMA"
-			(at 62.23 96.52 0)
+			(at 187.96 96.52 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5434,7 +6382,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 62.23 96.52 0)
+			(at 187.96 96.52 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5445,7 +6393,7 @@
 			)
 		)
 		(property "Description" "USB alimenta a placa na bancada (sem 12 V)"
-			(at 62.23 96.52 0)
+			(at 187.96 96.52 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -5456,10 +6404,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "29808e7a-24ba-4052-8d78-d9dae797297e")
+			(uuid "79c3f97f-2f03-4a8f-b026-642dd209a7a7")
 		)
 		(pin "2"
-			(uuid "6956720b-cf7a-4c69-ae48-14b9a44d9d72")
+			(uuid "af7b695a-aa08-48b5-ad14-afe044b79e14")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -5472,43 +6420,43 @@
 	)
 	(wire
 		(pts
-			(xy 58.42 96.52) (xy 55.88 96.52)
+			(xy 184.15 96.52) (xy 181.61 96.52)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "17ba4e1a-0722-4fc2-9ca3-9cc60ad9e1f5")
+		(uuid "f520feee-5fc2-4af8-be07-7caf650fcc18")
 	)
 	(label "VIN"
-		(at 55.88 96.52 180)
+		(at 181.61 96.52 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify right bottom)
 		)
-		(uuid "4a45c27d-6447-4964-bac3-59c0dbf2b8cc")
+		(uuid "b6e445e3-1a2e-4f42-9aaa-82bd8f1b435b")
 	)
 	(wire
 		(pts
-			(xy 66.04 96.52) (xy 68.58 96.52)
+			(xy 191.77 96.52) (xy 194.31 96.52)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "94d13839-40f9-4285-aa2e-919f2331acef")
+		(uuid "b3ed64b9-f931-4d63-920d-0fe309caa1d5")
 	)
 	(label "VBUS"
-		(at 68.58 96.52 0)
+		(at 194.31 96.52 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "402d863b-6bcd-49bf-9c39-9a2197f2c95a")
+		(uuid "c41af6b9-7b11-444d-97d2-d3bca4094259")
 	)
 	(text "2 · MCU — ESP32-C3-MINI-1: GPIO8 SDA · GPIO9 SCL (+BOOT) · GPIO10 LED · GPIO4 SENS_OFF · GPIO0 VSENSE · GPIO18/19 USB · EN com R1/C1 + RST"
 		(exclude_from_sim no)
@@ -5520,7 +6468,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "525eba0f-7a52-438a-bdc4-0c04e7c10648")
+		(uuid "2f23804a-49c0-4bfc-8b8f-bd6607e48a66")
 	)
 	(symbol
 		(lib_id "Espressif:ESP32-C3-MINI-1")
@@ -5530,7 +6478,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "3ae4ac37-e78a-41df-975b-f5363fd765c9")
+		(uuid "c20012b6-f5d2-466b-8395-890186953676")
 		(property "Reference" "U1"
 			(at 64.77 157.48 0)
 			(show_name no)
@@ -5585,163 +6533,163 @@
 			)
 		)
 		(pin "1"
-			(uuid "82a9ed3c-6628-4c81-9843-8e89bca44e56")
+			(uuid "a034e632-b98e-46a9-8145-e59955cfc315")
 		)
 		(pin "2"
-			(uuid "313495e1-d3cd-41e2-9023-d32277380c0a")
+			(uuid "0bf4e891-7b3c-443d-b061-f127b0438571")
 		)
 		(pin "3"
-			(uuid "6785be09-8b1f-43a3-a51a-fe1fc31f6ef8")
+			(uuid "6156554c-33d9-46e7-9dbf-871aea265928")
 		)
 		(pin "4"
-			(uuid "30860ecd-37a0-487c-86cc-94be12846a44")
+			(uuid "3b6fd0d0-354f-401e-acf0-21f22d6cb969")
 		)
 		(pin "5"
-			(uuid "45c5b969-aee5-4459-9307-5afd3c676c66")
+			(uuid "125a06e3-65cc-4091-8330-1a3674dc71ff")
 		)
 		(pin "6"
-			(uuid "57411284-1e21-43ec-9f9e-f73df71e5f79")
+			(uuid "8ae09cef-ff05-4284-b7bd-caf352375b58")
 		)
 		(pin "7"
-			(uuid "68a049f1-4df1-4e17-bcef-ef2d1bcb1b7f")
+			(uuid "e1942722-e8e3-4cb1-993f-56fdc8d1b981")
 		)
 		(pin "8"
-			(uuid "483552f0-eeb0-43f9-8cfc-b0c08b0f6112")
+			(uuid "8fe1f4fe-b9de-4540-b80b-99e4d972fefe")
 		)
 		(pin "9"
-			(uuid "5d540da2-9ddd-435d-92ff-6e3c9d1fe128")
+			(uuid "e244d072-c6d2-44cb-9e95-98e447234ff7")
 		)
 		(pin "10"
-			(uuid "4bb65d0b-c433-41d2-b9b5-779c7af0c9f7")
+			(uuid "313429a3-293b-4748-9bef-1d456d7939ff")
 		)
 		(pin "11"
-			(uuid "fe9c117e-feda-4cda-9ba6-72394db25791")
+			(uuid "3178dd69-269c-4c41-93f6-fe6268a722f4")
 		)
 		(pin "12"
-			(uuid "e4e456c7-91bc-47bc-a26f-0377d95c38df")
+			(uuid "728d33a1-4dbd-498a-885b-7b0af6cb0309")
 		)
 		(pin "13"
-			(uuid "48171ce3-a93c-4771-88eb-e94a9ca4c3aa")
+			(uuid "969ce861-0494-485d-af13-8ad88d0de501")
 		)
 		(pin "14"
-			(uuid "323be118-6adf-415d-b545-3264af9a1b97")
+			(uuid "9fed159f-d04a-4d7a-b8ae-aa66d327a637")
 		)
 		(pin "15"
-			(uuid "10bef962-5fea-454f-ad79-e0ecc74ad7aa")
+			(uuid "b9b81193-9afc-4f9b-8192-5bcbc7210a37")
 		)
 		(pin "16"
-			(uuid "59fcfc26-4790-4c64-8c53-10660648ee36")
+			(uuid "320d0e77-5f70-49ae-a236-3b9bd1495d51")
 		)
 		(pin "17"
-			(uuid "c0748354-60cd-4440-8bf5-5be234867383")
+			(uuid "2d9d5c71-8c56-4b99-937b-211c9c9a73cd")
 		)
 		(pin "18"
-			(uuid "886c0863-571c-4062-9f10-08251921e516")
+			(uuid "9a507363-9bb4-457d-a6b7-2363da2bf091")
 		)
 		(pin "19"
-			(uuid "576b6269-71e4-4c2a-bf7e-41914a30c27e")
+			(uuid "a8e2aa9c-395c-4005-84d2-83ca3b3b6d3e")
 		)
 		(pin "20"
-			(uuid "8dee8233-0a16-4952-89e5-dc532d83d2b7")
+			(uuid "baaa4080-c01b-4154-a71d-bdd9ba44fd7b")
 		)
 		(pin "21"
-			(uuid "4d2196cb-6858-480c-b277-eb698b425576")
+			(uuid "4b1a470d-48ed-45e0-bf3b-aa46884607aa")
 		)
 		(pin "22"
-			(uuid "2391df39-98f8-46d1-b3ff-4af76ae04a21")
+			(uuid "2e9d30f7-0a26-4bdd-b7df-4acbe033bcc9")
 		)
 		(pin "23"
-			(uuid "cc0052e3-e89c-40c8-97ad-7c13b682ad88")
+			(uuid "e69a0de2-2251-4886-a066-8aeefdda77cc")
 		)
 		(pin "24"
-			(uuid "b4a8e596-6658-4de6-8ec0-2c91c4055e12")
+			(uuid "5bf62c92-549c-40f3-b530-252fe362bcab")
 		)
 		(pin "25"
-			(uuid "73661831-3a1c-4e85-b95f-9337df496aba")
+			(uuid "176b44e8-e9e6-4c9a-a061-5a9565e059d1")
 		)
 		(pin "26"
-			(uuid "76f23f22-86db-4ffc-a435-b4c7ae031152")
+			(uuid "acf57cf8-c093-4e09-86fa-eabb68c64f64")
 		)
 		(pin "27"
-			(uuid "eee369e5-1266-40ac-8a75-ff078681577a")
+			(uuid "67742eb1-e03c-415b-ae48-490d66015801")
 		)
 		(pin "28"
-			(uuid "6465c9aa-fd41-4081-b8c3-434528681428")
+			(uuid "e1ecceed-44f3-4e50-8aa5-49e16fb8c3bc")
 		)
 		(pin "29"
-			(uuid "2ac6d923-3481-45d1-88c4-0dfa4ebd7920")
+			(uuid "8b2555cd-3a05-450e-944b-984a3676b8b9")
 		)
 		(pin "30"
-			(uuid "17769c3c-d6f7-4644-9e02-afd73be7f96d")
+			(uuid "3b90ec4f-899b-4b71-8d33-89fe0a4d2915")
 		)
 		(pin "31"
-			(uuid "4e18da63-91a8-474c-86ed-a61bfeb97b85")
+			(uuid "2cc22cd8-db28-491b-bb17-84615c9cf452")
 		)
 		(pin "32"
-			(uuid "b4a30e20-9af9-4f7b-bdf9-69f0a35f73f0")
+			(uuid "cf920fdf-0eba-4738-9f5e-8a3bbf9944d5")
 		)
 		(pin "33"
-			(uuid "e6e7d652-5ebb-4f37-a840-c5c4f88bd7a2")
+			(uuid "b46430e5-e055-4bdf-b89b-de68b8f67c19")
 		)
 		(pin "34"
-			(uuid "966b823b-ed90-4b85-8406-13ffce12f5cc")
+			(uuid "257d6cd1-bba0-48e7-84f0-2d13ed60a8c2")
 		)
 		(pin "35"
-			(uuid "0da8925a-5ea2-4de4-9a4e-494689044b66")
+			(uuid "b8bb8e59-dd98-4755-a82c-a588da85f6c8")
 		)
 		(pin "36"
-			(uuid "9cd09a78-c8d1-4cdc-914e-7fe5444e8fa5")
+			(uuid "17da1b35-9c9b-448e-9700-80cff2461fe4")
 		)
 		(pin "37"
-			(uuid "74dad3e2-249e-456b-945b-5c28c5604173")
+			(uuid "e113c699-e7f0-4fed-8993-9ea1fdb31c17")
 		)
 		(pin "38"
-			(uuid "d7cabf27-6299-4b86-8fac-1e1b25bf5d47")
+			(uuid "e690e2cf-4688-4402-9e8e-7809637b4fa2")
 		)
 		(pin "39"
-			(uuid "12c1d1cf-1832-4652-99b9-22214876caeb")
+			(uuid "e992ab97-0f53-4d7c-b87d-bfb6f9ff727f")
 		)
 		(pin "40"
-			(uuid "8454a958-553a-4717-bae8-b7df03a85f68")
+			(uuid "0a947271-35cf-465f-9664-3c9aca70023f")
 		)
 		(pin "41"
-			(uuid "52f58a03-dbfa-405f-9b58-6e658f126553")
+			(uuid "d8131d99-59cd-4988-bc39-d85b2ae51e71")
 		)
 		(pin "42"
-			(uuid "cecafa19-6388-46d2-97bd-14f6e563a8b7")
+			(uuid "623d09af-e939-40e6-b00e-72bd7757a9d3")
 		)
 		(pin "43"
-			(uuid "416cbff2-a98d-413c-93ac-8ca96c48ea7c")
+			(uuid "cd194399-269e-4930-9716-747eb214882f")
 		)
 		(pin "44"
-			(uuid "35f67a50-5901-4a79-9a4a-f1cad8bd2e7b")
+			(uuid "18b8e16d-f669-48dc-aaa7-3becf1ef9d4f")
 		)
 		(pin "45"
-			(uuid "fb6bd882-093b-4e03-94d6-96f57dea2220")
+			(uuid "6668f67c-49cc-4108-8716-158e5c30d1d1")
 		)
 		(pin "46"
-			(uuid "f60a4efa-2c72-406a-84da-50cbf80c76c4")
+			(uuid "2dc81588-e46c-4931-98cd-7bf5c92853a6")
 		)
 		(pin "47"
-			(uuid "5bfa7be3-2b40-419b-9c87-391afa146627")
+			(uuid "b55379e6-a162-43f5-9c63-9ed754ab7531")
 		)
 		(pin "48"
-			(uuid "8c3c1110-695d-4de7-8d67-011f3bbc5024")
+			(uuid "75c870d5-8471-465a-9865-a3b8b34c4fce")
 		)
 		(pin "49"
-			(uuid "14e7f552-07e1-48a3-8455-898737b3eb07")
+			(uuid "69854484-b4a0-40fb-aa69-2406ad8fc3ef")
 		)
 		(pin "50"
-			(uuid "64a47f43-2ce6-474f-85f9-cc3eeaefdb91")
+			(uuid "b376f520-a6fa-4895-98c5-f97b2db10e6b")
 		)
 		(pin "51"
-			(uuid "d07cd640-c3e4-4fa6-baad-4e27c08560de")
+			(uuid "d8f12078-0507-4d69-b543-2a79f203b6b3")
 		)
 		(pin "52"
-			(uuid "cf291909-339b-4210-949f-222a78f1328f")
+			(uuid "4f628a3f-2072-4416-a443-93ead3e21ef9")
 		)
 		(pin "53"
-			(uuid "48c3af5a-69fe-4f33-b097-7b86cfb6f8ba")
+			(uuid "d5ff9a01-89f7-4f13-9eef-e4f056930e22")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -5760,7 +6708,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3769bf34-84d5-4c4d-8949-3d4d0863636f")
+		(uuid "fa10f9d5-cce1-4c74-80c2-319ca13b6801")
 	)
 	(label "GND"
 		(at 72.39 220.98 270)
@@ -5770,7 +6718,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "3e86bb06-42a3-4a4c-9308-6d70edab5669")
+		(uuid "aa21500c-beeb-4a56-8e1c-f6f28650bd84")
 	)
 	(wire
 		(pts
@@ -5780,7 +6728,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "fbd8de4c-1359-4cd9-a705-ad96565f37a3")
+		(uuid "15cc783f-d93d-495b-ae64-b21ff1253169")
 	)
 	(label "3V3"
 		(at 72.39 160.02 90)
@@ -5790,23 +6738,23 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "91122291-3a83-4421-b128-b9c0a90d31bf")
+		(uuid "496794cc-0e49-4113-a08e-301f7f9ad246")
 	)
 	(no_connect
 		(at 46.99 180.34)
-		(uuid "7a1a044c-9fad-4d7d-b283-8a1229cfaa28")
+		(uuid "38a8bb14-8724-4fb1-9195-a2fa1ac523c2")
 	)
 	(no_connect
 		(at 100.33 193.04)
-		(uuid "a94808ab-fb46-4085-8c22-f32abfd65e76")
+		(uuid "43b89843-1cbe-4be3-9c7c-a8e069c73ee3")
 	)
 	(no_connect
 		(at 100.33 195.58)
-		(uuid "afe74360-1dff-4481-89f3-47af356fd1c5")
+		(uuid "ff186a6b-fecc-4482-a2ab-2244b3f50f40")
 	)
 	(no_connect
 		(at 46.99 182.88)
-		(uuid "71bf10aa-5fb0-47e2-a687-3946df462f81")
+		(uuid "dc97d0b3-29dc-492c-9aaa-74656500c33a")
 	)
 	(wire
 		(pts
@@ -5816,7 +6764,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e844c065-ba2a-47bb-b957-fe26f23b61c7")
+		(uuid "db19266c-43b5-4ab3-8e14-0d2b7e71a9cc")
 	)
 	(label "EN"
 		(at 41.91 167.64 180)
@@ -5826,15 +6774,15 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "a5b7e73a-5d04-4c0e-b561-b90d5e41933b")
+		(uuid "aec893a9-4a56-4455-be6d-e9cf837e47d3")
 	)
 	(no_connect
 		(at 46.99 185.42)
-		(uuid "d949d3f0-c7a9-46bb-afa3-ff04674aba8f")
+		(uuid "290f4854-c881-4daa-8122-d07196e840e3")
 	)
 	(no_connect
 		(at 46.99 187.96)
-		(uuid "9ffc0d8a-279c-49c8-bf55-ebed282fbd9f")
+		(uuid "50e0296b-3b01-40b4-abde-ec3e277e1bed")
 	)
 	(wire
 		(pts
@@ -5844,7 +6792,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "79f1748c-eaad-4c17-a2ff-8fc45064d7d0")
+		(uuid "fc6109b6-ad43-40ac-a560-dd96a711ed08")
 	)
 	(label "VSENSE"
 		(at 41.91 172.72 180)
@@ -5854,15 +6802,15 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b5c7b234-8aa5-44b9-b96f-f34daa2f041a")
+		(uuid "1646c55b-0951-48d7-9e42-8fe214e3fb1a")
 	)
 	(no_connect
 		(at 44.45 175.26)
-		(uuid "7789fa40-7eaa-4504-99db-9747f614b7fc")
+		(uuid "dc0dda9f-0264-4c4b-b5ba-b8ea1d6a35d1")
 	)
 	(no_connect
 		(at 46.99 190.5)
-		(uuid "d7601919-8585-41d6-8433-b5ea6d8c5233")
+		(uuid "db28aa18-254e-4a94-860f-d062bb10f49a")
 	)
 	(wire
 		(pts
@@ -5872,7 +6820,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "dad61fe5-91ee-4b79-9f45-381b77c4ecd7")
+		(uuid "3c86bb9f-6825-4014-8beb-57669aa2e1ba")
 	)
 	(label "LED_IO"
 		(at 102.87 213.36 0)
@@ -5882,11 +6830,11 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "4c320b55-be29-4c4b-b2ec-1c66c0ecfed5")
+		(uuid "6baeaa59-95bc-4bfb-a11e-4894b80b3c5c")
 	)
 	(no_connect
 		(at 46.99 193.04)
-		(uuid "bfb061b9-c5a3-455d-af4c-dbfa4ac2b795")
+		(uuid "8bfe67be-4d6d-41da-a4e3-386cf1b963eb")
 	)
 	(wire
 		(pts
@@ -5896,7 +6844,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0fee7fd9-2425-48ce-a1b8-781576414110")
+		(uuid "5c2260d6-bf22-4f4b-b44f-4c5b6690345a")
 	)
 	(label "SENS_OFF"
 		(at 102.87 198.12 0)
@@ -5906,19 +6854,19 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "56045997-efc9-4287-922c-c73da2ed6c15")
+		(uuid "260f4c02-7a21-4263-a1f5-8ed73ab206c3")
 	)
 	(no_connect
 		(at 100.33 200.66)
-		(uuid "cff82c11-4f12-419a-8bb5-27656345bf06")
+		(uuid "8f6d1109-081d-4348-8aa2-81fc1121927b")
 	)
 	(no_connect
 		(at 100.33 203.2)
-		(uuid "1d99dab6-3106-412d-9401-e5fda0fec8a6")
+		(uuid "af9d5d0d-29ef-4827-a279-b6238451f6d0")
 	)
 	(no_connect
 		(at 100.33 205.74)
-		(uuid "f2a5efc4-7715-4925-aa90-6d4104d74e2c")
+		(uuid "2a9cd8c6-ba92-46aa-a85f-0785bd48a4fe")
 	)
 	(wire
 		(pts
@@ -5928,7 +6876,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b1034d67-1efc-46de-934f-92d1f209803d")
+		(uuid "19ce9fe5-8507-4988-94b3-0f578915f7d8")
 	)
 	(label "SDA"
 		(at 102.87 208.28 0)
@@ -5938,7 +6886,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "5f1f6c0c-8d81-4be0-8562-d656091a25e1")
+		(uuid "d219a918-7904-4254-87d0-c8d93e99281b")
 	)
 	(wire
 		(pts
@@ -5948,7 +6896,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "cdb764b7-0778-4ad2-a809-172dd2b06939")
+		(uuid "c87c5d90-1540-458b-9874-b98a36502952")
 	)
 	(label "SCL"
 		(at 102.87 210.82 0)
@@ -5958,15 +6906,15 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "1b0712d6-89d2-41c5-9a58-4081fbd9be02")
+		(uuid "0471ba68-c9db-498b-9059-8362ab5f38db")
 	)
 	(no_connect
 		(at 46.99 195.58)
-		(uuid "02a66760-37b5-4bb8-801a-c6bee5ae5e0b")
+		(uuid "cd2f1603-8689-4604-9b7e-af227552c60c")
 	)
 	(no_connect
 		(at 46.99 198.12)
-		(uuid "adf3634d-7dec-426c-afe7-2c0a33029e86")
+		(uuid "d76a0ef0-6c6e-4717-9232-f87702332ded")
 	)
 	(wire
 		(pts
@@ -5976,7 +6924,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b0ff641c-1b3b-4d4c-bbec-aaf0b5363646")
+		(uuid "a881a72f-e1fc-45cc-91f8-1c8e06dbefa2")
 	)
 	(label "USB_DM"
 		(at 102.87 182.88 0)
@@ -5986,7 +6934,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "91f915cf-09be-4935-9494-1a96c8acd72f")
+		(uuid "bf9d7e52-9cf4-42fd-bc2b-41bf47a6f19d")
 	)
 	(wire
 		(pts
@@ -5996,7 +6944,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0b0013a6-cc3b-4532-a6f9-bbb6c1049060")
+		(uuid "83760da5-4d92-4101-ae0f-78990563d736")
 	)
 	(label "USB_DP"
 		(at 102.87 180.34 0)
@@ -6006,39 +6954,39 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "340560f9-678f-4f65-bf6e-440aebb27221")
+		(uuid "99cb4872-17a1-46f9-b0db-199207509663")
 	)
 	(no_connect
 		(at 46.99 200.66)
-		(uuid "044d38b9-0dce-4e30-b4fe-5bad9e3cb943")
+		(uuid "ae5a8ce8-79ce-4a54-85f9-988bc293bf93")
 	)
 	(no_connect
 		(at 46.99 203.2)
-		(uuid "ecab0d64-65e8-427d-9a7c-fe74e21fdc9c")
+		(uuid "7c48f17f-ceac-434b-ad8d-b755ad161ff9")
 	)
 	(no_connect
 		(at 100.33 175.26)
-		(uuid "bf1a15bb-51d9-48a3-a367-c40a182986d2")
+		(uuid "580b80f2-1299-4f4a-8802-9eb985a15382")
 	)
 	(no_connect
 		(at 100.33 172.72)
-		(uuid "d6ead313-82a6-4d1d-b4f8-29dc8153415f")
+		(uuid "22e94ea3-c62a-489c-a8a5-ad3a46261acf")
 	)
 	(no_connect
 		(at 46.99 205.74)
-		(uuid "cc6bd048-e05f-499e-b9e3-e08e03cb4c3a")
+		(uuid "371757cb-4109-484a-86c0-0b5bf78610e0")
 	)
 	(no_connect
 		(at 46.99 208.28)
-		(uuid "8f0037e2-edcc-4f8b-9ea6-0c038a9b6693")
+		(uuid "9906f1d0-986b-43a3-8edc-9315016471a6")
 	)
 	(no_connect
 		(at 46.99 210.82)
-		(uuid "14499823-0a8d-4aed-93f3-b7643204e6cf")
+		(uuid "9b51e092-b9db-4090-99a2-3cf26ad097d0")
 	)
 	(no_connect
 		(at 46.99 213.36)
-		(uuid "0866a5d1-b196-44e4-b918-e5358d2637a5")
+		(uuid "46c174d9-d17f-433d-b7cf-2c7fab849be7")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -6048,7 +6996,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4424b99a-9c51-4ed4-97b4-fb8d07890444")
+		(uuid "ba935ca2-d5fb-4014-84c4-f952c93b3f42")
 		(property "Reference" "C9"
 			(at 132.08 148.59 0)
 			(show_name no)
@@ -6105,10 +7053,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "7a584b64-9af5-44a5-965d-b8341df2695d")
+			(uuid "2c3fef6c-ccad-4fa6-b35c-7df7b64b9cd8")
 		)
 		(pin "2"
-			(uuid "180d7526-8960-498f-af37-b458cf05bb5e")
+			(uuid "650a1228-6c91-4291-ab1f-c5e32ad8f6b1")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6127,7 +7075,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6cf5cc56-b5f5-48cc-9f8c-88f220ff5efb")
+		(uuid "449ec687-b76e-4ba8-abaa-3a8514961ee6")
 	)
 	(label "3V3"
 		(at 129.54 143.51 90)
@@ -6137,7 +7085,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "8d8e3549-ccdb-45f5-86ac-592b553501b0")
+		(uuid "42ad575f-c020-403c-a38b-2c7e3367d0b0")
 	)
 	(wire
 		(pts
@@ -6147,7 +7095,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "36b20f08-e73a-4817-b737-9f3dac1fd2fe")
+		(uuid "056e2753-8b5e-42b6-919f-74f9e6c4b508")
 	)
 	(label "GND"
 		(at 129.54 156.21 270)
@@ -6157,7 +7105,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b260dea1-6b2b-45b4-9af2-f9a55f96ff90")
+		(uuid "ca2076b5-69d4-4724-ae56-d0bc9a77d609")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -6167,7 +7115,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f78d1d3f-0945-41af-8a30-4ee3e92e0c53")
+		(uuid "321e6b31-3164-4e4c-a952-1a6709369fdf")
 		(property "Reference" "C10"
 			(at 146.05 148.59 0)
 			(show_name no)
@@ -6224,10 +7172,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "b4e79f3f-a643-45b2-b15e-58e36128f298")
+			(uuid "f3407b8e-bf99-4dbe-a77e-e6558de942a6")
 		)
 		(pin "2"
-			(uuid "b9bf43ee-4a7b-43bd-9086-e4f0751ea22c")
+			(uuid "c77fc230-b49a-43ae-ad3e-73afd6ee1665")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6246,7 +7194,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9a7b8930-e261-4372-8d68-01f053a1cba9")
+		(uuid "9d4dc2c0-141f-4586-b69c-38164de1a915")
 	)
 	(label "3V3"
 		(at 143.51 143.51 90)
@@ -6256,7 +7204,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "58ec08a9-b6ac-45f9-b351-34a862e98891")
+		(uuid "802fc4e1-c795-4378-9b67-24e88c262760")
 	)
 	(wire
 		(pts
@@ -6266,7 +7214,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "90113b9d-fb38-48ea-b632-ec4311c7ee70")
+		(uuid "22dafbf2-f0a2-4db8-8fe0-2063cf887055")
 	)
 	(label "GND"
 		(at 143.51 156.21 270)
@@ -6276,7 +7224,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "22624daa-12e0-4d9d-9ba3-e8c9eb0a0b00")
+		(uuid "798c7ba6-1e5f-4600-b66d-0dbb28532bad")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -6286,7 +7234,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "a412f1dc-9a76-41b4-ac1e-af6f8a838747")
+		(uuid "80d67d55-7608-4e65-a8f0-32bf238b7f60")
 		(property "Reference" "R1"
 			(at 160.02 148.59 0)
 			(show_name no)
@@ -6343,10 +7291,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "fc6642f0-6bbf-4db3-9feb-03cbd4bd76d5")
+			(uuid "49cc52ba-ae30-4518-b157-4f7778a6e684")
 		)
 		(pin "2"
-			(uuid "74c6b1b8-efe8-4046-b6f4-f29fb6ef1a78")
+			(uuid "25436fd7-eafe-4dd6-97d0-d8b7ce3da6e5")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6365,7 +7313,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a387dc0e-fa91-45e3-8161-658d41d5e50b")
+		(uuid "4bb1b64b-e2fe-43f2-8267-2078629ed99d")
 	)
 	(label "3V3"
 		(at 157.48 143.51 90)
@@ -6375,7 +7323,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "23f5a50a-df1a-4770-a955-c55ac107650f")
+		(uuid "d861b0ad-b8da-407c-9217-5b5d7e55a44a")
 	)
 	(wire
 		(pts
@@ -6385,7 +7333,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "bea2a472-ca25-4c6b-9610-bf7a4161ab62")
+		(uuid "5107b900-7f63-40f2-802a-b6ced89ee074")
 	)
 	(label "EN"
 		(at 157.48 156.21 270)
@@ -6395,7 +7343,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "04d2885c-0ca3-486b-b497-8df1ae464352")
+		(uuid "56ae60ab-f9ef-4c18-bb68-ea76e337db15")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -6405,7 +7353,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "79e5b529-060e-4800-befd-bb28fa30ec99")
+		(uuid "7ab6f173-0cea-45fa-9e46-0c1de44e595f")
 		(property "Reference" "C1"
 			(at 173.99 148.59 0)
 			(show_name no)
@@ -6462,10 +7410,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "592c1b58-b3cf-4ba1-bc5a-6adba22b4eb3")
+			(uuid "8e3a59a6-3bca-4d5e-a1d0-d7f87118f7f2")
 		)
 		(pin "2"
-			(uuid "7c29f02f-6757-4223-a7ba-f484c8eb80f2")
+			(uuid "0a594c07-64b1-48b9-ad89-99b69476bbbc")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6484,7 +7432,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9b58afd8-0033-4cb4-991b-f7fec1cbfd81")
+		(uuid "e95373c0-d35b-4a9c-94af-9f2fcb07f245")
 	)
 	(label "EN"
 		(at 171.45 143.51 90)
@@ -6494,7 +7442,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "2056d175-09dc-4d28-9235-34b22ed74cca")
+		(uuid "bbcafaa1-bc04-4565-9454-aa61111f4718")
 	)
 	(wire
 		(pts
@@ -6504,7 +7452,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ca436584-e72d-4518-8396-b940673a7cc3")
+		(uuid "16148190-6031-4e9c-852d-c4a6120cb774")
 	)
 	(label "GND"
 		(at 171.45 156.21 270)
@@ -6514,7 +7462,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "b4b4ff1c-0a94-46b7-bffd-19bd85a03572")
+		(uuid "7477eec0-c468-4f41-9b06-0c74da9e1976")
 	)
 	(symbol
 		(lib_id "Switch:SW_Push")
@@ -6524,7 +7472,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "fb47361c-4351-4474-9e8a-361428a1b9f7")
+		(uuid "ed01ecf8-3663-4128-81bf-ef137243fcd3")
 		(property "Reference" "SW2"
 			(at 191.77 142.24 0)
 			(show_name no)
@@ -6579,10 +7527,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "d4822020-b3e9-4b96-b466-5e73cb2e96ff")
+			(uuid "4f955166-1b3b-4b3b-bf6f-4a2c5300c40a")
 		)
 		(pin "2"
-			(uuid "8fb1fd1c-c25e-4159-aa6d-2de976e34e93")
+			(uuid "46f6d55a-a75c-43f6-a5e3-631aeaf7b0a9")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6601,7 +7549,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1520d2d4-413c-4c95-aaa4-868842316f8d")
+		(uuid "4f2b09be-034c-4c05-a855-f76dfaff1248")
 	)
 	(label "EN"
 		(at 191.77 149.86 180)
@@ -6611,7 +7559,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "e12f2451-1670-4981-b51d-56b2141dad80")
+		(uuid "5c372f1d-a25a-43e6-a3a9-b34eb77bfaa9")
 	)
 	(wire
 		(pts
@@ -6621,7 +7569,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f3a83fc2-1d59-4fe6-b4f0-84003f9814b1")
+		(uuid "932ebd9c-89f3-4915-8ab8-b3303a06fb4e")
 	)
 	(label "GND"
 		(at 207.01 149.86 0)
@@ -6631,7 +7579,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "d0f94e49-b73d-451a-b868-6725bf43772b")
+		(uuid "e691ba64-d08c-4604-be41-9a9cea9f97c5")
 	)
 	(symbol
 		(lib_id "Switch:SW_Push")
@@ -6641,7 +7589,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "9d3d0091-d7ea-4f91-9020-996820efdf3b")
+		(uuid "85e17645-ccbd-48b4-a73a-c5bff8954d9e")
 		(property "Reference" "SW1"
 			(at 224.79 142.24 0)
 			(show_name no)
@@ -6696,10 +7644,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "9c6e2eb0-70a7-4ed9-ad85-eb4bdd9c83c3")
+			(uuid "6dea5a9f-94ed-40d8-94fc-43b98f6ad084")
 		)
 		(pin "2"
-			(uuid "c49bac21-992a-4104-bf4b-35c6e5a6b882")
+			(uuid "ef08c123-466d-4dc4-b0fd-5915a7822f05")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6718,7 +7666,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "aa1947de-da39-461b-b2d3-2bcf5d55943c")
+		(uuid "060beef3-958f-4c82-a909-b335c20a7ee0")
 	)
 	(label "SCL"
 		(at 224.79 149.86 180)
@@ -6728,7 +7676,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "f98b3fc0-5833-40f4-9ed7-487836f90f0e")
+		(uuid "a63b8f25-bf35-4e2c-99c5-9ec05fc4c217")
 	)
 	(wire
 		(pts
@@ -6738,7 +7686,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "01f3cab0-beb7-40ce-9816-9ed88cfaaea7")
+		(uuid "5460d844-74b6-45c2-b946-9ae8f64009d3")
 	)
 	(label "GND"
 		(at 240.03 149.86 0)
@@ -6748,7 +7696,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "9eb420b5-793b-4323-a472-4098ebfb5340")
+		(uuid "a56e5f0e-c663-45b8-a021-f3fe8399f612")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -6758,7 +7706,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "ffc5b2a6-ee89-43db-949d-1f8e5b18435b")
+		(uuid "d494da97-df85-404e-8893-da8bcdd3ff84")
 		(property "Reference" "R4"
 			(at 132.08 184.15 0)
 			(show_name no)
@@ -6815,10 +7763,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "ab96088b-eca0-4c5b-b9a3-bd7dbb4375af")
+			(uuid "d00c0833-87b0-4a06-9182-da4b15049377")
 		)
 		(pin "2"
-			(uuid "e091c778-0889-4e24-92bc-da92be0d7bf5")
+			(uuid "871d2211-32af-4c8b-95e0-ff68ba8bb8b4")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6837,7 +7785,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3ea5ae2c-e2f8-4ee5-ab9c-135b3b62d463")
+		(uuid "c9ce63d5-81b4-4e1b-bce9-a332b568ea1a")
 	)
 	(label "LED_IO"
 		(at 129.54 179.07 90)
@@ -6847,7 +7795,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "3d3fd1bd-d57c-4841-9d6c-2be8660d1a25")
+		(uuid "777eade0-a2eb-4cb3-9a04-35fc39454d0b")
 	)
 	(wire
 		(pts
@@ -6857,7 +7805,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e712f8ab-21bc-42e7-a8e0-00b3d7c1c6fc")
+		(uuid "5055b04e-d36d-4ba9-a6ea-3e64c035e09e")
 	)
 	(label "LED_A"
 		(at 129.54 191.77 270)
@@ -6867,7 +7815,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "fdb07a2c-3900-4d4e-9945-874e9318ba67")
+		(uuid "b60a685d-8e2d-4afe-8193-5f6840e85626")
 	)
 	(symbol
 		(lib_id "Device:LED")
@@ -6877,7 +7825,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "e0710caf-190e-4f6e-a75e-bf0b4fa47b03")
+		(uuid "49be7bf6-40ce-428e-ae92-a2d520188332")
 		(property "Reference" "LED1"
 			(at 142.24 177.8 0)
 			(show_name no)
@@ -6932,10 +7880,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "4c4da751-6b43-4708-90f9-1d52672ea28f")
+			(uuid "ba9eed4c-de0d-46ad-9965-2acf3d1836d6")
 		)
 		(pin "2"
-			(uuid "2b40ea15-798d-40c2-afe3-79d013152f84")
+			(uuid "f2bfac91-d76a-4013-b1d6-75e9895bf747")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -6954,7 +7902,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6338c40d-8b1d-4bfe-a38f-93902bf4199d")
+		(uuid "538b95c0-b5ef-4f59-9f03-1aa99fb6088b")
 	)
 	(label "GND"
 		(at 143.51 185.42 180)
@@ -6964,7 +7912,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "84922619-3ca3-4544-8b33-048a0ddfdff2")
+		(uuid "b4728887-40b0-4676-a50b-438e25a7aee6")
 	)
 	(wire
 		(pts
@@ -6974,7 +7922,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "27545835-e16d-4d15-a612-63e1a869b555")
+		(uuid "b5369da2-e033-4915-a153-f650204cdade")
 	)
 	(label "LED_A"
 		(at 156.21 185.42 0)
@@ -6984,7 +7932,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "0db4cbfa-2ff0-4dfd-8f62-5f89a7ef8659")
+		(uuid "fba14959-5760-42c1-8d56-9e685743baed")
 	)
 	(text "3 · SENSOR — MLX90640 110 graus no lado B (frente, janela de germanio). VDD_MLX = 3V3 via Q1 (PMOS ligado por padrao); GPIO4 alto = sensor desligado. Pull-ups I2C p/ VDD_MLX."
 		(exclude_from_sim no)
@@ -6996,7 +7944,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "8e6e3a65-245c-4b09-8efe-bc4f0f56bb45")
+		(uuid "2bf6f0d2-7d5d-4284-a370-7136ab3b14bb")
 	)
 	(symbol
 		(lib_id "SAFEBOAT:MLX90640")
@@ -7006,7 +7954,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "96292246-3cf7-4106-a11b-4a9afad3ae40")
+		(uuid "b60c3512-1365-430d-898e-250838d3158a")
 		(property "Reference" "U3"
 			(at 41.91 234.95 0)
 			(show_name no)
@@ -7061,16 +8009,16 @@
 			)
 		)
 		(pin "1"
-			(uuid "60aa413f-c1f7-4938-9474-b87499584bbd")
+			(uuid "b6637203-da35-4d7d-ae60-dbd0cc6bdf3e")
 		)
 		(pin "4"
-			(uuid "7d07d916-3d99-4209-9da5-5161343e58ad")
+			(uuid "f16385ea-78cf-4c09-a841-a09449a6f144")
 		)
 		(pin "2"
-			(uuid "0e7a134e-f1ed-4f8e-bd71-28b04cb485b9")
+			(uuid "72e915e8-9b21-4ff2-836e-0e1c49fedb2d")
 		)
 		(pin "3"
-			(uuid "d3bd8305-28dd-4240-b2b2-fe4f4ef9900a")
+			(uuid "e9a981ec-b6d6-4b45-bb2b-6e303e37ed2f")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7089,7 +8037,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "769a4fba-22b9-4fb5-95b7-bb43a76c44a7")
+		(uuid "7e0b49fb-bac1-4fe8-b1da-e736b165a7a1")
 	)
 	(label "SDA"
 		(at 34.29 247.65 180)
@@ -7099,7 +8047,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "a4161fe6-ddc3-4fe0-8697-9741cff67bc8")
+		(uuid "6a890941-1807-4f9f-85b1-e511f5485aa8")
 	)
 	(wire
 		(pts
@@ -7109,7 +8057,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a2a934db-e767-4a0a-b293-2ddd4041f9d6")
+		(uuid "e5e2ab7f-5423-4af9-921d-6ac017a37389")
 	)
 	(label "SCL"
 		(at 34.29 252.73 180)
@@ -7119,7 +8067,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "eacc0a24-fba5-4047-bb96-684e91d1925c")
+		(uuid "5639765d-4fc8-4860-a132-e1bb4c9d8822")
 	)
 	(wire
 		(pts
@@ -7129,7 +8077,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "86a491db-9222-44f4-94bc-44bced6d4f8b")
+		(uuid "0078a637-1ea6-4785-9f91-3db3e3583dd4")
 	)
 	(label "VDD_MLX"
 		(at 49.53 237.49 90)
@@ -7139,7 +8087,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "300876e9-204d-41c7-b10e-cd351ef64662")
+		(uuid "eb2ae1ad-3a90-47bc-a297-80cdecd002d1")
 	)
 	(wire
 		(pts
@@ -7149,7 +8097,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7873282a-ea3d-4866-a4d0-4d69183cfc04")
+		(uuid "bf8e3096-a3d1-4361-a011-f87076bfe752")
 	)
 	(label "GND"
 		(at 49.53 262.89 270)
@@ -7159,7 +8107,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "d153424c-5832-4be3-9806-e4edde5702c9")
+		(uuid "de9a77e7-2ee1-4207-9037-4c3a49e0be42")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -7169,7 +8117,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "8b665091-b71c-44df-b9fe-1caa0e0c002a")
+		(uuid "22134cb9-10d3-416b-a30a-8d1aa4407ba4")
 		(property "Reference" "C2"
 			(at 86.36 245.11 0)
 			(show_name no)
@@ -7226,10 +8174,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "c4842423-f483-4e29-9768-82c9f6b268ae")
+			(uuid "0ea71cf4-ffc7-4d5f-b28d-623df0e08b37")
 		)
 		(pin "2"
-			(uuid "e41ba4c1-96c4-4e8f-a46a-477fb5750ff8")
+			(uuid "8c40c7af-7bd3-4364-986a-578289e8067f")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7248,7 +8196,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "86a2384f-2692-4e76-8a40-c4d0bac0980c")
+		(uuid "ab25d733-4d70-4c39-9eb8-26ea0112c947")
 	)
 	(label "VDD_MLX"
 		(at 83.82 240.03 90)
@@ -7258,7 +8206,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "a0bcbb3e-139a-415b-ac8c-e0be8ff3079d")
+		(uuid "6227ca0a-30a8-4456-97e7-1bd4df6b47ab")
 	)
 	(wire
 		(pts
@@ -7268,7 +8216,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b5b44873-0f08-49e5-8eb6-34b6bf0eab3f")
+		(uuid "ce2ee97e-d03a-4c28-9ba9-108fe47ea507")
 	)
 	(label "GND"
 		(at 83.82 252.73 270)
@@ -7278,7 +8226,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "46b07238-6c29-4c72-8780-017b52ae88ea")
+		(uuid "556b529f-cd71-4538-bbb4-7beca93244cf")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -7288,7 +8236,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "c6fd3ef0-7aa2-4449-8af1-974c52b87dc0")
+		(uuid "641edc3d-0a46-4226-a84c-7679aa50b0af")
 		(property "Reference" "C3"
 			(at 100.33 245.11 0)
 			(show_name no)
@@ -7345,10 +8293,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "8fa76669-1132-45e0-9955-ce21ed0fb5d2")
+			(uuid "56c2a6ca-e28c-4ad0-a5e5-97eea199cd5d")
 		)
 		(pin "2"
-			(uuid "a87d1ac0-22cd-4537-9647-d5c125626744")
+			(uuid "b6d5f35f-c7b3-43f1-953c-f3c1ecc1b85f")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7367,7 +8315,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4a82ced4-87c6-4aa0-97e4-0644e728baff")
+		(uuid "cfd4b409-e521-4e3f-bd9e-dd2976a9278b")
 	)
 	(label "VDD_MLX"
 		(at 97.79 240.03 90)
@@ -7377,7 +8325,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "655b49e7-21dc-4776-b8dc-eee274af3eba")
+		(uuid "094ed783-baa5-4a87-916d-156eca39b76f")
 	)
 	(wire
 		(pts
@@ -7387,7 +8335,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "03d6e184-e0c1-4a51-b386-ba8a855c10e9")
+		(uuid "843aa224-0f68-4efd-93b9-5e57ccee7af4")
 	)
 	(label "GND"
 		(at 97.79 252.73 270)
@@ -7397,7 +8345,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "814b767f-1708-46ff-984f-730d78f85a70")
+		(uuid "ca55b5d1-6c0d-46fa-9a27-0d35f9c0314c")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -7407,7 +8355,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "5ab53849-4297-4810-86ac-d3033c0a8730")
+		(uuid "573f6665-4a5f-4b35-85b3-0e65d4dcc13d")
 		(property "Reference" "R2"
 			(at 118.11 245.11 0)
 			(show_name no)
@@ -7464,10 +8412,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "4beed5b5-5dcb-4283-a88f-00f178e85eb1")
+			(uuid "09cc596d-a1b3-4a82-8deb-7e02a142ef74")
 		)
 		(pin "2"
-			(uuid "9e9ff32c-848d-4b13-b473-dc5f09e1d496")
+			(uuid "528e13bc-b946-4cd6-b30a-576647a95a49")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7486,7 +8434,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d0e7c77a-0466-4036-b928-38d74f827bd7")
+		(uuid "5056dc7e-0eac-4caa-b228-1b1b241176b6")
 	)
 	(label "VDD_MLX"
 		(at 115.57 240.03 90)
@@ -7496,7 +8444,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "78db19fc-c189-4644-bce8-f17a0b73653c")
+		(uuid "b7339aee-a673-488e-b1ac-6d157ef48fbc")
 	)
 	(wire
 		(pts
@@ -7506,7 +8454,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ef015019-939e-4136-b441-cd7f5fa258ca")
+		(uuid "1f46a5d3-f2ed-4859-93ef-6ee3a6881485")
 	)
 	(label "SDA"
 		(at 115.57 252.73 270)
@@ -7516,7 +8464,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "64d42e4a-8032-4012-b0bf-cc05f4353366")
+		(uuid "c66bd429-72d9-4e6b-a149-aac1ac45592d")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -7526,7 +8474,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "f527f375-4d32-4cd0-8c35-8ffca798d238")
+		(uuid "2fb8f143-1476-4450-8e97-4bebe60d4559")
 		(property "Reference" "R3"
 			(at 132.08 245.11 0)
 			(show_name no)
@@ -7583,10 +8531,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "2f8fee8b-ff6a-4c84-ba0a-00e12c556b0f")
+			(uuid "9e76fec8-2c78-4e75-afa6-69174d0440b0")
 		)
 		(pin "2"
-			(uuid "afc602a1-dd86-431c-be70-c3dca42de8de")
+			(uuid "1ffcbd11-59e9-4907-8464-2758906f1307")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7605,7 +8553,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e2bcde2d-02e9-4d40-a7a3-07969c819ee4")
+		(uuid "eb1c4c4f-8781-4402-b7f4-5e2916093d48")
 	)
 	(label "VDD_MLX"
 		(at 129.54 240.03 90)
@@ -7615,7 +8563,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "5b5f3f3f-7c5d-436e-9d49-cde87dfb903e")
+		(uuid "7dc78e19-f2db-461c-94cb-fd134af88d3c")
 	)
 	(wire
 		(pts
@@ -7625,7 +8573,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "728d344c-b3e1-4079-8b7e-8895518278af")
+		(uuid "b3384da2-be16-4892-ad42-c8151d4ad683")
 	)
 	(label "SCL"
 		(at 129.54 252.73 270)
@@ -7635,7 +8583,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "aba109c8-34af-4388-9291-d1b7e60f8dbc")
+		(uuid "40ba14af-5987-4e6e-83a6-63bd3343b5a4")
 	)
 	(symbol
 		(lib_id "Transistor_FET:Q_PMOS_GSD")
@@ -7645,7 +8593,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "690a93fa-c2ae-4656-a9f4-fbbf5c7b4612")
+		(uuid "37666b7a-a3d3-4193-9bc8-cc543e61f5c9")
 		(property "Reference" "Q1"
 			(at 152.4 240.03 0)
 			(show_name no)
@@ -7700,13 +8648,13 @@
 			)
 		)
 		(pin "1"
-			(uuid "b9a31a22-e1c5-41e3-b261-3a73ee779a69")
+			(uuid "faa8031a-2a95-4b60-a060-f4b400c346b9")
 		)
 		(pin "2"
-			(uuid "9302158c-eacc-4208-906a-59b762e04e8d")
+			(uuid "94a58685-6461-4aea-a8a2-101f3add18ec")
 		)
 		(pin "3"
-			(uuid "fd427c2e-c5fe-407d-b931-662c1229529d")
+			(uuid "2b7c8758-81e4-463a-a01e-c022cc16182a")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7725,7 +8673,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "dcad9912-f3f8-4c2d-9de8-a355d699f7bf")
+		(uuid "d9392c13-9972-4751-bfaf-232aa497500e")
 	)
 	(label "GATE"
 		(at 152.4 250.19 180)
@@ -7735,7 +8683,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "d695a20e-4ed3-4b6f-93fd-84149656419b")
+		(uuid "2e7e400d-c7f4-4d40-8ac0-43122a391fad")
 	)
 	(wire
 		(pts
@@ -7745,7 +8693,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d7d029fe-6c18-4048-bfbb-920879dea3e6")
+		(uuid "0a96e44c-354b-47cd-9325-51b5aae22eb0")
 	)
 	(label "3V3"
 		(at 162.56 257.81 270)
@@ -7755,7 +8703,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "8c7a7552-013c-4650-bed6-8772f827e92a")
+		(uuid "1acd9483-8021-4521-9b86-62e87e1aac91")
 	)
 	(wire
 		(pts
@@ -7765,7 +8713,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "fe8be668-85a5-42e1-ad8a-b2702225fc59")
+		(uuid "da90f7ea-45b6-4fe4-9ae2-a555b4da1c4a")
 	)
 	(label "VDD_MLX"
 		(at 162.56 242.57 90)
@@ -7775,7 +8723,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "939a3aec-6ea7-42fd-a2bd-5ded51739186")
+		(uuid "128a765f-8763-43d8-b4be-0c85a94ed428")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -7785,7 +8733,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "cc33d038-c278-4327-ac61-82d855d10690")
+		(uuid "dccd291d-3cd5-4f46-993d-d4ff9e4790aa")
 		(property "Reference" "R5"
 			(at 186.69 245.11 0)
 			(show_name no)
@@ -7842,10 +8790,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "fe9e7aa3-d564-4c2c-8300-a10f981e26ab")
+			(uuid "bd24d637-eb76-4781-9706-75d45c7790d9")
 		)
 		(pin "2"
-			(uuid "fb6543a3-d001-421f-bb3a-3509d874e84e")
+			(uuid "7cfdfd5e-36b0-4c28-835b-671d1892c7fd")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7864,7 +8812,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3b31a606-80cc-4d07-bc91-0c3ba067abee")
+		(uuid "29e4521e-e7e6-414c-878c-2afa7998481a")
 	)
 	(label "GATE"
 		(at 184.15 240.03 90)
@@ -7874,7 +8822,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "077de2a0-d449-4118-8aed-eb56d9a8a48d")
+		(uuid "d616ccd9-4778-4734-8ac9-1c052df54323")
 	)
 	(wire
 		(pts
@@ -7884,7 +8832,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "88eab568-8ce3-4677-a149-42ad06785bf3")
+		(uuid "524875b3-c55b-4ebb-8553-506e615f8b5c")
 	)
 	(label "GND"
 		(at 184.15 252.73 270)
@@ -7894,7 +8842,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "03eeda37-9223-464f-a0e5-9f2ac6b6a20a")
+		(uuid "653d6c2b-9755-4c81-86cb-ea563d58ae6f")
 	)
 	(symbol
 		(lib_id "Device:R")
@@ -7904,7 +8852,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "2cbed628-4ea9-4f27-906e-59163cff1a14")
+		(uuid "0b6c5759-8c2f-4d48-b055-4913e1c9bd5b")
 		(property "Reference" "R6"
 			(at 200.66 245.11 0)
 			(show_name no)
@@ -7961,10 +8909,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "badaa4cb-331d-43b8-a07d-a32d7bbe624c")
+			(uuid "732c2c37-e18a-4ee0-9aed-8b48a5fa6c69")
 		)
 		(pin "2"
-			(uuid "8369131b-40cc-4043-9b91-df69f19689b7")
+			(uuid "7bc53dda-f2ec-4e3f-848f-b8c5290f0744")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -7983,7 +8931,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3af6f7b3-5567-4f80-8b15-404a3fe67fab")
+		(uuid "fafb58ad-f1ac-4725-84ed-351f081a3e3d")
 	)
 	(label "SENS_OFF"
 		(at 198.12 240.03 90)
@@ -7993,7 +8941,7 @@
 			)
 			(justify left bottom)
 		)
-		(uuid "248ebc72-ab1d-4fc6-8c0d-c84669093247")
+		(uuid "ebaeffbb-d15a-4268-ab04-6fc7c8d3adf6")
 	)
 	(wire
 		(pts
@@ -8003,7 +8951,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b97e4102-6d5a-4c57-afa5-bdaf47425354")
+		(uuid "03e56181-5271-474e-91de-2831ca5f1075")
 	)
 	(label "GATE"
 		(at 198.12 252.73 270)
@@ -8013,7 +8961,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "4fb50d18-15a7-4cf7-a235-752e1c67713d")
+		(uuid "5456aeb1-c2f4-4a04-bb1d-d9c8b3ac8f33")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8023,7 +8971,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "c2d3b199-6460-41cc-a21e-4018186d46d3")
+		(uuid "655703ad-d7ee-446f-904a-2b638a8c5d68")
 		(property "Reference" "#FLG1"
 			(at 232.41 248.92 0)
 			(show_name no)
@@ -8081,7 +9029,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "7ddd20a4-5617-49af-8ccb-f11bf16efd2b")
+			(uuid "15e3a638-2d38-427b-9881-01016aa6bb83")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8100,7 +9048,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c1a8d7b5-2f81-4f9f-90df-003385833b6f")
+		(uuid "a092f9fc-ba43-4b80-b710-153f255774d1")
 	)
 	(label "GND"
 		(at 229.87 252.73 270)
@@ -8110,7 +9058,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "301fcf41-d8fe-44d7-9ba8-9042b03a1b17")
+		(uuid "137104b3-e16d-447b-9245-a7773526801a")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8120,7 +9068,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "0cba66d7-4a88-4195-9528-be733471f70a")
+		(uuid "31047d47-2872-4d7b-b872-7d836b842b77")
 		(property "Reference" "#FLG2"
 			(at 246.38 248.92 0)
 			(show_name no)
@@ -8178,7 +9126,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "5f763179-7f0b-4201-ab13-4a5d7507ef0d")
+			(uuid "7ca875b9-44db-418b-8f7d-0a85118950c5")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8197,7 +9145,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a9096919-fd97-4c24-b6a6-313caf0f7b11")
+		(uuid "75fca55a-706b-4746-9145-d48eb407034e")
 	)
 	(label "VIN_RAW"
 		(at 243.84 252.73 270)
@@ -8207,7 +9155,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "025bbcc2-1086-42e7-b317-40331422cb30")
+		(uuid "a090b287-fd3f-4e9d-9566-9d7a87c7cde5")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8217,7 +9165,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "c81ed730-f19d-40d8-a5b3-8021808d6162")
+		(uuid "c046e008-89f1-47ec-8b2e-c032f33d77bc")
 		(property "Reference" "#FLG3"
 			(at 260.35 248.92 0)
 			(show_name no)
@@ -8275,7 +9223,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "4409fbcf-5459-407d-a09f-eb5858dff3b9")
+			(uuid "6ae3d049-a742-4530-92f9-b3cd84b00277")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8294,7 +9242,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e08215cb-1c29-45df-905a-3b577c69633f")
+		(uuid "0315a445-097d-4932-9692-67dcb06db580")
 	)
 	(label "VIN_F"
 		(at 257.81 252.73 270)
@@ -8304,7 +9252,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "dcd963de-94fb-412d-90cb-69ef35109a73")
+		(uuid "b8bff0ac-2637-4de7-b754-4981bb3bd2f7")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8314,7 +9262,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "d90ab5c3-38c7-4251-a1a0-51f6e5ee6181")
+		(uuid "b1fb547f-f7c1-44e0-b9fc-d2fb17050f39")
 		(property "Reference" "#FLG4"
 			(at 274.32 248.92 0)
 			(show_name no)
@@ -8372,7 +9320,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "115ee616-d0f0-4b55-8842-40243f69406f")
+			(uuid "743f7ad8-aa94-4bbe-9a0f-ff421bed92c3")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8391,7 +9339,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "acd84dcf-c77f-4c0b-b044-e797d3f17114")
+		(uuid "a9bb4fae-2898-46cf-bb18-7ba42b6b390d")
 	)
 	(label "VIN"
 		(at 271.78 252.73 270)
@@ -8401,7 +9349,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "ff73aaac-5dba-4acd-9eba-dffff50ed9af")
+		(uuid "db457956-fce5-4dab-a2cb-af377df78116")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8411,7 +9359,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "8e9e63c8-9550-4815-8db4-81c1ac5ad816")
+		(uuid "2918996e-670f-4371-a2a2-c1bffbdc1c96")
 		(property "Reference" "#FLG5"
 			(at 288.29 248.92 0)
 			(show_name no)
@@ -8469,7 +9417,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "2e8d9278-302b-45bd-aaf0-3f41aba89a8e")
+			(uuid "a3f5d34e-d6b4-43a8-ae7c-23eaa59d1cec")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8488,7 +9436,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e4853eff-3994-43b9-8779-0f27548fbad7")
+		(uuid "018d1c7d-6c23-4299-8989-7dc7de7a9b50")
 	)
 	(label "VBUS"
 		(at 285.75 252.73 270)
@@ -8498,7 +9446,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "900247ed-eafd-4913-8f07-379fb39a581a")
+		(uuid "991160b0-c930-4cb6-bf46-b89125ad7da8")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8508,7 +9456,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "259d4db4-d0c7-4618-9959-6e1ca0e0579c")
+		(uuid "f5c0afb6-72c4-4d2f-8aa2-a734a980f463")
 		(property "Reference" "#FLG6"
 			(at 302.26 248.92 0)
 			(show_name no)
@@ -8566,7 +9514,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "16db3ee5-823b-4574-ab4b-c6082c1f783b")
+			(uuid "cb572972-2f56-44d0-833c-6b80ea3cb0ed")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8585,7 +9533,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5bf6797c-3bd4-44de-9ce7-f0867a144e84")
+		(uuid "0e9af08c-cfeb-4fff-90e6-839c000f9de1")
 	)
 	(label "3V3"
 		(at 299.72 252.73 270)
@@ -8595,7 +9543,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "fd582e5c-92c6-4ec8-a36b-19e5b462a227")
+		(uuid "26e533ae-6168-4708-b771-eb2871527f55")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -8605,7 +9553,7 @@
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "4d40da35-7c5e-4711-a1a7-01766732c03f")
+		(uuid "98bc93f6-0601-45a8-8c84-36acabfe25ba")
 		(property "Reference" "#FLG7"
 			(at 316.23 248.92 0)
 			(show_name no)
@@ -8663,7 +9611,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "b40677b9-ad32-4abe-98cd-e5d1621d3ded")
+			(uuid "c0ec118b-ac33-468e-8b0a-e6a1092d5ea4")
 		)
 		(instances
 			(project "safeboat-termica-v1"
@@ -8682,7 +9630,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "55a6bc50-d796-4f10-9211-ada865e74d7c")
+		(uuid "06c4a43c-9151-4081-b48c-bbe547d07455")
 	)
 	(label "VDD_MLX"
 		(at 313.69 252.73 270)
@@ -8692,7 +9640,7 @@
 			)
 			(justify right bottom)
 		)
-		(uuid "9983fc8b-33f7-4f15-aad0-88e15af32a56")
+		(uuid "473ffbd0-81ca-4be2-baa0-6f38ec822567")
 	)
 	(sheet_instances
 		(path "/"

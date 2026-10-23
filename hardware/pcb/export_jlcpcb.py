@@ -2,7 +2,7 @@
 """
 SAFEBOAT TERMICA v1 — fase 3: BOM + CPL para montagem JLCPCB (gerbers pelo make_gerbers.sh).
 Gera jlcpcb/BOM-safeboat-termica-v1.csv e jlcpcb/CPL-safeboat-termica-v1.csv (dois lados: U3 no Bottom).
-Códigos LCSC verificados em 22/09 e 13/10/2026 (busca web): TODAS as linhas com código — regra da casa:
+Códigos LCSC verificados em 22/09, 13/10 e 22/10/2026 (busca web): TODAS as linhas com código (R9/R11/C12 pelo guia de básicos — conferir no carrinho) — regra da casa:
 conferir código/encapsulamento/estoque no carrinho antes de pagar (editar peça DESMARCA a linha;
 remarcar o checkbox).
 """
@@ -19,14 +19,14 @@ OX, OY = 100.0, 100.0
 
 LCSC = {
     "U1": ("ESP32-C3-MINI-1-N4", "C2934569"),
-    "U2": ("AP63203WU-7 buck 3.3V 2A 32V", "C780769"),
+    "U2": ("MP4560DN-LF-Z buck 55V 2A SOIC-8 EP", "C40133"),
     "U3": ("MLX90640ESF-BAA-000-TU (TO-39, 110x75 graus) - THT no lado B (frente)", "C17380659"),
-    "J2": ("KF350-3.5-2P borne 3.5mm 2p", "C474892"),
     "Q1": ("SI2301CDS PMOS SOT-23", "C10487"),
-    "D1": ("SMAJ26A-TR TVS 26V SMA", "C132945"),
+    "D1": ("SMBJ33A TVS 33V SMB (MDD)", "C173526"),
     "D2": ("SS34 Schottky 3A 40V SMA (MDD, basico)", "C8678"),
     "D3": ("SS14 Schottky 1A 40V SMA (MDD, basico)", "C2480"),
-    "L1": ("SWPA4020S4R7MT 4.7uH 1.34A", "C48427"),
+    "D4": ("SS36A Schottky 3A 60V SMA (roda livre)", "C360444"),
+    "L1": ("SWPA5040S100MT 10uH 2.1A 5x5", "C84608"),
     "F1": ("SMD1812P050TF/60 PPTC 0.5A 60V", "C462518"),
     "J1": ("JST B4B-PH-K-S 4p 2.0mm", "C131334"),
     "SW1": ("KMR221GLFS", "C72443"), "SW2": ("KMR221GLFS", "C72443"),
@@ -37,10 +37,13 @@ LCSC = {
     "C3": ("10uF 0603 X5R", "C19702"),
     "C9": ("10uF 25V X5R 0805 CL21A106KAYNNNE (basico)", "C15850"),
     "C6": ("22uF 25V X5R 0805 CL21A226MAQNNNE (basico)", "C45783"), "C7": ("22uF 25V X5R 0805 CL21A226MAQNNNE (basico)", "C45783"),
-    "C5": ("10uF 50V X7R 1210 CL32B106KBJNNNE", "C138687"),
+    "C5": ("4.7uF 100V X7R 1210 C1210X475K101T", "C337978"), "C11": ("4.7uF 100V X7R 1210 C1210X475K101T", "C337978"),
+    "C12": ("1nF 50V X7R 0603 (basico)", "C1588"),
     "R1": ("10k 0603", "C25804"), "R4": ("1k 0603", "C21190"), "R6": ("1k 0603", "C21190"),
     "R2": ("2.2k 0603 (basico)", "C4190"), "R3": ("2.2k 0603 (basico)", "C4190"),
-    "R5": ("100k 0603", "C25803"), "R7": ("200k 0603 (basico)", "C25811"), "R8": ("20k 0603 (basico)", "C4184"),
+    "R5": ("100k 0603", "C25803"), "R7": ("330k 0603 (basico)", "C23137"), "R8": ("15k 0603 (basico)", "C22809"),
+    "R9": ("47k 0603 (basico)", "C25819"), "R10": ("15k 0603 (basico)", "C22809"),
+    "R11": ("200k 0603 (basico)", "C25811"), "R12": ("68k 0603 (basico)", "C23231"),
 }
 dnp = set(open(os.path.join(OUT_DIR, "kicad", "dnp.txt")).read().split())
 

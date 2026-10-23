@@ -1,19 +1,26 @@
-SAFEBOAT TERMICA v1 — pacote para revisão (22/09/2026)
-Placa 32 x 32 mm, 2 camadas, 1,6 mm. Lado F (ré) = componentes; lado B (frente) = sensor MLX90640 110° (TO-39).
-Obs.: sensor e borne aparecem no 3D com modelos próprios (lib/3d, VRML gerado por make_3d_models.cjs); 10 = frente em ângulo rasante.
+SAFEBOAT TERMICA v2 — pacote para revisão (23/10/2026) — rev. 2 após a reunião de 22/10
+Placa 40 x 40 mm, 4 camadas (F sinais · In1 plano GND · In2 plano 3V3 · B sinais), 1,6 mm, recortes laterais na antena.
+Lado F (ré) = componentes; lado B (frente) = sensor MLX90640 110° (TO-39). Sensor e pads têm modelos 3D próprios.
 
-01 ré, vista de cima            05 lateral (alturas)
-02 frente (lado do sensor)      06 cobre F + serigrafia
-03 ré, isométrica               07 cobre B + serigrafia (ESPELHADO, como visto pela frente)
-04 frente, isométrica           08 cobre F e B sobrepostos + contorno (F.Fab)
-09 esquemático (PDF)
+01 ré, vista de cima            06 cobre F + serigrafia (trilhas a 90°)
+02 frente (lado do sensor)      07 cobre B + serigrafia (ESPELHADO, como visto pela frente)
+03 ré, isométrica               08 plano interno In1 (GND sólido; vazio sob a antena e recortes)
+04 frente, isométrica           09 plano interno In2 (3V3 sólido)
+05 lateral (alturas)            10 esquemático (PDF)
+
+O que mudou (pedidos da reunião):
+- Nada metálico ao lado da antena: indutor, botões, JST e diodos desceram; recortes de 3,3 mm nos dois lados da antena
+  (Espressif) e keep-out de cobre nas 4 camadas.
+- Trilhas só a 90° (entram retas nos pads); sinais em F/B, planos internos inteiros (sem trilhas cortando).
+- Isolamento 0,2 mm (JLC >= 0,127), trilha 0,25, via 0,6/0,3, cobre-borda 0,3.
+- 4 furos M2,5 em (±17,5; +3) e (±17,5; −18), longe da antena.
+- Entrada 8–32 V: MP4560 (3,8–55 V, 2 A, 488 kHz) + TVS SMBJ33A + 2x4,7 uF/100 V + SS36 roda livre; PPTC 0,5 A/60 V mantido.
+- Sem borne: pads P1 (+VIN, quadrado) e P2 (GND) para soldar o fio.
+- DRC KiCad 10: 0 erros / 0 avisos / 0 desconectados. ERC 0. Netlist do esquemático = netlist da placa (0 diferenças).
 
 Pontos para revisar:
-- Entrada 12 V: borne J2 -> F1 PPTC 0,5 A/60 V -> D1 TVS SMAJ26A -> D2 SS34 série -> VIN (buck AP63203, EN=VIN, FB=VOUT).
-- Buck: C5 10u/50V 1210 entrada, L1 4,7 uH SWPA4020S, C6/C7 2x22u saída, C8 100n BST. Laço SW/L1/C6 curto?
-- USB de bancada por JST-PH 4 (J1) -> D3 SS14 -> VIN. Sem CC/ESD na placa (ficam no rabicho).
-- ESP32-C3-MINI-1: antena rente à borda superior, keepout nas 2 camadas; EN R1/C1 + RST; BOOT em GPIO9 (= SCL, pull-up 2k2 p/ VDD_MLX).
-- Sensor: alimentado por VDD_MLX via Q1 SI2301 (PMOS, gate R5 100k p/ GND = ligado; GPIO4 alto desliga). Pull-ups I2C p/ VDD_MLX.
-- Leitura da tensão do barco: R7 200k / R8 20k + C4 100n -> GPIO0 (ADC).
-- Planos de GND nas 2 camadas; DRC KiCad 10: 0 erros / 0 desconectados. Netlist do esquemático = netlist da placa (0 diferenças).
-- Mecânica: lente 9,5 mm abaixo do centro; sem furos de fixação (placa presa por trilhos no case); lata do sensor 5,7 mm.
+- Laço do buck (SW: U2 pino 1 -> L1 -> C6/C7; D4 roda livre junto ao SW; C5/C11 junto ao VIN pino 7). EN do MP4560 fica
+  flutuante (abs. max. 5 V; não pode ir ao VIN) — datasheet: "leaving it floating enables the chip".
+- Compensação R12 68k + C12 1 nF (tabela 3 do datasheet p/ 3,3 V usa 68k + 220 pF; 1 nF = zero em 2,3 kHz, mais margem).
+- FB 47k/15k = 3,31 V. Leitura de VIN: 330k/15k (55 V -> 2,4 V no GPIO0).
+- Sem ESD nas linhas USB (ficam no rabicho). Pull-ups I2C p/ VDD_MLX (rede comutada pelo PMOS Q1).

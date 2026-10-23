@@ -131,10 +131,11 @@ def make_custom(name, pins, desc, value, w=10.16, h=12.7):
     LIBS["SAFEBOAT:" + name] = dict(block=b, pins=[dict(num=num, name=n, etype=e, x=x, y=y, ang=a, length=2.54) for num, n, e, x, y, a in pins])
 
 
-make_custom("AP63203", [
-    ("3", "VIN", "power_in", -12.7, 5.08, 0), ("2", "EN", "input", -12.7, 0, 0), ("1", "FB", "input", -12.7, -5.08, 0),
-    ("6", "BST", "passive", 12.7, 5.08, 180), ("5", "SW", "power_out", 12.7, 0, 180), ("4", "GND", "power_in", 0, -12.7, 90),
-], "Buck síncrono 3,8–32 V, 3,3 V fixo, 2 A, 1,1 MHz, TSOT26 (1 FB 2 EN 3 VIN 4 GND 5 SW 6 BST)", "AP63203WU-7", 7.62, 7.62)
+make_custom("MP4560", [
+    ("7", "VIN", "power_in", -12.7, 7.62, 0), ("2", "EN", "input", -12.7, 2.54, 0), ("3", "COMP", "passive", -12.7, -2.54, 0),
+    ("4", "FB", "input", -12.7, -7.62, 0), ("8", "BST", "passive", 12.7, 7.62, 180), ("1", "SW", "power_out", 12.7, 2.54, 180),
+    ("6", "FREQ", "passive", 12.7, -2.54, 180), ("5", "GND", "power_in", 0, -15.24, 90), ("9", "EP", "passive", 2.54, -15.24, 90),
+], "Buck 3,8–55 V, 2 A, não síncrono, SOIC-8 EP (1 SW 2 EN 3 COMP 4 FB 5 GND 6 FREQ 7 VIN 8 BST); Vfb 0,8 V", "MP4560DN-LF-Z", 10.16, 12.7)
 make_custom("MLX90640", [
     ("1", "SDA", "bidirectional", -12.7, 2.54, 0), ("4", "SCL", "input", -12.7, -2.54, 0),
     ("2", "VDD", "power_in", 0, 10.16, 270), ("3", "GND", "power_in", 0, -10.16, 90),
@@ -247,28 +248,37 @@ def C_(ref, X, Y, val, n1, n2, desc="", fp="C"):
 
 
 # ================================================================ FOLHA
-text("SAFEBOAT TERMICA v1  —  camera termica MLX90640 + ESP32-C3, 12 V do barco  ·  esquematico p/ revisao", 20, 18, 3.0, True)
-text("Redes por label (mesma netlist pino a pino de make_board.py). Placa quadrada 32 x 32 mm; sensor no lado B (frente), resto no lado F (re). Montagem completa JLCPCB (2 lados).", 20, 24, 1.5)
+text("SAFEBOAT TERMICA v2  —  camera termica MLX90640 110 + ESP32-C3, 8-32 V do barco, 4 camadas  ·  esquematico p/ revisao", 20, 18, 3.0, True)
+text("Redes por label (mesma netlist pino a pino de make_board.py). Placa 40 x 40 mm, 4 camadas (In1 GND, In2 3V3); sensor no lado B (frente), resto no lado F (re). Montagem completa JLCPCB (2 lados).", 20, 24, 1.5)
 
 # ---- 1 · ALIMENTACAO
-text("1 · ALIMENTACAO — +12 V (borne J2) -> F1 PPTC 0,5 A -> D1 TVS SMBJ26A -> D2 SS34 (inversao) -> VIN -> U2 AP63203 (EN=VIN, FB=VOUT) -> L1 4,7 uH -> 3V3  ·  USB J1 -> D3 SS14 -> VIN (bancada)  ·  R7/R8 leem VIN no ADC (GPIO0)", 20, 40, 2.0, True)
-place("J2", "Connector_Generic", "Conn_01x02", 34, 62, "+12V (borne KF350)", "SAFEBOAT:KF350-3.5-2P", {"1": "VIN_RAW", "2": "GND"}, "cabo 2x0,75 mm2 pelo prensa-cabo; fusivel 1 A no cabo; 1 = +12V (quadrado) 2 = GND")
+text("1 · ALIMENTACAO — +8-32 V (pads P1/P2, fio soldado) -> F1 PPTC 0,5 A -> D1 TVS SMBJ33A -> D2 SS34 (inversao) -> VIN -> U2 MP4560 (500 kHz, EN flutuante = liga) -> L1 10 uH / D4 SS36 -> 3V3 (FB 47k/15k)  ·  USB J1 -> D3 SS14 -> VIN  ·  R7/R8 leem VIN/23 no ADC (GPIO0)", 20, 40, 2.0, True)
+place("P1", "SAFEBOAT", "WirePad", 34, 60, "+VIN 8-32V (pad)", "SAFEBOAT:WirePad_P1", {"1": "VIN_RAW"}, "fio do cabo soldado direto; fusivel 1 A no cabo")
+place("P2", "SAFEBOAT", "WirePad", 34, 74, "GND (pad)", "SAFEBOAT:WirePad_P2", {"1": "GND"}, "retorno")
 place("F1", "Device", "Polyfuse", 56, 60, "PPTC 0.5A 60V", "Fuse:Fuse_1812_4532Metric", {"1": "VIN_RAW", "2": "VIN_F"}, "SMD1812P050TF/60 — 2a barreira")
-place("D1", "Device", "D_TVS", 76, 60, "SMAJ26A", FP["SMA"], {"1": "VIN_F", "2": "GND"}, "TVS 26 V standoff, 400 W (alternador / cargas indutivas)")
+place("D1", "Device", "D_TVS", 76, 60, "SMBJ33A", FP["SMB"], {"1": "VIN_F", "2": "GND"}, "TVS 33 V standoff, 600 W: clampa em ~53 V < 60 V abs. max. do MP4560")
 place("D2", "Device", "D_Schottky", 96, 60, "SS34", FP["SMA"], {"2": "VIN_F", "1": "VIN"}, "serie: inversao de polaridade")
-C_("C5", 116, 60, "10u/50V", "VIN", "GND", "entrada do buck", "C1210")
-place("U2", "SAFEBOAT", "AP63203", 150, 62, "AP63203WU-7", FP["TSOT236"], {"3": "VIN", "2": "VIN", "1": "3V3", "6": "BST", "5": "SW", "4": "GND"},
-      "buck 3,3 V fixo; EN ligado a VIN (datasheet: 'attach to VIN'); FB direto no VOUT")
-C_("C8", 176, 60, "100n", "SW", "BST", "bootstrap")
-place("L1", "Device", "L", 196, 60, "4.7u SWPA4020S", "Inductor_SMD:L_Sunlord_SWPA4020S", {"1": "SW", "2": "3V3"}, "4x4x2 mm, 1,34 A")
-C_("C6", 214, 60, "22u", "3V3", "GND", "saida", "C0805")
-C_("C7", 228, 60, "22u", "3V3", "GND", "saida", "C0805")
-R_("R7", 248, 60, "200k", "VIN", "VSENSE", "leitura da tensao do barco: VIN/11")
-R_("R8", 262, 60, "20k", "VSENSE", "GND", "divisor")
-C_("C4", 276, 60, "100n", "VSENSE", "GND", "filtro do ADC")
-place("J1", "Connector_Generic", "Conn_01x04", 34, 96, "USB (JST-PH 4)", "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical",
+C_("C5", 116, 60, "4.7u/100V", "VIN", "GND", "entrada do buck", "C1210")
+C_("C11", 130, 60, "4.7u/100V", "VIN", "GND", "entrada do buck", "C1210")
+place("U2", "SAFEBOAT", "MP4560", 160, 66, "MP4560DN-LF-Z", "Package_SO:HSOP-8-1EP_3.9x4.9mm_P1.27mm_EP2.41x3.1mm_ThermalVias",
+      {"7": "VIN", "2": "NC", "3": "COMP", "4": "FB", "8": "BST", "1": "SW", "6": "FREQ", "5": "GND", "9": "GND"},
+      "EN flutuante = habilitado (abs. max. 5 V: NAO ligar a VIN); fsw = 100000/(R11+5) kHz")
+C_("C8", 186, 60, "100n", "SW", "BST", "bootstrap")
+place("L1", "Device", "L", 206, 60, "10u SWPA5040S", "Inductor_SMD:L_Sunlord_SWPA5040S", {"1": "SW", "2": "3V3"}, "5x5x4 mm, 2,1 A")
+place("D4", "Device", "D_Schottky", 226, 60, "SS36", FP["SMA"], {"2": "GND", "1": "SW"}, "roda livre 60 V (anodo GND, catodo SW)")
+C_("C6", 246, 60, "22u", "3V3", "GND", "saida", "C0805")
+C_("C7", 260, 60, "22u", "3V3", "GND", "saida", "C0805")
+R_("R9", 280, 60, "47k", "3V3", "FB", "FB: 0,8 V x (1 + 47/15) = 3,31 V (basicos JLC)")
+R_("R10", 294, 60, "15k", "FB", "GND", "divisor")
+R_("R12", 56, 84, "68k", "COMP", "COMP_C", "compensacao (tabela 3 do datasheet p/ 3,3 V)")
+C_("C12", 70, 84, "1n", "COMP_C", "GND", "compensacao: zero em 2,3 kHz (< fc/4)")
+R_("R11", 84, 84, "200k", "FREQ", "GND", "fsw = 100000/(200+5) = 488 kHz")
+R_("R7", 104, 84, "330k", "VIN", "VSENSE", "leitura da tensao do barco: VIN/23 (55 V -> 2,4 V)")
+R_("R8", 118, 84, "15k", "VSENSE", "GND", "divisor")
+C_("C4", 132, 84, "100n", "VSENSE", "GND", "filtro do ADC")
+place("J1", "Connector_Generic", "Conn_01x04", 160, 96, "USB (JST-PH 4)", "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical",
       {"1": "VBUS", "2": "USB_DM", "3": "USB_DP", "4": "GND"}, "rabicho p/ USB-C femea: 1 5V · 2 D- · 3 D+ · 4 GND")
-place("D3", "Device", "D_Schottky", 62, 96, "SS14", FP["SMA"], {"2": "VBUS", "1": "VIN"}, "USB alimenta a placa na bancada (sem 12 V)")
+place("D3", "Device", "D_Schottky", 188, 96, "SS14", FP["SMA"], {"2": "VBUS", "1": "VIN"}, "USB alimenta a placa na bancada (sem 12 V)")
 
 # ---- 2 · MCU
 text("2 · MCU — ESP32-C3-MINI-1: GPIO8 SDA · GPIO9 SCL (+BOOT) · GPIO10 LED · GPIO4 SENS_OFF · GPIO0 VSENSE · GPIO18/19 USB · EN com R1/C1 + RST", 20, 122, 2.0, True)
@@ -317,9 +327,9 @@ sch = '''(kicad_sch
 	(uuid "%s")
 	(paper "A3")
 	(title_block
-		(title "SAFEBOAT TERMICA v1 — camera termica MLX90640 + ESP32-C3")
-		(date "2026-09-22")
-		(rev "v1")
+		(title "SAFEBOAT TERMICA v2 — camera termica MLX90640 110 + ESP32-C3, 8-32 V")
+		(date "2026-10-22")
+		(rev "v2")
 		(company "SAFEBOAT Tecnologia")
 		(comment 1 "Gerado por hardware/pcb/gen_schematic.py — netlist idêntica a make_board.py (PCB)")
 	)
